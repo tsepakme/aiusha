@@ -1,0 +1,215 @@
+{
+    "parser": "@typescript-eslint/parser",
+    "plugins": [
+      "@typescript-eslint",
+      "prettier",
+      "import",
+      "react-hooks",
+      "react"
+    ],
+    "extends": [
+      "eslint:recommended",
+      "plugin:react/recommended"
+    ],
+    "parserOptions": {
+      "project": "./tsconfig.json",
+      "sourceType": "module",
+      "requireConfigFile": false,
+      "ecmaFeatures": {
+        "jsx": true
+      }
+    },
+    "env": {
+      "browser": true,
+      "es6": true,
+      "jest": true,
+      "node": true
+    },
+    "rules": {
+      "max-len": [
+        "error",
+        {
+          // TODO: fix 100 max-len strings (doesnt work with `${blah}${blah-blah}` that strings)
+          "code": 150,
+          "tabWidth": 4,
+          "ignoreComments": true,
+          "ignoreTrailingComments": true,
+          "ignoreUrls": true,
+          "ignoreStrings": true,
+          "ignoreRegExpLiterals": true
+        }
+      ],
+      "import/newline-after-import": "error",
+      "import/no-duplicates": "error",
+      "import/order": [
+        "error",
+        {
+          "groups": [
+            "builtin",
+            "external",
+            "internal"
+          ],
+          "pathGroups": [
+            {
+              "pattern": "react*",
+              "group": "external",
+              "position": "before"
+            },
+            {
+              "pattern": "react*/*",
+              "group": "external",
+              "position": "before"
+            }
+          ],
+          "pathGroupsExcludedImportTypes": [
+            "react"
+          ],
+          "newlines-between": "always",
+          "alphabetize": {
+            "order": "asc",
+            "caseInsensitive": true
+          }
+        }
+      ],
+      "prettier/prettier": "error",
+      "react-hooks/rules-of-hooks": "error",
+      "react-hooks/exhaustive-deps": "warn",
+      "react/jsx-closing-bracket-location": [
+        1,
+        "line-aligned"
+      ],
+      "react/display-name": "off",
+      "@typescript-eslint/adjacent-overload-signatures": "off",
+      "@typescript-eslint/array-type": "off",
+      "@typescript-eslint/consistent-type-definitions": "off",
+      "@typescript-eslint/explicit-member-accessibility": "off",
+      "@typescript-eslint/indent": "off",
+      "@typescript-eslint/interface-name-prefix": "off",
+      "@typescript-eslint/no-unused-vars": [
+        "warn",
+        {
+          "argsIgnorePattern": "^_"
+        }
+      ],
+      "@typescript-eslint/member-ordering": "off",
+      "@typescript-eslint/consistent-type-assertions": [
+        "error",
+        {
+          "assertionStyle": "as"
+        }
+      ],
+      "@typescript-eslint/no-empty-interface": "off",
+      "@typescript-eslint/no-explicit-any": "off",
+      "@typescript-eslint/no-for-in-array": "off",
+      "@typescript-eslint/no-inferrable-types": "off",
+      "@typescript-eslint/no-magic-numbers": "off",
+      "@typescript-eslint/no-namespace": [
+        "error",
+        {
+          "allowDeclarations": true
+        }
+      ],
+      "@typescript-eslint/no-parameter-properties": "off",
+      "@typescript-eslint/no-require-imports": "error",
+      "@typescript-eslint/no-var-requires": "error",
+      "@typescript-eslint/triple-slash-reference": [
+        "error",
+        {
+          "path": "never"
+        }
+      ],
+      "@typescript-eslint/prefer-for-of": "error",
+      "@typescript-eslint/prefer-function-type": "off",
+      "@typescript-eslint/prefer-interface": "off",
+      "@typescript-eslint/prefer-namespace-keyword": "error",
+      "@typescript-eslint/promise-function-async": "off",
+      "@typescript-eslint/restrict-plus-operands": "off",
+      "@typescript-eslint/strict-boolean-expressions": "off",
+      "@typescript-eslint/typedef": [
+        "error",
+        {
+          "propertyDeclaration": true,
+          "arrowParameter": false,
+          "memberVariableDeclaration": false,
+          "parameter": false
+        }
+      ],
+      "@typescript-eslint/type-annotation-spacing": "error",
+      "@typescript-eslint/unified-signatures": "error",
+      "arrow-parens": [
+        "error"
+      ],
+      "spaced-comment": "off",
+      "capitalized-comments": "off",
+      "comma-dangle": "off",
+      "complexity": "off",
+      "curly": "error",
+      "default-case": "off",
+      "dot-notation": "off",
+      "eol-last": "off",
+      "eqeqeq": "error",
+      "guard-for-in": "error",
+      "indent": "off",
+      "linebreak-style": "off",
+      "max-classes-per-file": "off",
+      "max-lines": "off",
+      "new-parens": "error",
+      "newline-per-chained-call": "off",
+      "no-bitwise": "off",
+      "no-caller": "error",
+      "no-cond-assign": "error",
+      "no-debugger": "error",
+      "no-duplicate-case": "error",
+      "no-empty": "off",
+      "no-empty-functions": "off",
+      "no-eval": "error",
+      "no-fallthrough": "off",
+      "no-invalid-this": "off",
+      "no-irregular-whitespace": "off",
+      "no-magic-numbers": "off",
+      "no-multiple-empty-lines": "error",
+      "no-new-wrappers": "error",
+      "@typescript-eslint/no-redeclare": [
+        "error"
+      ],
+      "no-shadow": "off",
+      "no-throw-literal": "error",
+      "no-trailing-spaces": "error",
+      "no-unsafe-finally": "error",
+      "no-unused-expressions": [
+        "error",
+        {
+          "allowShortCircuit": true,
+          "allowTernary": true
+        }
+      ],
+      "no-unused-labels": "off",
+      "no-unused-vars": "off",
+      "no-var": "error",
+      "no-void": "off",
+      "object-shorthand": "error",
+      "one-var": [
+        "error",
+        "never"
+      ],
+      "prefer-const": "error",
+      "quote-props": [
+        "error",
+        "as-needed"
+      ],
+      "quotes": [
+        "error",
+        "single",
+        {
+          "allowTemplateLiterals": true,
+          "avoidEscape": true
+        }
+      ],
+      "radix": "error",
+      "space-before-function-paren": "off",
+      "sort-keys": "off",
+      "use-isnan": "error",
+      "no-console": "warn",
+      "no-prototype-builtins": "warn"
+    }
+  }

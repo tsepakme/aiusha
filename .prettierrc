@@ -1,0 +1,35 @@
+{
+    "parser": "typescript",
+    "bracketSpacing": true,
+    "useTabs": false,
+    "printWidth": 100,
+    "tabWidth": 2,
+    "singleQuote": true,
+    "trailingComma": "none",
+    "jsxBracketSameLine": false,
+    "semi": false,
+    "endOfLine": "auto",
+    "arrowParens": "always",
+    "overrides": [
+      {
+        "files": [
+          "*.js",
+          "*.jsx"
+        ],
+        "options": {
+          "parser": "babel",
+          "endOfLine": "auto",
+          "arrowParens": "always"
+        }
+      },
+      {
+        "files": [
+          "*.ts",
+          "*.tsx"
+        ],
+        "options": {
+          "parser": "typescript"
+        }
+      }
+    ]
+  }
