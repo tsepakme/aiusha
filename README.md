@@ -1,2 +1,2 @@
-# React + TypeScript + Vite
+# Hello world
 
