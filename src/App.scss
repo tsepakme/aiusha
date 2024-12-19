@@ -1,9 +1,11 @@
 .greeting {
     display: flex;
+    flex-direction: column;
     justify-content: center;
+    align-items: center;
     font-family: 'Comic Sans MS';
 
-    h1 {
+    h1, h2 {
         background-color: white;
     }
 }
