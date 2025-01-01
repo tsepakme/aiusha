@@ -3,6 +3,7 @@ import './App.scss';
 
 function App() {
   const [count, setCount] = useState(0);
+	
 	const increment = 1;
   const handleClick = () => {
     setCount(count + increment);
