@@ -24,7 +24,7 @@ function App() {
         <input type='number' placeholder='increase/decrease by' value={increment}  onChange={handleIncrementChange}/>
         <button onClick={handleIncrease}>+{increment}</button>
         <button onClick={handleDecrease}>-{increment}</button>
-        <p>Button clicked {count} times</p>
+        <p>Current count: {count}</p>
       </div>
     </>
   );
