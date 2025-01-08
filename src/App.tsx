@@ -2,7 +2,7 @@ import { useState } from 'react';
 import './App.scss';
 
 function App() {
-  const [display, setDisplay] = useState('');
+  const [display, setDisplay] = useState('0');
 
   const handleButtonClick = (value: string) => {
     setDisplay(display + value);
