@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import io from 'socket.io-client';
 import './App.scss';
 
-const socket = io();
+const socket = io('/api/socket');
 
 function App() {
   const [board, setBoard] = useState(Array(9).fill(null));
