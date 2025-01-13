@@ -40,7 +40,7 @@ function App() {
 
   return (
     <div className='todo-app'>
-      <h1>To-Do List</h1>
+      <h1>Hello world!</h1>
       <input 
         type='text' 
         value={newTask} 
