@@ -1,16 +1,46 @@
-.greeting {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    font-family: 'Comic Sans MS';
-
-    * {
-        background-color: white;
-    }
+:root {
+    font-family: Comic Sans MS, cursive;
 }
 
-.buttons {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
+.todo-app {
+  max-width: 400px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+input {
+  padding: 10px;
+  width: 70%;
+  margin-right: 10px;
+}
+
+button {
+  padding: 10px;
+}
+
+ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+li {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px;
+  border-bottom: 1px solid #ccc;
+  background-color: #fff;
+}
+
+li.completed span {
+  text-decoration: line-through;
+  color: #ff0000;
+}
+
+li span {
+  cursor: pointer;
+}
+
+li input {
+  flex: 1;
+  padding: 5px;
 }
