@@ -1,14 +1,14 @@
 :root {
-    font-family: Comic Sans MS, cursive;
+  font-family: Comic Sans MS, cursive;
 }
 
 .todo-app {
   max-width: 400px;
   margin: 0 auto;
   text-align: center;
-  h1{
-    background-color: #fff;
-  }
+  background-color: #fff;
+  border-radius: 10px;
+  padding: 20px;
 }
 
 input {
@@ -26,12 +26,24 @@ ul {
   padding: 0;
 }
 
+.task {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+}
+
+.actions {
+  display: flex;
+  justify-content: center;
+  gap: 5px;
+}
+
 li {
   display: flex;
   justify-content: space-between;
   padding: 10px;
   border-bottom: 1px solid #ccc;
-  background-color: #fff;
 }
 
 li.completed span {
@@ -43,7 +55,7 @@ li span {
   cursor: pointer;
 }
 
-li input {
+li input[type="text"] {
   flex: 1;
   padding: 5px;
 }

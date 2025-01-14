@@ -59,9 +59,16 @@ function App() {
                 autoFocus 
               />
             ) : (
-              <span onClick={() => handleToggleTask(index)}>{task.text}</span>
+              <span className='task'>
+                <input 
+                  type='checkbox' 
+                  checked={task.completed} 
+                  onChange={() => handleToggleTask(index)} 
+                />
+                {task.text}
+              </span>
             )}
-            <div>
+            <div className='actions'>
               {!task.isEditing && <button onClick={() => handleEditTask(index)}>Edit</button>}
               <button onClick={() => handleRemoveTask(index)}>Remove</button>
             </div>
