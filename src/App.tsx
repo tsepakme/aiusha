@@ -12,6 +12,12 @@ function App() {
     }
   };
 
+  const handleKeyPress = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === 'Enter') {
+      handleAddTask();
+    }
+  };
+
   const handleToggleTask = (index: number) => {
     const updatedTasks = tasks.map((task, i) => 
       i === index ? { ...task, completed: !task.completed } : task
@@ -45,6 +51,7 @@ function App() {
         type='text' 
         value={newTask} 
         onChange={(e) => setNewTask(e.target.value)} 
+        onKeyDown={handleKeyPress}
         placeholder='Add a new task' 
       />
       <button onClick={handleAddTask}>Add Task</button>
