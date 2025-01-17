@@ -1,4 +1,4 @@
-export interface Task {
+export type Task = {
   text: string
   completed: boolean
   isEditing: boolean
