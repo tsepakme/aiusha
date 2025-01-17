@@ -15,3 +15,12 @@ export type TodoContextProps = {
   handleEditTask: (index: number) => void;
   handleSaveTask: (index: number, newText: string) => void;
 }
+
+export type TodoItemProps = {
+  task: Task;
+  onToggle: () => void;
+  onEdit: () => void;
+  onSave: (newText: string) => void;
+  onRemove: () => void;
+  onEditKeyPress: (event: React.KeyboardEvent<HTMLInputElement>, newText: string) => void;
+}

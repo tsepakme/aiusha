@@ -51,6 +51,17 @@ const useTodos = () => {
     setTasks(updatedTasks);
   };
 
+  // Функция для обработки нажатия клавиши Enter при редактировании задачи
+  const handleEditKeyPress = (event: React.KeyboardEvent<HTMLInputElement>, index: number, newText: string) => {
+    console.log('handleEditKeyPress', index, newText);
+    
+    if (event.key === 'Enter') {
+      console.log('handleEditKeyPress', index, newText);
+      
+      handleSaveTask(index, newText);
+    }
+  };
+
   return {
     tasks,
     newTask,
@@ -61,6 +72,7 @@ const useTodos = () => {
     handleRemoveTask,
     handleEditTask,
     handleSaveTask,
+    handleEditKeyPress,
   };
 };
 

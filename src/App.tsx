@@ -16,6 +16,7 @@ const AppContent: React.FC = () => {
     handleRemoveTask,
     handleEditTask,
     handleSaveTask,
+    handleEditKeyPress,
   } = useTodos();
 
   return (
@@ -38,6 +39,7 @@ const AppContent: React.FC = () => {
             onEdit={() => handleEditTask(index)}
             onSave={(newText) => handleSaveTask(index, newText)}
             onRemove={() => handleRemoveTask(index)}
+            onEditKeyPress={(e, newText) => handleEditKeyPress(e, index, newText)}
           />
         ))}
       </ul>

@@ -1,23 +1,19 @@
-import React from 'react';
-import { Task } from '../../types/todo';
+import React, { useState } from 'react';
+import { TodoItemProps } from '../../types/todo';
 import './TodoItem.scss';
 
-interface TodoItemProps {
-  task: Task;
-  onToggle: () => void;
-  onEdit: () => void;
-  onSave: (newText: string) => void;
-  onRemove: () => void;
-}
+const TodoItem: React.FC<TodoItemProps> = ({ task, onToggle, onEdit, onSave, onRemove, onEditKeyPress }) => {
+  const [editText, setEditText] = useState(task.text);
 
-const TodoItem: React.FC<TodoItemProps> = ({ task, onToggle, onEdit, onSave, onRemove }) => {
   return (
     <li className={task.completed ? 'completed' : ''}>
       {task.isEditing ? (
         <input
           type='text'
-          defaultValue={task.text}
-          onBlur={(e) => onSave(e.target.value)}
+          value={editText}
+          onChange={(e) => setEditText(e.target.value)}
+          onBlur={() => onSave(editText)}
+          onKeyDown={(e) => onEditKeyPress(e, editText)}
           autoFocus
         />
       ) : (
