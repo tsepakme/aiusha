@@ -1,14 +1,30 @@
-import React, { createContext, useContext, useState, ReactNode } from 'react';
+import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { Task } from '../types/todo';
-import { TodoContextProps } from '../types/todo';
 
-// Создание контекста задач
+interface TodoContextProps {
+  tasks: Task[];
+  newTask: string;
+  setNewTask: (task: string) => void;
+  handleAddTask: () => void;
+  handleKeyPress: (event: React.KeyboardEvent<HTMLInputElement>) => void;
+  handleToggleTask: (index: number) => void;
+  handleRemoveTask: (index: number) => void;
+  handleEditTask: (index: number) => void;
+  handleSaveTask: (index: number, newText: string) => void;
+}
+
 const TodoContext = createContext<TodoContextProps | undefined>(undefined);
 
-// Провайдер контекста задач
 export const TodoProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const [tasks, setTasks] = useState<Task[]>([]);
+  const [tasks, setTasks] = useState<Task[]>(() => {
+    const savedTasks = localStorage.getItem('tasks');
+    return savedTasks ? JSON.parse(savedTasks) : [];
+  });
   const [newTask, setNewTask] = useState('');
+
+  useEffect(() => {
+    localStorage.setItem('tasks', JSON.stringify(tasks));
+  }, [tasks]);
 
   const handleAddTask = () => {
     if (newTask.trim()) {

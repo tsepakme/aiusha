@@ -24,11 +24,11 @@ const TodoItem: React.FC<TodoItemProps> = ({ task, onToggle, onEdit, onSave, onR
             checked={task.completed}
             onChange={onToggle}
           />
-          {task.text}
+          <div className='task_text' onClick={onEdit}>{task.text}</div>
         </div>
       )}
       <div>
-        {!task.isEditing && <Button onClick={onEdit}>Edit</Button>}
+        {/* {!task.isEditing && <Button onClick={onEdit}>Edit</Button>} */}
         <Button onClick={onRemove}>Remove</Button>
       </div>
     </li>
