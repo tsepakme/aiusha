@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { TodoItemProps } from '../../types/todo';
+import Button from '../Button/Button';
 import './TodoItem.scss';
 
 const TodoItem: React.FC<TodoItemProps> = ({ task, onToggle, onEdit, onSave, onRemove, onEditKeyPress }) => {
@@ -27,8 +28,8 @@ const TodoItem: React.FC<TodoItemProps> = ({ task, onToggle, onEdit, onSave, onR
         </span>
       )}
       <div>
-        {!task.isEditing && <button onClick={onEdit}>Edit</button>}
-        <button onClick={onRemove}>Remove</button>
+        {!task.isEditing && <Button onClick={onEdit}>Edit</Button>}
+        <Button onClick={onRemove}>Remove</Button>
       </div>
     </li>
   );
