@@ -68,7 +68,6 @@ export const TodoProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   );
 };
 
-// Хук для использования контекста задач
 export const useTodos = () => {
   const context = useContext(TodoContext);
   if (context === undefined) {
