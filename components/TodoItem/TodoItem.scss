@@ -5,8 +5,9 @@ li {
   border-bottom: 1px solid #ccc;
 }
 
-li.completed span {
+li.completed div {
   text-decoration: line-through;
+  color: #ff0000;
 }
 
 li span {
@@ -31,4 +32,11 @@ li button {
   &:hover {
     background-color: #0056b3;
   }
+}
+
+.task {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
 }

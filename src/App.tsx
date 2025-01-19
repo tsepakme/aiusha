@@ -22,14 +22,16 @@ const AppContent: React.FC = () => {
   return (
     <div className='todo-app'>
       <h1>Hello world!</h1>
-      <input
-        type='text'
-        value={newTask}
-        onChange={(e) => setNewTask(e.target.value)}
-        onKeyDown={handleKeyPress}
-        placeholder='Add a new task'
-      />
-      <Button onClick={handleAddTask}>Add Task</Button>
+      <div className='add-task'>
+        <input
+          type='text'
+          value={newTask}
+          onChange={(e) => setNewTask(e.target.value)}
+          onKeyDown={handleKeyPress}
+          placeholder='Add a new task'
+        />
+        <Button onClick={handleAddTask}>Add Task</Button>
+      </div>
       <ul>
         {tasks.map((task, index) => (
           <TodoItem

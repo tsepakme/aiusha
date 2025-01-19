@@ -18,14 +18,14 @@ const TodoItem: React.FC<TodoItemProps> = ({ task, onToggle, onEdit, onSave, onR
           autoFocus
         />
       ) : (
-        <span>
+        <div className='task'>
           <input
             type='checkbox'
             checked={task.completed}
             onChange={onToggle}
           />
           {task.text}
-        </span>
+        </div>
       )}
       <div>
         {!task.isEditing && <Button onClick={onEdit}>Edit</Button>}
