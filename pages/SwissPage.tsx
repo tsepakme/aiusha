@@ -7,12 +7,15 @@ type Player = {
   points: number;
   buchholz: number;
   opponents: number[];
+  colorHistory: string[];
 };
 
 type Match = {
   player1: Player;
   player2?: Player;
   result?: number;
+  player1Color: string;
+  player2Color: string;
 };
 
 type Round = {
@@ -31,7 +34,8 @@ function initializePlayers(namesAndRatings: { name: string; rating?: number }[])
     rating: data.rating,
     points: 0,
     buchholz: 0,
-    opponents: []
+    opponents: [],
+    colorHistory: []
   })).sort((a, b) => (b.rating ?? 0) - (a.rating ?? 0));
 }
 
@@ -40,8 +44,12 @@ function generateFirstRound(players: Player[]): Match[] {
   for (let i = 0; i < players.length; i += 2) {
     matches.push({
       player1: players[i],
-      player2: players[i + 1]
+      player2: players[i + 1],
+      player1Color: 'white',
+      player2Color: 'black'
     });
+    players[i].colorHistory.push('white');
+    players[i + 1].colorHistory.push('black');
   }
   return matches;
 }
@@ -56,10 +64,15 @@ function generateSwissRound(players: Player[]): Match[] {
     const opponent = sortedPlayers.find(p => !player.opponents.includes(p.id));
 
     if (opponent) {
-      matches.push({ player1: player, player2: opponent });
+      const player1Color = player.colorHistory[player.colorHistory.length - 1] === 'white' ? 'black' : 'white';
+      const player2Color = player1Color === 'white' ? 'black' : 'white';
+
+      matches.push({ player1: player, player2: opponent, player1Color, player2Color });
       sortedPlayers.splice(sortedPlayers.indexOf(opponent), 1);
       player.opponents.push(opponent.id);
       opponent.opponents.push(player.id);
+      player.colorHistory.push(player1Color);
+      opponent.colorHistory.push(player2Color);
     } else {
       unmatched.push(player);
     }
@@ -68,7 +81,10 @@ function generateSwissRound(players: Player[]): Match[] {
   if (unmatched.length > 0) {
     const outsider = unmatched.pop()!;
     outsider.points += 1;
-    matches.push({ player1: outsider });
+    matches.push({
+      player1: outsider, player1Color: 'white', result: 1,
+      player2Color: ''
+    });
   }
 
   return matches;
@@ -215,13 +231,17 @@ const SwissTournament: React.FC = () => {
               <ul>
                 {round.matches.map((match, matchIndex) => (
                   <li key={matchIndex}>
-                    {match.player1.name} vs {match.player2?.name || 'Bye'} -{' '}
-                    <select onChange={(e) => handleResultChange(roundIndex, matchIndex, parseInt(e.target.value))}>
-                      <option value="">Select Result</option>
-                      <option value="1">{match.player1.name} Wins</option>
-                      <option value="-1">{match.player2?.name} Wins</option>
-                      <option value="0">Draw</option>
-                    </select>
+                    {match.player1.name} ({match.player1Color}) vs {match.player2?.name || 'Bye'} ({match.player2Color || 'N/A'}) -{' '}
+                    {match.player2 ? (
+                      <select onChange={(e) => handleResultChange(roundIndex, matchIndex, parseInt(e.target.value))}>
+                        <option value="">Select Result</option>
+                        <option value="1">{match.player1.name} Wins</option>
+                        <option value="-1">{match.player2?.name} Wins</option>
+                        <option value="0">Draw</option>
+                      </select>
+                    ) : (
+                      'Win by default'
+                    )}
                   </li>
                 ))}
               </ul>
