@@ -3,16 +3,16 @@ import React, { useState } from 'react';
 type Player = {
   id: number;
   name: string;
-  rating?: number; // Рейтинг необязательный
-  points: number; // Очки
-  buchholz: number; // Сумма очков противников
-  opponents: number[]; // ID противников
+  rating?: number;
+  points: number;
+  buchholz: number;
+  opponents: number[];
 };
 
 type Match = {
   player1: Player;
-  player2?: Player; // Может быть undefined, если бай
-  result?: number; // 1 = победа игрока 1, 0 = ничья, -1 = победа игрока 2
+  player2?: Player;
+  result?: number;
 };
 
 type Round = {
@@ -24,19 +24,17 @@ type Tournament = {
   rounds: Round[];
 };
 
-// Инициализация игроков
 function initializePlayers(namesAndRatings: { name: string; rating?: number }[]): Player[] {
   return namesAndRatings.map((data, index) => ({
     id: index + 1,
     name: data.name,
     rating: data.rating,
     points: 0,
-    buchholz: 0, // Изначально Бухгольц равен 0
+    buchholz: 0,
     opponents: []
-  })).sort((a, b) => (b.rating ?? 0) - (a.rating ?? 0)); // Сортируем по рейтингу (если есть)
+  })).sort((a, b) => (b.rating ?? 0) - (a.rating ?? 0));
 }
 
-// Формирование пар для первого раунда
 function generateFirstRound(players: Player[]): Match[] {
   const matches: Match[] = [];
   for (let i = 0; i < players.length; i += 2) {
@@ -48,9 +46,8 @@ function generateFirstRound(players: Player[]): Match[] {
   return matches;
 }
 
-// Формирование пар для последующих раундов
 function generateSwissRound(players: Player[]): Match[] {
-  const sortedPlayers = [...players].sort((a, b) => b.points - a.points || b.buchholz - a.buchholz); // Сортируем по очкам, затем по Бухгольцу
+  const sortedPlayers = [...players].sort((a, b) => b.points - a.points || b.buchholz - a.buchholz);
   const matches: Match[] = [];
   const unmatched: Player[] = [];
 
@@ -68,16 +65,18 @@ function generateSwissRound(players: Player[]): Match[] {
     }
   }
 
-  // Если остались игроки без пары
-  unmatched.forEach(player => matches.push({ player1: player }));
+  if (unmatched.length > 0) {
+    const outsider = unmatched.pop()!;
+    outsider.points += 1;
+    matches.push({ player1: outsider });
+  }
 
   return matches;
 }
 
-// Обновление результатов матчей
 function updateResults(matches: Match[], results: number[]): void {
   matches.forEach((match, index) => {
-    const result = results[index]; // 1, 0 или -1
+    const result = results[index];
     if (result === 1) {
       match.player1.points += 1;
     } else if (result === -1 && match.player2) {
@@ -88,11 +87,9 @@ function updateResults(matches: Match[], results: number[]): void {
     }
   });
 
-  // Обновляем Бухгольц после каждого раунда
   updateBuchholz(matches);
 }
 
-// Обновление значений Бухгольца
 function updateBuchholz(matches: Match[]): void {
   const playerMap = new Map<number, Player>();
 
@@ -111,34 +108,27 @@ function updateBuchholz(matches: Match[]): void {
   });
 }
 
-// Создание турнира
-function runTournament(namesAndRatings: { name: string; rating?: number }[], rounds: number): Tournament {
+function calculateRounds(numPlayers: number): number {
+  return Math.ceil(Math.log2(numPlayers));
+}
+
+function runTournament(namesAndRatings: { name: string; rating?: number }[]): Tournament {
   const players = initializePlayers(namesAndRatings);
   const tournament: Tournament = { players, rounds: [] };
 
-  for (let roundIndex = 0; roundIndex < rounds; roundIndex++) {
-    const matches = roundIndex === 0
-      ? generateFirstRound(players)
-      : generateSwissRound(players);
-
-    tournament.rounds.push({ matches });
-
-    // Здесь вы можете запросить результаты для каждого матча вручную
-    const results = matches.map(() => Math.floor(Math.random() * 3) - 1); // Генерация случайных результатов
-    updateResults(matches, results);
-  }
+  const firstRoundMatches = generateFirstRound(players);
+  tournament.rounds.push({ matches: firstRoundMatches });
 
   return tournament;
 }
 
-// initializePlayers, generateFirstRound, generateSwissRound, updateResults
-
 const SwissTournament: React.FC = () => {
   const [players, setPlayers] = useState<{ name: string; rating?: number }[]>([]);
   const [tournament, setTournament] = useState<Tournament | null>(null);
-  const [rounds, setRounds] = useState<number>(3); // Количество раундов
   const [playerName, setPlayerName] = useState('');
   const [playerRating, setPlayerRating] = useState<string>('');
+  const [isFinished, setIsFinished] = useState(false);
+  const [roundResults, setRoundResults] = useState<number[][]>([]);
 
   const addPlayer = () => {
     setPlayers([...players, { name: playerName, rating: playerRating ? parseInt(playerRating) : undefined }]);
@@ -147,8 +137,39 @@ const SwissTournament: React.FC = () => {
   };
 
   const startTournament = () => {
-    const newTournament = runTournament(players, rounds);
+    const newTournament = runTournament(players);
     setTournament(newTournament);
+    setRoundResults(newTournament.rounds.map(() => []));
+  };
+
+  const handleResultChange = (roundIndex: number, matchIndex: number, result: number) => {
+    const newRoundResults = [...roundResults];
+    newRoundResults[roundIndex][matchIndex] = result;
+    setRoundResults(newRoundResults);
+  };
+
+  const finishRound = (roundIndex: number) => {
+    if (tournament) {
+      const newTournament = { ...tournament };
+      updateResults(newTournament.rounds[roundIndex].matches, roundResults[roundIndex]);
+      setTournament(newTournament);
+    }
+  };
+
+  const nextRound = () => {
+    if (tournament && tournament.rounds.length < calculateRounds(tournament.players.length)) {
+      finishRound(tournament.rounds.length - 1);
+      const newTournament = { ...tournament };
+      const newRoundMatches = generateSwissRound(newTournament.players);
+      newTournament.rounds.push({ matches: newRoundMatches });
+      setTournament(newTournament);
+      setRoundResults([...roundResults, []]);
+    }
+  };
+
+  const finishTournament = () => {
+    finishRound(tournament!.rounds.length - 1);
+    setIsFinished(true);
   };
 
   return (
@@ -183,18 +204,7 @@ const SwissTournament: React.FC = () => {
         </ul>
       </div>
 
-      <div>
-        <h2>Settings</h2>
-        <label>
-          Number of Rounds:
-          <input
-            type="number"
-            value={rounds}
-            onChange={(e) => setRounds(parseInt(e.target.value))}
-          />
-        </label>
-        <button onClick={startTournament}>Start Tournament</button>
-      </div>
+      <button onClick={startTournament}>Start Tournament</button>
 
       {tournament && (
         <div>
@@ -206,29 +216,40 @@ const SwissTournament: React.FC = () => {
                 {round.matches.map((match, matchIndex) => (
                   <li key={matchIndex}>
                     {match.player1.name} vs {match.player2?.name || 'Bye'} -{' '}
-                    {match.result === 1
-                      ? `${match.player1.name} Wins`
-                      : match.result === -1
-                        ? `${match.player2?.name} Wins`
-                        : match.result === 0
-                          ? 'Draw'
-                          : 'Pending'}
+                    <select onChange={(e) => handleResultChange(roundIndex, matchIndex, parseInt(e.target.value))}>
+                      <option value="">Select Result</option>
+                      <option value="1">{match.player1.name} Wins</option>
+                      <option value="-1">{match.player2?.name} Wins</option>
+                      <option value="0">Draw</option>
+                    </select>
                   </li>
                 ))}
               </ul>
             </div>
           ))}
 
-          <h3>Final Standings</h3>
-          <ul>
-            {tournament.players
-              .sort((a, b) => b.points - a.points || b.buchholz - a.buchholz)
-              .map((player) => (
-                <li key={player.id}>
-                  {player.name} - Points: {player.points}, Buchholz: {player.buchholz}
-                </li>
-              ))}
-          </ul>
+          {tournament.rounds.length < calculateRounds(tournament.players.length) && (
+            <button onClick={nextRound}>Next Round</button>
+          )}
+
+          {tournament.rounds.length === calculateRounds(tournament.players.length) && !isFinished && (
+            <button onClick={finishTournament}>Finish Tournament</button>
+          )}
+
+          {isFinished && (
+            <div>
+              <h3>Final Standings</h3>
+              <ul>
+                {tournament.players
+                  .sort((a, b) => b.points - a.points || b.buchholz - a.buchholz)
+                  .map((player) => (
+                    <li key={player.id}>
+                      {player.name} - Points: {player.points}, Buchholz: {player.buchholz}
+                    </li>
+                  ))}
+              </ul>
+            </div>
+          )}
         </div>
       )}
     </div>
