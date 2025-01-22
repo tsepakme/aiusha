@@ -1,10 +1,10 @@
 import React from 'react';
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-import { TodoProvider } from '../contexts/TodoContext';
-import useTodos from '../hooks/useTodos';
-import TodoItem from '../components/TodoItem/TodoItem';
-import Button from '../components/Button/Button';
-import SwissPage from '../pages/SwissPage';
+import { BrowserRouter as Router, Route, Routes, Link } from 'react-router-dom';
+import { TodoProvider } from './contexts/TodoContext';
+import useTodos from './hooks/useTodos';
+import TodoItem from './components/TodoItem/TodoItem';
+import Button from './components/Button/Button';
+import SwissPage from './pages/SwissPage';
 import './App.scss';
 
 const AppContent: React.FC = () => {
@@ -24,6 +24,7 @@ const AppContent: React.FC = () => {
   return (
     <div className='todo-app'>
       <h1>Hello world!</h1>
+      <Link to="/swiss">Go to Swiss Tournament Page</Link>
       <div className='add-task'>
         <input
           type='text'
