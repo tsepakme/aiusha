@@ -4,7 +4,7 @@ import { TodoProvider } from './contexts/TodoContext';
 import useTodos from './hooks/useTodos';
 import TodoItem from './components/TodoItem/TodoItem';
 import Button from './components/Button/Button';
-import SwissPage from './pages/SwissPage';
+import SwissPage from './routes/SwissPage';
 import './App.scss';
 
 const AppContent: React.FC = () => {
