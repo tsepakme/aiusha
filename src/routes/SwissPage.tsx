@@ -15,7 +15,7 @@ type Match = {
   player2?: Player;
   result?: number;
   player1Color: string;
-  player2Color: string;
+  player2Color?: string;
 };
 
 type Round = {
@@ -81,10 +81,7 @@ function generateSwissRound(players: Player[]): Match[] {
   if (unmatched.length > 0) {
     const outsider = unmatched.pop()!;
     outsider.points += 1;
-    matches.push({
-      player1: outsider, player1Color: 'white', result: 1,
-      player2Color: ''
-    });
+    matches.push({ player1: outsider, player1Color: 'white', result: 1 });
   }
 
   return matches;
@@ -192,35 +189,39 @@ const SwissTournament: React.FC = () => {
     <div>
       <h1>Swiss System Tournament</h1>
 
-      <div>
-        <h2>Add Players</h2>
-        <input
-          type="text"
-          placeholder="Player Name"
-          value={playerName}
-          onChange={(e) => setPlayerName(e.target.value)}
-        />
-        <input
-          type="number"
-          placeholder="Player Rating (optional)"
-          value={playerRating}
-          onChange={(e) => setPlayerRating(e.target.value)}
-        />
-        <button onClick={addPlayer}>Add Player</button>
-      </div>
+      {!tournament && (
+        <div>
+          <h2>Add Players</h2>
+          <input
+            type="text"
+            placeholder="Player Name"
+            value={playerName}
+            onChange={(e) => setPlayerName(e.target.value)}
+          />
+          <input
+            type="number"
+            placeholder="Player Rating (optional)"
+            value={playerRating}
+            onChange={(e) => setPlayerRating(e.target.value)}
+          />
+          <button onClick={addPlayer}>Add Player</button>
+        </div>
+      )}
 
-      <div>
-        <h2>Players</h2>
-        <ul>
-          {players.map((player, index) => (
-            <li key={index}>
-              {player.name} {player.rating ? `(Rating: ${player.rating})` : ''}
-            </li>
-          ))}
-        </ul>
-      </div>
+      {!tournament && (
+        <div>
+          <h2>Players</h2>
+          <ul>
+            {players.map((player, index) => (
+              <li key={index}>
+                {player.name} {player.rating ? `(Rating: ${player.rating})` : ''}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
 
-      <button onClick={startTournament}>Start Tournament</button>
+      {!tournament && <button onClick={startTournament}>Start Tournament</button>}
 
       {tournament && (
         <div>
