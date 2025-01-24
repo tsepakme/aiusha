@@ -42,14 +42,23 @@ function initializePlayers(namesAndRatings: { name: string; rating?: number }[])
 function generateFirstRound(players: Player[]): Match[] {
   const matches: Match[] = [];
   for (let i = 0; i < players.length; i += 2) {
-    matches.push({
-      player1: players[i],
-      player2: players[i + 1],
-      player1Color: 'white',
-      player2Color: 'black'
-    });
-    players[i].colorHistory.push('white');
-    players[i + 1].colorHistory.push('black');
+    if (players[i + 1]) {
+      matches.push({
+        player1: players[i],
+        player2: players[i + 1],
+        player1Color: 'white',
+        player2Color: 'black'
+      });
+      players[i].colorHistory.push('white');
+      players[i + 1].colorHistory.push('black');
+    } else {
+      matches.push({
+        player1: players[i],
+        player1Color: 'white',
+        result: 1
+      });
+      players[i].points += 1;
+    }
   }
   return matches;
 }
