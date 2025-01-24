@@ -179,19 +179,38 @@ const SwissTournament: React.FC = () => {
   };
 
   const nextRound = () => {
-    if (tournament && tournament.rounds.length < calculateRounds(tournament.players.length)) {
-      finishRound(tournament.rounds.length - 1);
-      const newTournament = { ...tournament };
-      const newRoundMatches = generateSwissRound(newTournament.players);
-      newTournament.rounds.push({ matches: newRoundMatches });
-      setTournament(newTournament);
-      setRoundResults([...roundResults, []]);
+    if (tournament) {
+      const currentRoundResults = roundResults[tournament.rounds.length - 1];
+      const allResultsEntered = currentRoundResults.every(result => result !== undefined && result !== null);
+
+      if (!allResultsEntered) {
+        alert('Please enter all results before proceeding to the next round.');
+        return;
+      }
+
+      if (tournament.rounds.length < calculateRounds(tournament.players.length)) {
+        finishRound(tournament.rounds.length - 1);
+        const newTournament = { ...tournament };
+        const newRoundMatches = generateSwissRound(newTournament.players);
+        newTournament.rounds.push({ matches: newRoundMatches });
+        setTournament(newTournament);
+        setRoundResults([...roundResults, []]);
+      }
     }
   };
 
   const finishTournament = () => {
     finishRound(tournament!.rounds.length - 1);
     setIsFinished(true);
+  };
+
+  const startNewTournament = () => {
+    setPlayers([]);
+    setTournament(null);
+    setPlayerName('');
+    setPlayerRating('');
+    setIsFinished(false);
+    setRoundResults([]);
   };
 
   return (
@@ -278,6 +297,7 @@ const SwissTournament: React.FC = () => {
                     </li>
                   ))}
               </ul>
+              <button onClick={startNewTournament}>Start New Tournament</button>
             </div>
           )}
         </div>
