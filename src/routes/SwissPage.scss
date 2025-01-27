@@ -1,0 +1,21 @@
+.header {
+  text-align: center;
+}
+
+.tournament {
+  max-width: 500px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.round {
+  width: 100%;
+}
+
+.standings {
+  width: 100%;
+  text-align: center;
+}
