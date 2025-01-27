@@ -5,7 +5,8 @@ type Player = {
   name: string;
   rating?: number;
   points: number;
-  buchholz: number;
+  buchholzT: number;
+  buchholzCut1: number;
   opponents: number[];
   colorHistory: string[];
 };
@@ -33,7 +34,8 @@ function initializePlayers(namesAndRatings: { name: string; rating?: number }[])
     name: data.name,
     rating: data.rating,
     points: 0,
-    buchholz: 0,
+    buchholzT: 0,
+    buchholzCut1: 0,
     opponents: [],
     colorHistory: []
   })).sort((a, b) => (b.rating ?? 0) - (a.rating ?? 0));
@@ -64,7 +66,7 @@ function generateFirstRound(players: Player[]): Match[] {
 }
 
 function generateSwissRound(players: Player[]): Match[] {
-  const sortedPlayers = [...players].sort((a, b) => b.points - a.points || b.buchholz - a.buchholz);
+  const sortedPlayers = [...players].sort((a, b) => b.points - a.points || b.buchholzCut1 - a.buchholzCut1 || b.buchholzT - a.buchholzT);
   const matches: Match[] = [];
   const unmatched: Player[] = [];
 
@@ -109,10 +111,11 @@ function updateResults(matches: Match[], results: number[]): void {
     }
   });
 
-  updateBuchholz(matches);
+  updateBuchholzT(matches);
+  updateBuchholzCut1(matches);
 }
 
-function updateBuchholz(matches: Match[]): void {
+function updateBuchholzT(matches: Match[]): void {
   const playerMap = new Map<number, Player>();
 
   matches.forEach(match => {
@@ -123,10 +126,31 @@ function updateBuchholz(matches: Match[]): void {
   });
 
   playerMap.forEach(player => {
-    player.buchholz = player.opponents.reduce((sum, opponentId) => {
+    player.buchholzT = player.opponents.reduce((sum, opponentId) => {
       const opponent = playerMap.get(opponentId);
       return sum + (opponent ? opponent.points : 0);
     }, 0);
+  });
+}
+
+function updateBuchholzCut1(matches: Match[]): void {
+  const playerMap = new Map<number, Player>();
+
+  matches.forEach(match => {
+    playerMap.set(match.player1.id, match.player1);
+    if (match.player2) {
+      playerMap.set(match.player2.id, match.player2);
+    }
+  });
+
+  playerMap.forEach(player => {
+    const opponentPoints = player.opponents.map(opponentId => {
+      const opponent = playerMap.get(opponentId);
+      return opponent ? opponent.points : 0;
+    });
+
+    const minOpponentPoints = Math.min(...opponentPoints);
+    player.buchholzCut1 = player.buchholzT - minOpponentPoints;
   });
 }
 
@@ -290,10 +314,10 @@ const SwissTournament: React.FC = () => {
               <h3>Final Standings</h3>
               <ul>
                 {tournament.players
-                  .sort((a, b) => b.points - a.points || b.buchholz - a.buchholz)
+                  .sort((a, b) => b.points - a.points || b.buchholzT - a.buchholzT)
                   .map((player) => (
                     <li key={player.id}>
-                      {player.name} - Points: {player.points}, Buchholz: {player.buchholz}
+                      {player.name} - Points: {player.points}, BucT: {player.buchholzT}, Buc1: {player.buchholzCut1}
                     </li>
                   ))}
               </ul>
