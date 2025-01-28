@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import './SwissPage.scss';
 
 type Player = {
   id: number;
@@ -149,8 +150,12 @@ function updateBuchholzCut1(matches: Match[]): void {
       return opponent ? opponent.points : 0;
     });
 
-    const minOpponentPoints = Math.min(...opponentPoints);
-    player.buchholzCut1 = player.buchholzT - minOpponentPoints;
+    if (opponentPoints.length > 0) {
+      const minOpponentPoints = Math.min(...opponentPoints);
+      player.buchholzCut1 = player.buchholzT - minOpponentPoints;
+    } else {
+      player.buchholzCut1 = player.buchholzT;
+    }
   });
 }
 
@@ -238,7 +243,7 @@ const SwissTournament: React.FC = () => {
   };
 
   return (
-    <div>
+    <div className="swiss-tournament">
       <h1>Swiss System Tournament</h1>
 
       {!tournament && (
@@ -314,10 +319,10 @@ const SwissTournament: React.FC = () => {
               <h3>Final Standings</h3>
               <ul>
                 {tournament.players
-                  .sort((a, b) => b.points - a.points || b.buchholzT - a.buchholzT)
+                  .sort((a, b) => b.points - a.points || b.buchholzCut1 - a.buchholzCut1 || b.buchholzT - a.buchholzT)
                   .map((player) => (
                     <li key={player.id}>
-                      {player.name} - Points: {player.points}, BucT: {player.buchholzT}, Buc1: {player.buchholzCut1}
+                      {player.name} - Points: {player.points}, Buc1: {player.buchholzCut1}, BucT: {player.buchholzT}
                     </li>
                   ))}
               </ul>
