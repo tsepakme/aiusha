@@ -7,7 +7,7 @@ type Player = {
   rating?: number;
   points: number;
   buchholzT: number;
-  buchholzCut1: number;
+  // buchholzCut1: number;
   opponents: number[];
   colorHistory: string[];
 };
@@ -36,7 +36,7 @@ function initializePlayers(namesAndRatings: { name: string; rating?: number }[])
     rating: data.rating,
     points: 0,
     buchholzT: 0,
-    buchholzCut1: 0,
+    // buchholzCut1: 0,
     opponents: [],
     colorHistory: []
   })).sort((a, b) => (b.rating ?? 0) - (a.rating ?? 0));
@@ -67,7 +67,7 @@ function generateFirstRound(players: Player[]): Match[] {
 }
 
 function generateSwissRound(players: Player[]): Match[] {
-  const sortedPlayers = [...players].sort((a, b) => b.points - a.points || b.buchholzCut1 - a.buchholzCut1 || b.buchholzT - a.buchholzT);
+  const sortedPlayers = [...players].sort((a, b) => b.points - a.points || b.buchholzT - a.buchholzT);
   const matches: Match[] = [];
   const unmatched: Player[] = [];
 
@@ -112,8 +112,8 @@ function updateResults(matches: Match[], results: number[]): void {
     }
   });
 
+  // updateBuchholzCut1(matches);
   updateBuchholzT(matches);
-  updateBuchholzCut1(matches);
 }
 
 function updateBuchholzT(matches: Match[]): void {
@@ -134,30 +134,30 @@ function updateBuchholzT(matches: Match[]): void {
   });
 }
 
-function updateBuchholzCut1(matches: Match[]): void {
-  const playerMap = new Map<number, Player>();
+// function updateBuchholzCut1(matches: Match[]): void {
+//   const playerMap = new Map<number, Player>();
 
-  matches.forEach(match => {
-    playerMap.set(match.player1.id, match.player1);
-    if (match.player2) {
-      playerMap.set(match.player2.id, match.player2);
-    }
-  });
+//   matches.forEach(match => {
+//     playerMap.set(match.player1.id, match.player1);
+//     if (match.player2) {
+//       playerMap.set(match.player2.id, match.player2);
+//     }
+//   });
 
-  playerMap.forEach(player => {
-    const opponentPoints = player.opponents.map(opponentId => {
-      const opponent = playerMap.get(opponentId);
-      return opponent ? opponent.points : 0;
-    });
+//   playerMap.forEach(player => {
+//     const opponentPoints = player.opponents.map(opponentId => {
+//       const opponent = playerMap.get(opponentId);
+//       return opponent ? opponent.points : 0;
+//     });
 
-    if (opponentPoints.length > 0) {
-      const minOpponentPoints = Math.min(...opponentPoints);
-      player.buchholzCut1 = player.buchholzT - minOpponentPoints;
-    } else {
-      player.buchholzCut1 = player.buchholzT;
-    }
-  });
-}
+//     if (opponentPoints.length > 0) {
+//       const minOpponentPoints = Math.min(...opponentPoints);
+//       player.buchholzCut1 = player.buchholzT - minOpponentPoints;
+//     } else {
+//       player.buchholzCut1 = player.buchholzT;
+//     }
+//   });
+// }
 
 function calculateRounds(numPlayers: number): number {
   return Math.ceil(Math.log2(numPlayers));
@@ -319,10 +319,10 @@ const SwissTournament: React.FC = () => {
               <h3>Final Standings</h3>
               <ul>
                 {tournament.players
-                  .sort((a, b) => b.points - a.points || b.buchholzCut1 - a.buchholzCut1 || b.buchholzT - a.buchholzT)
+                  .sort((a, b) => b.points - a.points || b.buchholzT - a.buchholzT)
                   .map((player) => (
                     <li key={player.id}>
-                      {player.name} - Points: {player.points}, Buc1: {player.buchholzCut1}, BucT: {player.buchholzT}
+                      {player.name} - Points: {player.points}, BucT: {player.buchholzT}
                     </li>
                   ))}
               </ul>
