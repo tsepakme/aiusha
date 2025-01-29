@@ -119,6 +119,7 @@ function updateResults(matches: Match[], results: number[]): void {
 function updateBuchholzT(matches: Match[]): void {
   const playerMap = new Map<number, Player>();
 
+  // Populate the playerMap with all players
   matches.forEach(match => {
     playerMap.set(match.player1.id, match.player1);
     if (match.player2) {
@@ -126,6 +127,7 @@ function updateBuchholzT(matches: Match[]): void {
     }
   });
 
+  // Calculate Buchholz score for each player
   playerMap.forEach(player => {
     player.buchholzT = player.opponents.reduce((sum, opponentId) => {
       const opponent = playerMap.get(opponentId);
