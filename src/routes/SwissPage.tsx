@@ -129,10 +129,12 @@ function updateBuchholzT(matches: Match[]): void {
 
   // Calculate Buchholz score for each player
   playerMap.forEach(player => {
-    player.buchholzT = player.opponents.reduce((sum, opponentId) => {
+    const opponentPoints = player.opponents.map(opponentId => {
       const opponent = playerMap.get(opponentId);
-      return sum + (opponent ? opponent.points : 0);
-    }, 0);
+      return opponent ? opponent.points : 0;
+    });
+
+    player.buchholzT = opponentPoints.reduce((sum, points) => sum + points, 0);
   });
 }
 
