@@ -99,7 +99,7 @@ function generateSwissRound(players: Player[]): Match[] {
   return matches;
 }
 
-function updateResults(matches: Match[], results: number[]): void {
+function updateResults(matches: Match[], results: number[], players: Player[]): void {
   matches.forEach((match, index) => {
     const result = results[index];
     if (result === 1) {
@@ -117,9 +117,10 @@ function updateResults(matches: Match[], results: number[]): void {
 }
 
 function updateBuchholzT(matches: Match[]): void {
+  console.log('matches', matches);
+  
   const playerMap = new Map<number, Player>();
 
-  // Populate the playerMap with all players
   matches.forEach(match => {
     playerMap.set(match.player1.id, match.player1);
     if (match.player2) {
@@ -127,7 +128,6 @@ function updateBuchholzT(matches: Match[]): void {
     }
   });
 
-  // Calculate Buchholz score for each player
   playerMap.forEach(player => {
     const opponentPoints = player.opponents.map(opponentId => {
       const opponent = playerMap.get(opponentId);
