@@ -305,7 +305,6 @@ const SwissTournament: React.FC = () => {
                     {match.player2 ? (
                       <Select onValueChange={(e) => {
                         handleResultChange(roundIndex, matchIndex, parseInt(e))
-                        console.log(e, 'event');                        
                       }}>
                         <SelectTrigger>
                           <SelectValue placeholder="Select result" />
