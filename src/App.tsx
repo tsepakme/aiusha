@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { ThemeProvider } from "@/components/theme-provider"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import {
@@ -8,6 +9,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import { ModeToggle } from './components/ui/mode-toggle';
 
 type Player = {
   id: number;
@@ -255,101 +257,105 @@ const SwissTournament: React.FC = () => {
   };
 
   return (
-    <div className="swiss-tournament">
-      <h1>Swiss System Tournament</h1>
-
-      {!tournament && (
+    <ThemeProvider defaultTheme="system" storageKey="vite-ui-theme">
+      <div className="swiss-tournament">
         <div>
-          <h2>Add Players</h2>
-          <Input
-            type="text"
-            placeholder="Player Name"
-            value={playerName}
-            onChange={(e) => setPlayerName(e.target.value)}
-          />
-          <Input
-            type="number"
-            placeholder="Player Rating (optional)"
-            value={playerRating}
-            onChange={(e) => setPlayerRating(e.target.value)}
-          />
-          <Button onClick={addPlayer}>Add Player</Button>
+          <h1>Swiss System Tournament</h1>
+          <ModeToggle />
         </div>
-      )}
+        {!tournament && (
+          <div>
+            <h2>Add Players</h2>
+            <Input
+              type="text"
+              placeholder="Player Name"
+              value={playerName}
+              onChange={(e) => setPlayerName(e.target.value)}
+            />
+            <Input
+              type="number"
+              placeholder="Player Rating (optional)"
+              value={playerRating}
+              onChange={(e) => setPlayerRating(e.target.value)}
+            />
+            <Button onClick={addPlayer}>Add Player</Button>
+          </div>
+        )}
 
-      {!tournament && (
-        <div>
-          <h2>Players</h2>
-          <ul>
-            {players.map((player, index) => (
-              <li key={index}>
-                {player.name} {player.rating ? `(Rating: ${player.rating})` : ''}
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
+        {!tournament && (
+          <div>
+            <h2>Players</h2>
+            <ul>
+              {players.map((player, index) => (
+                <li key={index}>
+                  {player.name} {player.rating ? `(Rating: ${player.rating})` : ''}
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
 
-      {!tournament && <Button onClick={startTournament}>Start Tournament</Button>}
+        {!tournament && <Button onClick={startTournament}>Start Tournament</Button>}
 
-      {tournament && (
-        <div>
-          <h2>Results</h2>
-          {tournament.rounds.map((round, roundIndex) => (
-            <div key={roundIndex}>
-              <h3>Round {roundIndex + 1}</h3>
-              <ul>
-                {round.matches.map((match, matchIndex) => (
-                  <li key={matchIndex}>
-                    {match.player1.name} ({match.player1Color}) vs {match.player2?.name || 'Bye'} ({match.player2Color || 'N/A'}) -{' '}
-                    {match.player2 ? (
-                      <Select onValueChange={(e) => {
-                        handleResultChange(roundIndex, matchIndex, parseInt(e))
-                      }}>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select result" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="1">{match.player1.name} Wins</SelectItem>
-                          <SelectItem value="-1">{match.player2?.name} Wins</SelectItem>
-                          <SelectItem value="0">Draw</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    ) : (
-                      'Win by default'
-                    )}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ))}
-
-          {tournament.rounds.length < calculateRounds(tournament.players.length) && (
-            <Button onClick={nextRound}>Next Round</Button>
-          )}
-
-          {tournament.rounds.length === calculateRounds(tournament.players.length) && !isFinished && (
-            <Button onClick={finishTournament}>Finish Tournament</Button>
-          )}
-
-          {isFinished && (
-            <div>
-              <h3>Final Standings</h3>
-              <ul>
-                {tournament.players
-                  .sort((a, b) => b.points - a.points || b.buchholzT - a.buchholzT)
-                  .map((player) => (
-                    <li key={player.id}>
-                      {player.name} - Points: {player.points}, BucT: {player.buchholzT}
+        {tournament && (
+          <div>
+            <h2>Results</h2>
+            {tournament.rounds.map((round, roundIndex) => (
+              <div key={roundIndex}>
+                <h3>Round {roundIndex + 1}</h3>
+                <ul>
+                  {round.matches.map((match, matchIndex) => (
+                    <li key={matchIndex}>
+                      {match.player1.name} ({match.player1Color}) vs {match.player2?.name || 'Bye'} ({match.player2Color || 'N/A'}) -{' '}
+                      {match.player2 ? (
+                        <Select onValueChange={(e) => {
+                          handleResultChange(roundIndex, matchIndex, parseInt(e))
+                        }}>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select result" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="1">{match.player1.name} Wins</SelectItem>
+                            <SelectItem value="-1">{match.player2?.name} Wins</SelectItem>
+                            <SelectItem value="0">Draw</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      ) : (
+                        'Win by default'
+                      )}
                     </li>
                   ))}
-              </ul>
-              <Button onClick={startNewTournament}>Start New Tournament</Button>
-            </div>
-          )}
-        </div>
-      )}
-    </div>
+                </ul>
+              </div>
+            ))}
+
+            {tournament.rounds.length < calculateRounds(tournament.players.length) && (
+              <Button onClick={nextRound}>Next Round</Button>
+            )}
+
+            {tournament.rounds.length === calculateRounds(tournament.players.length) && !isFinished && (
+              <Button onClick={finishTournament}>Finish Tournament</Button>
+            )}
+
+            {isFinished && (
+              <div>
+                <h3>Final Standings</h3>
+                <ul>
+                  {tournament.players
+                    .sort((a, b) => b.points - a.points || b.buchholzT - a.buchholzT)
+                    .map((player) => (
+                      <li key={player.id}>
+                        {player.name} - Points: {player.points}, BucT: {player.buchholzT}
+                      </li>
+                    ))}
+                </ul>
+                <Button onClick={startNewTournament}>Start New Tournament</Button>
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+    </ThemeProvider>
   );
 };
 
