@@ -1,5 +1,13 @@
 import React, { useState } from 'react';
 import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 
 type Player = {
   id: number;
@@ -99,7 +107,7 @@ function generateSwissRound(players: Player[]): Match[] {
   return matches;
 }
 
-function updateResults(matches: Match[], results: number[], players: Player[]): void {
+function updateResults(matches: Match[], results: number[]): void {
   matches.forEach((match, index) => {
     const result = results[index];
     if (result === 1) {
@@ -253,13 +261,13 @@ const SwissTournament: React.FC = () => {
       {!tournament && (
         <div>
           <h2>Add Players</h2>
-          <input
+          <Input
             type="text"
             placeholder="Player Name"
             value={playerName}
             onChange={(e) => setPlayerName(e.target.value)}
           />
-          <input
+          <Input
             type="number"
             placeholder="Player Rating (optional)"
             value={playerRating}
@@ -295,12 +303,19 @@ const SwissTournament: React.FC = () => {
                   <li key={matchIndex}>
                     {match.player1.name} ({match.player1Color}) vs {match.player2?.name || 'Bye'} ({match.player2Color || 'N/A'}) -{' '}
                     {match.player2 ? (
-                      <select onChange={(e) => handleResultChange(roundIndex, matchIndex, parseInt(e.target.value))}>
-                        <option value="">Select Result</option>
-                        <option value="1">{match.player1.name} Wins</option>
-                        <option value="-1">{match.player2?.name} Wins</option>
-                        <option value="0">Draw</option>
-                      </select>
+                      <Select onValueChange={(e) => {
+                        handleResultChange(roundIndex, matchIndex, parseInt(e))
+                        console.log(e, 'event');                        
+                      }}>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select result" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="1">{match.player1.name} Wins</SelectItem>
+                          <SelectItem value="-1">{match.player2?.name} Wins</SelectItem>
+                          <SelectItem value="0">Draw</SelectItem>
+                        </SelectContent>
+                      </Select>
                     ) : (
                       'Win by default'
                     )}
