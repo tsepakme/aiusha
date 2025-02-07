@@ -9,6 +9,16 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import {
+  Table,
+  TableBody,
+  TableCaption,
+  TableCell,
+  // TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table"
+
 import { ModeToggle } from './components/ui/mode-toggle';
 
 type Player = {
@@ -258,13 +268,13 @@ const SwissTournament: React.FC = () => {
 
   return (
     <ThemeProvider defaultTheme="system" storageKey="vite-ui-theme">
-      <div className="swiss-tournament">
-        <div>
+      <div className="w-1/3 mx-auto">
+        <div className='flex justify-between items-center'>
           <h1>Swiss System Tournament</h1>
           <ModeToggle />
         </div>
         {!tournament && (
-          <div>
+          <div className='flex flex-col gap-2'>
             <h2>Add Players</h2>
             <Input
               type="text"
@@ -282,24 +292,36 @@ const SwissTournament: React.FC = () => {
           </div>
         )}
 
-        {!tournament && (
+        {players.length > 0 && (
           <div>
-            <h2>Players</h2>
             <ul>
-              {players.map((player, index) => (
-                <li key={index}>
-                  {player.name} {player.rating ? `(Rating: ${player.rating})` : ''}
-                </li>
-              ))}
+              <Table>
+                <TableCaption>Players</TableCaption>
+                <TableHeader>
+                  <TableRow>
+                    <TableCell>Name</TableCell>
+                    <TableCell>Rating</TableCell>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {players.map((player, index) => (
+                    <TableRow key={index}>
+                      <TableCell>{player.name}</TableCell>
+                      <TableCell>{player.rating}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
             </ul>
           </div>
         )}
 
-        {!tournament && <Button onClick={startTournament}>Start Tournament</Button>}
+        {players.length > 0 && !tournament && (
+          <Button onClick={startTournament}>Start Tournament</Button>
+        )}
 
         {tournament && (
           <div>
-            <h2>Results</h2>
             {tournament.rounds.map((round, roundIndex) => (
               <div key={roundIndex}>
                 <h3>Round {roundIndex + 1}</h3>
@@ -339,16 +361,27 @@ const SwissTournament: React.FC = () => {
 
             {isFinished && (
               <div>
-                <h3>Final Standings</h3>
-                <ul>
-                  {tournament.players
-                    .sort((a, b) => b.points - a.points || b.buchholzT - a.buchholzT)
-                    .map((player) => (
-                      <li key={player.id}>
-                        {player.name} - Points: {player.points}, BucT: {player.buchholzT}
-                      </li>
-                    ))}
-                </ul>
+                <Table>
+                  <TableCaption>Final Standings</TableCaption>
+                  <TableHeader>
+                    <TableRow>
+                      <TableCell>Name</TableCell>
+                      <TableCell>Points</TableCell>
+                      <TableCell>Buchholz T</TableCell>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {tournament.players
+                      .sort((a, b) => b.points - a.points || b.buchholzT - a.buchholzT)
+                      .map((player) => (
+                        <TableRow key={player.id}>
+                          <TableCell>{player.name}</TableCell>
+                          <TableCell>{player.points}</TableCell>
+                          <TableCell>{player.buchholzT}</TableCell>
+                        </TableRow>
+                      ))}
+                  </TableBody>
+                </Table>
                 <Button onClick={startNewTournament}>Start New Tournament</Button>
               </div>
             )}
