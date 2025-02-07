@@ -18,6 +18,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 
 import { ModeToggle } from './components/ui/mode-toggle';
 
@@ -273,28 +274,33 @@ const SwissTournament: React.FC = () => {
           <h1>Swiss System Tournament</h1>
           <ModeToggle />
         </div>
-        {!tournament && (
-          <div className='flex flex-col gap-2'>
-            <h2>Add Players</h2>
-            <Input
-              type="text"
-              placeholder="Player Name"
-              value={playerName}
-              onChange={(e) => setPlayerName(e.target.value)}
-            />
-            <Input
-              type="number"
-              placeholder="Player Rating (optional)"
-              value={playerRating}
-              onChange={(e) => setPlayerRating(e.target.value)}
-            />
-            <Button onClick={addPlayer}>Add Player</Button>
-          </div>
-        )}
+        <Tabs defaultValue="players" className="w-[400px]">
+          <TabsList>
+            <TabsTrigger value="players">Players</TabsTrigger>
+            <TabsTrigger value="rounds">Rounds</TabsTrigger>
+            <TabsTrigger value="standings">Standings</TabsTrigger>
+          </TabsList>
+          <TabsContent value="players">
+            {!tournament && (
+              <div className='flex flex-col gap-2'>
+                <h2>Add Players</h2>
+                <Input
+                  type="text"
+                  placeholder="Player Name"
+                  value={playerName}
+                  onChange={(e) => setPlayerName(e.target.value)}
+                />
+                <Input
+                  type="number"
+                  placeholder="Player Rating (optional)"
+                  value={playerRating}
+                  onChange={(e) => setPlayerRating(e.target.value)}
+                />
+                <Button onClick={addPlayer}>Add Player</Button>
+              </div>
+            )}
 
-        {players.length > 0 && (
-          <div>
-            <ul>
+            {players.length > 0 && (
               <Table>
                 <TableCaption>Players</TableCaption>
                 <TableHeader>
@@ -312,54 +318,58 @@ const SwissTournament: React.FC = () => {
                   ))}
                 </TableBody>
               </Table>
-            </ul>
-          </div>
-        )}
+            )}
 
-        {players.length > 0 && !tournament && (
-          <Button onClick={startTournament}>Start Tournament</Button>
-        )}
+            {players.length > 0 && !tournament && (
+              <Button onClick={startTournament}>Start Tournament</Button>
+            )}
+          </TabsContent>
+          <TabsContent value="rounds">
+            {tournament && (
+              <div>
+                {
+                  tournament.rounds.map((round, roundIndex) => (
+                    <div key={roundIndex}>
+                      <h3>Round {roundIndex + 1}</h3>
+                      <ul>
+                        {round.matches.map((match, matchIndex) => (
+                          <li key={matchIndex}>
+                            {match.player1.name} ({match.player1Color}) vs {match.player2?.name || 'Bye'} ({match.player2Color || 'N/A'}) -{' '}
+                            {match.player2 ? (
+                              <Select onValueChange={(e) => {
+                                handleResultChange(roundIndex, matchIndex, parseInt(e))
+                              }}>
+                                <SelectTrigger>
+                                  <SelectValue placeholder="Select result" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="1">{match.player1.name} Wins</SelectItem>
+                                  <SelectItem value="-1">{match.player2?.name} Wins</SelectItem>
+                                  <SelectItem value="0">Draw</SelectItem>
+                                </SelectContent>
+                              </Select>
+                            ) : (
+                              'Win by default'
+                            )}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  ))
+                }
 
-        {tournament && (
-          <div>
-            {tournament.rounds.map((round, roundIndex) => (
-              <div key={roundIndex}>
-                <h3>Round {roundIndex + 1}</h3>
-                <ul>
-                  {round.matches.map((match, matchIndex) => (
-                    <li key={matchIndex}>
-                      {match.player1.name} ({match.player1Color}) vs {match.player2?.name || 'Bye'} ({match.player2Color || 'N/A'}) -{' '}
-                      {match.player2 ? (
-                        <Select onValueChange={(e) => {
-                          handleResultChange(roundIndex, matchIndex, parseInt(e))
-                        }}>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select result" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="1">{match.player1.name} Wins</SelectItem>
-                            <SelectItem value="-1">{match.player2?.name} Wins</SelectItem>
-                            <SelectItem value="0">Draw</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      ) : (
-                        'Win by default'
-                      )}
-                    </li>
-                  ))}
-                </ul>
+                {tournament.rounds.length < calculateRounds(tournament.players.length) && (
+                  <Button onClick={nextRound}>Next Round</Button>
+                )}
+
+                {tournament.rounds.length === calculateRounds(tournament.players.length) && !isFinished && (
+                  <Button onClick={finishTournament}>Finish Tournament</Button>
+                )}
               </div>
-            ))}
-
-            {tournament.rounds.length < calculateRounds(tournament.players.length) && (
-              <Button onClick={nextRound}>Next Round</Button>
             )}
-
-            {tournament.rounds.length === calculateRounds(tournament.players.length) && !isFinished && (
-              <Button onClick={finishTournament}>Finish Tournament</Button>
-            )}
-
-            {isFinished && (
+          </TabsContent>
+          <TabsContent value="standings">
+            {tournament && isFinished && (
               <div>
                 <Table>
                   <TableCaption>Final Standings</TableCaption>
@@ -385,8 +395,8 @@ const SwissTournament: React.FC = () => {
                 <Button onClick={startNewTournament}>Start New Tournament</Button>
               </div>
             )}
-          </div>
-        )}
+          </TabsContent>
+        </Tabs>
       </div>
     </ThemeProvider>
   );
