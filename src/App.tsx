@@ -133,7 +133,6 @@ function updateResults(matches: Match[], results: number[]): void {
     }
   });
 
-  // updateBuchholzCut1(matches);
   updateBuchholzT(matches);
 }
 
@@ -158,31 +157,6 @@ function updateBuchholzT(matches: Match[]): void {
     player.buchholzT = opponentPoints.reduce((sum, points) => sum + points, 0);
   });
 }
-
-// function updateBuchholzCut1(matches: Match[]): void {
-//   const playerMap = new Map<number, Player>();
-
-//   matches.forEach(match => {
-//     playerMap.set(match.player1.id, match.player1);
-//     if (match.player2) {
-//       playerMap.set(match.player2.id, match.player2);
-//     }
-//   });
-
-//   playerMap.forEach(player => {
-//     const opponentPoints = player.opponents.map(opponentId => {
-//       const opponent = playerMap.get(opponentId);
-//       return opponent ? opponent.points : 0;
-//     });
-
-//     if (opponentPoints.length > 0) {
-//       const minOpponentPoints = Math.min(...opponentPoints);
-//       player.buchholzCut1 = player.buchholzT - minOpponentPoints;
-//     } else {
-//       player.buchholzCut1 = player.buchholzT;
-//     }
-//   });
-// }
 
 function calculateRounds(numPlayers: number): number {
   return Math.ceil(Math.log2(numPlayers));
