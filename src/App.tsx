@@ -243,12 +243,18 @@ const SwissTournament: React.FC = () => {
 
   return (
     <ThemeProvider defaultTheme="system" storageKey="vite-ui-theme">
-      <div className="w-1/3 mx-auto">
-        <div className='flex justify-between items-center'>
-          <h1>Swiss System Tournament</h1>
-          <ModeToggle />
+      <div className="w-full md:w-1/2 mx-auto">
+        <div className='w-full flex justify-between items-top'>
+          <div className=''>
+            <h1 className='text-lg'>Swiss System Tournament</h1>
+            <p className='text-base mt-5'>Ideal for Chess, but adaptable for Go, Checkers, and other games with black and white sides.
+              Supports custom points for various games like football, tennis, darts, etc.</p>
+          </div>
+          <div>
+            <ModeToggle />
+          </div>
         </div>
-        <Tabs defaultValue="players" className="w-[400px]">
+        <Tabs defaultValue="players" className="w-full mt-5">
           <TabsList>
             <TabsTrigger value="players">Players</TabsTrigger>
             <TabsTrigger value="rounds">Rounds</TabsTrigger>
