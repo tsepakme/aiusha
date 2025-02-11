@@ -147,7 +147,7 @@ const SwissTournament: React.FC = () => {
           </TabsList>
           <TabsContent value="players">
             {!tournament && (
-              <div className='flex flex-col gap-2'>
+              <div className='flex flex-col gap-2 my-3'>
                 <h2>Add Players</h2>
                 <Input
                   type="text"
@@ -161,13 +161,13 @@ const SwissTournament: React.FC = () => {
                   value={playerRating}
                   onChange={(e) => setPlayerRating(e.target.value)}
                 />
-                <Button onClick={addPlayer}>Add Player</Button>
+                <Button variant={'secondary'} onClick={addPlayer}>Add Player</Button>
               </div>
             )}
 
             {players.length > 0 && (
               <Table>
-                <TableCaption>Players</TableCaption>
+                {/* <TableCaption>Players</TableCaption> */}
                 <TableHeader>
                   <TableRow>
                     <TableCell>Name</TableCell>
@@ -190,7 +190,7 @@ const SwissTournament: React.FC = () => {
             )}
 
             {players.length > 0 && !tournament && (
-              <div className='flex flex-col gap-2 mt-5'>
+              <div className='flex flex-row justify-between gap-2 mt-5'>
                 <Button onClick={startTournament}>Start Tournament</Button>
                 <DeleteConfirmationDialog onConfirm={startNewTournament} />
               </div>
@@ -239,15 +239,16 @@ const SwissTournament: React.FC = () => {
                   <Button onClick={nextRound}>Next Round</Button>
                 )}
 
-                {tournament.rounds.length === calculateRounds(tournament.players.length) && !isFinished && (
-                  <Button onClick={finishTournament}>Finish Tournament</Button>
-                )}
-
+                <div className='flex flex-row justify-between gap-2 mt-5'>
+                  {tournament.rounds.length === calculateRounds(tournament.players.length) && !isFinished && (
+                    <Button onClick={finishTournament}>Finish Tournament</Button>
+                  )}
+                  <DeleteConfirmationDialog onConfirm={startNewTournament} />
+                </div>
+                
                 {isFinished && (
                   <p>The tournament has finished. Go to the 'Standings' tab to see the final standings.</p>
                 )}
-
-                <DeleteConfirmationDialog onConfirm={startNewTournament} />
               </div>
             )}
           </TabsContent>
