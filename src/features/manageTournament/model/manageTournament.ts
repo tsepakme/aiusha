@@ -1,4 +1,5 @@
-import { Player, Tournament, Match } from '@/entities/tournament/model/tournament'
+import { Player } from '@/entities/player/model/player'
+import { Tournament, Match } from '@/entities/tournament/model/tournament'
 import { initializePlayers } from '@/features/addPlayer/model/adddPlayer'
 
 export function generateFirstRound(players: Player[]): Match[] {
@@ -88,12 +89,12 @@ function updateBuchholzT(matches: Match[]): void {
   })
 
   playerMap.forEach((player) => {
-    const opponentPoints = player.opponents.map((opponentId) => {
+    const opponentPoints = player.opponents.map((opponentId: number) => {
       const opponent = playerMap.get(opponentId)
       return opponent ? opponent.points : 0
     })
 
-    player.buchholzT = opponentPoints.reduce((sum, points) => sum + points, 0)
+    player.buchholzT = opponentPoints.reduce((sum: number, points: number) => sum + points, 0)
   })
 }
 
