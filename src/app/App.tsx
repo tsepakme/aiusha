@@ -21,7 +21,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/shared/components/ta
 import { Separator } from "@/shared/components/separator"
 
 import { ModeToggle } from '@/shared/components/mode-toggle';
-import { Tournament, Match } from "@/entities/tournament/model/tournament";
+import { Tournament } from "@/entities/tournament/model/tournament";
 import { runTournament, generateSwissRound, updateResults, calculateRounds } from "@/features/manageTournament/model/manageTournament";
 
 const SwissTournament: React.FC = () => {
@@ -189,7 +189,10 @@ const SwissTournament: React.FC = () => {
             )}
 
             {players.length > 0 && !tournament && (
-              <Button onClick={startTournament}>Start Tournament</Button>
+              <div className='flex flex-col gap-2 mt-5'>
+                <Button onClick={startTournament}>Start Tournament</Button>
+                <Button variant={'destructive'} onClick={startNewTournament}>Delete all data and start from scratch</Button>
+              </div>
             )}
           </TabsContent>
           <TabsContent value="rounds">
@@ -242,6 +245,8 @@ const SwissTournament: React.FC = () => {
                 {isFinished && (
                   <p>The tournament has finished. Go to the 'Standings' tab to see the final standings.</p>
                 )}
+
+                <Button variant={'destructive'} onClick={startNewTournament}>Delete all data and start from scratch</Button>
               </div>
             )}
           </TabsContent>
