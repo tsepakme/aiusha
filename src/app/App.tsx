@@ -19,6 +19,7 @@ import {
 } from "@/shared/components/table"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/shared/components/tabs"
 import { Separator } from "@/shared/components/separator"
+import DeleteConfirmationDialog from "@/shared/components/DeleteConfirmationDialog"
 
 import { ModeToggle } from '@/shared/components/mode-toggle';
 import { Tournament } from "@/entities/tournament/model/tournament";
@@ -191,7 +192,7 @@ const SwissTournament: React.FC = () => {
             {players.length > 0 && !tournament && (
               <div className='flex flex-col gap-2 mt-5'>
                 <Button onClick={startTournament}>Start Tournament</Button>
-                <Button variant={'destructive'} onClick={startNewTournament}>Delete all data and start from scratch</Button>
+                <DeleteConfirmationDialog onConfirm={startNewTournament} />
               </div>
             )}
           </TabsContent>
@@ -246,7 +247,7 @@ const SwissTournament: React.FC = () => {
                   <p>The tournament has finished. Go to the 'Standings' tab to see the final standings.</p>
                 )}
 
-                <Button variant={'destructive'} onClick={startNewTournament}>Delete all data and start from scratch</Button>
+                <DeleteConfirmationDialog onConfirm={startNewTournament} />
               </div>
             )}
           </TabsContent>
