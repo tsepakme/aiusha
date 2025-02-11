@@ -1,176 +1,29 @@
 import React, { useState } from 'react';
-import { ThemeProvider } from "@/components/theme-provider"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
+import { ThemeProvider } from "@/shared/theme-provider"
+import { Button } from "@/shared/components/button"
+import { Input } from "@/shared/components/input"
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select"
+} from "@/shared/components/select"
 import {
   Table,
   TableBody,
   TableCaption,
   TableCell,
-  // TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+} from "@/shared/components/table"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/shared/components/tabs"
 
-import { ModeToggle } from './components/ui/mode-toggle';
-
-type Player = {
-  id: number;
-  name: string;
-  rating?: number;
-  points: number;
-  buchholzT: number;
-  // buchholzCut1: number;
-  opponents: number[];
-  colorHistory: string[];
-};
-
-type Match = {
-  player1: Player;
-  player2?: Player;
-  result?: number;
-  player1Color: string;
-  player2Color?: string;
-};
-
-type Round = {
-  matches: Match[];
-};
-
-type Tournament = {
-  players: Player[];
-  rounds: Round[];
-};
-
-function initializePlayers(namesAndRatings: { name: string; rating?: number }[]): Player[] {
-  return namesAndRatings.map((data, index) => ({
-    id: index + 1,
-    name: data.name,
-    rating: data.rating,
-    points: 0,
-    buchholzT: 0,
-    // buchholzCut1: 0,
-    opponents: [],
-    colorHistory: []
-  })).sort((a, b) => (b.rating ?? 0) - (a.rating ?? 0));
-}
-
-function generateFirstRound(players: Player[]): Match[] {
-  const matches: Match[] = [];
-  for (let i = 0; i < players.length; i += 2) {
-    if (players[i + 1]) {
-      matches.push({
-        player1: players[i],
-        player2: players[i + 1],
-        player1Color: 'white',
-        player2Color: 'black'
-      });
-      players[i].colorHistory.push('white');
-      players[i + 1].colorHistory.push('black');
-    } else {
-      matches.push({
-        player1: players[i],
-        player1Color: 'white',
-        result: 1
-      });
-      players[i].points += 1;
-    }
-  }
-  return matches;
-}
-
-function generateSwissRound(players: Player[]): Match[] {
-  const sortedPlayers = [...players].sort((a, b) => b.points - a.points || b.buchholzT - a.buchholzT);
-  const matches: Match[] = [];
-  const unmatched: Player[] = [];
-
-  while (sortedPlayers.length > 0) {
-    const player = sortedPlayers.shift()!;
-    const opponent = sortedPlayers.find(p => !player.opponents.includes(p.id));
-
-    if (opponent) {
-      const player1Color = player.colorHistory[player.colorHistory.length - 1] === 'white' ? 'black' : 'white';
-      const player2Color = player1Color === 'white' ? 'black' : 'white';
-
-      matches.push({ player1: player, player2: opponent, player1Color, player2Color });
-      sortedPlayers.splice(sortedPlayers.indexOf(opponent), 1);
-      player.opponents.push(opponent.id);
-      opponent.opponents.push(player.id);
-      player.colorHistory.push(player1Color);
-      opponent.colorHistory.push(player2Color);
-    } else {
-      unmatched.push(player);
-    }
-  }
-
-  if (unmatched.length > 0) {
-    const outsider = unmatched.pop()!;
-    outsider.points += 1;
-    matches.push({ player1: outsider, player1Color: 'white', result: 1 });
-  }
-
-  return matches;
-}
-
-function updateResults(matches: Match[], results: number[]): void {
-  matches.forEach((match, index) => {
-    const result = results[index];
-    if (result === 1) {
-      match.player1.points += 1;
-    } else if (result === -1 && match.player2) {
-      match.player2.points += 1;
-    } else if (result === 0 && match.player2) {
-      match.player1.points += 0.5;
-      match.player2.points += 0.5;
-    }
-  });
-
-  updateBuchholzT(matches);
-}
-
-function updateBuchholzT(matches: Match[]): void {
-  console.log('matches', matches);
-
-  const playerMap = new Map<number, Player>();
-
-  matches.forEach(match => {
-    playerMap.set(match.player1.id, match.player1);
-    if (match.player2) {
-      playerMap.set(match.player2.id, match.player2);
-    }
-  });
-
-  playerMap.forEach(player => {
-    const opponentPoints = player.opponents.map(opponentId => {
-      const opponent = playerMap.get(opponentId);
-      return opponent ? opponent.points : 0;
-    });
-
-    player.buchholzT = opponentPoints.reduce((sum, points) => sum + points, 0);
-  });
-}
-
-function calculateRounds(numPlayers: number): number {
-  return Math.ceil(Math.log2(numPlayers));
-}
-
-function runTournament(namesAndRatings: { name: string; rating?: number }[]): Tournament {
-  const players = initializePlayers(namesAndRatings);
-  const tournament: Tournament = { players, rounds: [] };
-
-  const firstRoundMatches = generateFirstRound(players);
-  tournament.rounds.push({ matches: firstRoundMatches });
-
-  return tournament;
-}
+import { ModeToggle } from '@/shared/components/mode-toggle';
+import { Player } from "@/entities/player/model/player";
+import { Tournament, Match } from "@/entities/tournament/model/tournament";
+import { initializePlayers } from "@/features/addPlayer/model/addPlayer";
+import { runTournament, generateSwissRound, updateResults, calculateRounds } from "@/features/manageTournament/model/manageTournament";
 
 const SwissTournament: React.FC = () => {
   const [players, setPlayers] = useState<{ name: string; rating?: number }[]>([]);
@@ -300,6 +153,10 @@ const SwissTournament: React.FC = () => {
               </Table>
             )}
 
+            {tournament && (
+              <p className='mt-10'>The draw has taken place. Go to the 'Rounds' tab.</p>
+            )}
+
             {players.length > 0 && !tournament && (
               <Button onClick={startTournament}>Start Tournament</Button>
             )}
@@ -309,7 +166,7 @@ const SwissTournament: React.FC = () => {
               <div>
                 {
                   tournament.rounds.map((round, roundIndex) => (
-                    <div key={roundIndex}>
+                    <div className='mb-5' key={roundIndex}>
                       <h3>Round {roundIndex + 1}</h3>
                       <ul>
                         {round.matches.map((match, matchIndex) => (
@@ -344,6 +201,10 @@ const SwissTournament: React.FC = () => {
 
                 {tournament.rounds.length === calculateRounds(tournament.players.length) && !isFinished && (
                   <Button onClick={finishTournament}>Finish Tournament</Button>
+                )}
+
+                {isFinished && (
+                  <p>The tournament has finished. Go to the 'Standings' tab to see the final standings.</p>
                 )}
               </div>
             )}
