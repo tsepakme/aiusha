@@ -69,7 +69,7 @@ const TournamentPage: React.FC = () => {
   const finishRound = (roundIndex: number) => {
     if (tournament) {
       const newTournament = { ...tournament };
-      updateResults(newTournament.rounds[roundIndex].matches, roundResults[roundIndex]);
+      updateResults(newTournament.rounds[roundIndex].matches, roundResults[roundIndex], newTournament.players);
       setTournament(newTournament);
     }
   };
@@ -195,7 +195,7 @@ const TournamentPage: React.FC = () => {
                           <li className='flex flex-col gap-2 my-5' key={matchIndex}>
                             {match.player1.name} ({match.player1Color}) vs {match.player2?.name || 'Bye'} ({match.player2Color || 'N/A'})
                             {match.player2 ? (
-                              roundIndex === tournament.rounds.length - 1 ? (
+                              roundIndex === tournament.rounds.length - 1 && !isFinished ? (
                                 <Select onValueChange={(e) => {
                                   handleResultChange(roundIndex, matchIndex, parseInt(e))
                                 }}>

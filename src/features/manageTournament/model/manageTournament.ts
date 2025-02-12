@@ -1,6 +1,6 @@
 import { Player } from '@/entities/player/model/player'
 import { Tournament, Match } from '@/entities/tournament/model/tournament'
-import { initializePlayers } from '@/features/addPlayer/model/adddPlayer'
+import { initializePlayers } from '@/features/addPlayer/model/addPlayer'
 
 export function generateFirstRound(players: Player[]): Match[] {
   const matches: Match[] = []
@@ -62,7 +62,7 @@ export function generateSwissRound(players: Player[]): Match[] {
   return matches
 }
 
-export function updateResults(matches: Match[], results: number[]): void {
+export function updateResults(matches: Match[], results: number[], players: Player[]): void {
   matches.forEach((match, index) => {
     const result = results[index]
     if (result === 1) {
@@ -75,26 +75,15 @@ export function updateResults(matches: Match[], results: number[]): void {
     }
   })
 
-  updateBuchholzT(matches)
+  calculateBuchholz(players)
 }
 
-function updateBuchholzT(matches: Match[]): void {
-  const playerMap = new Map<number, Player>()
-
-  matches.forEach((match) => {
-    playerMap.set(match.player1.id, match.player1)
-    if (match.player2) {
-      playerMap.set(match.player2.id, match.player2)
-    }
-  })
-
-  playerMap.forEach((player) => {
-    const opponentPoints = player.opponents.map((opponentId: number) => {
-      const opponent = playerMap.get(opponentId)
-      return opponent ? opponent.points : 0
-    })
-
-    player.buchholzT = opponentPoints.reduce((sum: number, points: number) => sum + points, 0)
+function calculateBuchholz(players: Player[]): void {
+  players.forEach((player) => {
+    player.buchholzT = player.opponents.reduce((sum, opponentId) => {
+      const opponent = players.find((p) => p.id === opponentId)
+      return sum + (opponent ? opponent.points : 0)
+    }, 0)
   })
 }
 
