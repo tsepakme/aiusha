@@ -7,7 +7,8 @@ export function initializePlayers(namesAndRatings: { name: string; rating?: numb
       name: data.name,
       rating: data.rating,
       points: 0,
-      buchholzT: 0,
+      buc1: 0,
+      bucT: 0,
       opponents: [],
       colorHistory: []
     }))

@@ -3,7 +3,8 @@ export type Player = {
   name: string
   rating?: number
   points: number
-  buchholzT: number
+  buc1: number
+  bucT: number
   opponents: number[]
   colorHistory: string[]
 }
