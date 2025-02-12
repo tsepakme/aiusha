@@ -2,21 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { ThemeProvider } from "@/shared/theme-provider"
 import { Button } from "@/shared/components/button"
 import { Input } from "@/shared/components/input"
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/shared/components/select"
-import {
-  Table,
-  TableBody,
-  TableCaption,
-  TableCell,
-  TableHeader,
-  TableRow,
-} from "@/shared/components/table"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shared/components/select"
+import { Table, TableBody, TableCaption, TableCell, TableHeader, TableRow } from "@/shared/components/table"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/shared/components/tabs"
 import { Separator } from "@/shared/components/separator"
 import DeleteConfirmationDialog from "@/shared/components/DeleteConfirmationDialog"
@@ -129,7 +116,7 @@ const TournamentPage: React.FC = () => {
   return (
     <ThemeProvider defaultTheme="system" storageKey="vite-ui-theme">
       <div className="w-full md:w-1/2 mx-auto">
-        <div className='w-full flex justify-between items-top'>
+        <div className='w-full flex justify-between items-top my-5'>
           <div className=''>
             <h1 className='text-lg'>Swiss System Tournament</h1>
             <p className='text-base mt-5'>Ideal for Chess, but adaptable for Go, Checkers, and other games with black and white sides.
@@ -139,7 +126,7 @@ const TournamentPage: React.FC = () => {
             <ModeToggle />
           </div>
         </div>
-        <Tabs defaultValue="players" className="w-full mt-5">
+        <Tabs defaultValue="players" className="w-full">
           <TabsList>
             <TabsTrigger value="players">Players</TabsTrigger>
             <TabsTrigger value="rounds">Rounds</TabsTrigger>
@@ -192,7 +179,7 @@ const TournamentPage: React.FC = () => {
             {players.length > 0 && !tournament && (
               <div className='flex flex-col sm:flex-row justify-between gap-2 mt-5'>
                 <Button onClick={startTournament}>Start Tournament</Button>
-                <DeleteConfirmationDialog onConfirm={startNewTournament} />
+                <DeleteConfirmationDialog onConfirm={startNewTournament} value='Delete all' variant={'destructive'}/>
               </div>
             )}
           </TabsContent>
@@ -235,8 +222,6 @@ const TournamentPage: React.FC = () => {
                   ))
                 }
 
-
-
                 <div className='flex flex-col sm:flex-row justify-between gap-2 mt-5 w-full'>
                   {tournament.rounds.length < calculateRounds(tournament.players.length) && (
                     <Button className='' onClick={nextRound}>Next Round</Button>
@@ -244,7 +229,7 @@ const TournamentPage: React.FC = () => {
                   {tournament.rounds.length === calculateRounds(tournament.players.length) && !isFinished && (
                     <Button onClick={finishTournament}>Finish Tournament</Button>
                   )}
-                  <DeleteConfirmationDialog onConfirm={startNewTournament} />
+                  <DeleteConfirmationDialog onConfirm={startNewTournament} value='Delete all' variant={'destructive'}/>
                 </div>
 
                 {isFinished && (
@@ -262,7 +247,7 @@ const TournamentPage: React.FC = () => {
                     <TableRow>
                       <TableCell>Name</TableCell>
                       <TableCell>Points</TableCell>
-                      <TableCell>Buchholz T</TableCell>
+                      <TableCell>BucT</TableCell>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -277,7 +262,7 @@ const TournamentPage: React.FC = () => {
                       ))}
                   </TableBody>
                 </Table>
-                <Button onClick={startNewTournament}>Start New Tournament</Button>
+                <DeleteConfirmationDialog onConfirm={startNewTournament} value='Start New Tournament' variant={'default'} />
               </div>
             )}
           </TabsContent>
