@@ -62,7 +62,12 @@ export function generateSwissRound(players: Player[]): Match[] {
   return matches
 }
 
-export function updateResults(matches: Match[], results: number[], players: Player[]): void {
+export function updateResults(
+  matches: Match[],
+  results: number[],
+  players: Player[],
+  allMatches: Match[]
+): void {
   matches.forEach((match, index) => {
     const result = results[index]
     if (result === 1) {
@@ -75,14 +80,20 @@ export function updateResults(matches: Match[], results: number[], players: Play
     }
   })
 
-  calculateBuchholz(players)
+  calculateBuchholz(players, allMatches)
 }
 
-function calculateBuchholz(players: Player[]): void {
+function calculateBuchholz(players: Player[], matches: Match[]): void {
   players.forEach((player) => {
-    player.buchholzT = player.opponents.reduce((sum, opponentId) => {
-      const opponent = players.find((p) => p.id === opponentId)
-      return sum + (opponent ? opponent.points : 0)
+    player.buchholzT = matches.reduce((sum, match) => {
+      if (match.player1.id === player.id) {
+        const opponent = players.find((p) => p.id === match.player2?.id)
+        return sum + (opponent ? opponent.points : 0)
+      } else if (match.player2?.id === player.id) {
+        const opponent = players.find((p) => p.id === match.player1.id)
+        return sum + (opponent ? opponent.points : 0)
+      }
+      return sum
     }, 0)
   })
 }

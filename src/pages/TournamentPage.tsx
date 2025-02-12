@@ -69,7 +69,8 @@ const TournamentPage: React.FC = () => {
   const finishRound = (roundIndex: number) => {
     if (tournament) {
       const newTournament = { ...tournament };
-      updateResults(newTournament.rounds[roundIndex].matches, roundResults[roundIndex], newTournament.players);
+      const allMatches = newTournament.rounds.flatMap(round => round.matches);
+      updateResults(newTournament.rounds[roundIndex].matches, roundResults[roundIndex], newTournament.players, allMatches);
       setTournament(newTournament);
     }
   };
@@ -179,7 +180,7 @@ const TournamentPage: React.FC = () => {
             {players.length > 0 && !tournament && (
               <div className='flex flex-col sm:flex-row justify-between gap-2 mt-5'>
                 <Button onClick={startTournament}>Start Tournament</Button>
-                <DeleteConfirmationDialog onConfirm={startNewTournament} value='Delete all' variant={'destructive'}/>
+                <DeleteConfirmationDialog onConfirm={startNewTournament} value='Delete all' variant={'destructive'} />
               </div>
             )}
           </TabsContent>
@@ -229,7 +230,7 @@ const TournamentPage: React.FC = () => {
                   {tournament.rounds.length === calculateRounds(tournament.players.length) && !isFinished && (
                     <Button onClick={finishTournament}>Finish Tournament</Button>
                   )}
-                  <DeleteConfirmationDialog onConfirm={startNewTournament} value='Delete all' variant={'destructive'}/>
+                  <DeleteConfirmationDialog onConfirm={startNewTournament} value='Delete all' variant={'destructive'} />
                 </div>
 
                 {isFinished && (
@@ -239,7 +240,7 @@ const TournamentPage: React.FC = () => {
             )}
           </TabsContent>
           <TabsContent value="standings">
-            {tournament && isFinished && (
+            {tournament && (
               <div>
                 <Table>
                   <TableCaption>Final Standings</TableCaption>
