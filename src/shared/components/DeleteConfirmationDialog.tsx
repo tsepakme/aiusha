@@ -1,16 +1,18 @@
 import React from 'react';
 import { AlertDialog, AlertDialogTrigger, AlertDialogContent, AlertDialogHeader, AlertDialogTitle, AlertDialogDescription, AlertDialogFooter, AlertDialogCancel, AlertDialogAction } from "@/shared/components/alert-dialog";
 import { Button } from "@/shared/components/button";
+import { ButtonProps } from "@/shared/components/button";
 
-interface DeleteConfirmationDialogProps {
+interface DeleteConfirmationDialogProps extends ButtonProps {
   onConfirm: () => void;
+  value: string;
 }
 
-const DeleteConfirmationDialog: React.FC<DeleteConfirmationDialogProps> = ({ onConfirm }) => {
+const DeleteConfirmationDialog: React.FC<DeleteConfirmationDialogProps> = ({ onConfirm, value, variant }) => {
   return (
     <AlertDialog>
       <AlertDialogTrigger asChild>
-        <Button variant={'destructive'}>Delete all data and start from scratch</Button>
+        <Button variant={variant}>{value}</Button>
       </AlertDialogTrigger>
       <AlertDialogContent>
         <AlertDialogHeader>
