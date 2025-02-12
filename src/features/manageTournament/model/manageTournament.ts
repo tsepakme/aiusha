@@ -28,7 +28,7 @@ export function generateFirstRound(players: Player[]): Match[] {
 
 export function generateSwissRound(players: Player[]): Match[] {
   const sortedPlayers = [...players].sort(
-    (a, b) => b.points - a.points || b.buchholzT - a.buchholzT
+    (a, b) => b.points - a.points || b.buc1 - a.buc1 || b.bucT - a.bucT
   )
   const matches: Match[] = []
   const unmatched: Player[] = []
@@ -85,16 +85,25 @@ export function updateResults(
 
 function calculateBuchholz(players: Player[], matches: Match[]): void {
   players.forEach((player) => {
-    player.buchholzT = matches.reduce((sum, match) => {
-      if (match.player1.id === player.id) {
-        const opponent = players.find((p) => p.id === match.player2?.id)
-        return sum + (opponent ? opponent.points : 0)
-      } else if (match.player2?.id === player.id) {
+    const opponentPoints = matches.reduce((points, match) => {
+      if (match.player1.id === player.id && match.player2) {
+        const opponent = players.find((p) => p.id === match.player2!.id)
+        if (opponent) points.push(opponent.points)
+      } else if (match.player2 && match.player2.id === player.id) {
         const opponent = players.find((p) => p.id === match.player1.id)
-        return sum + (opponent ? opponent.points : 0)
+        if (opponent) points.push(opponent.points)
       }
-      return sum
-    }, 0)
+      return points
+    }, [] as number[])
+
+    player.bucT = opponentPoints.reduce((sum, points) => sum + points, 0)
+
+    if (opponentPoints.length > 1) {
+      const minPoints = Math.min(...opponentPoints)
+      player.buc1 = opponentPoints.reduce((sum, points) => sum + points, 0) - minPoints
+    } else {
+      player.buc1 = player.bucT
+    }
   })
 }
 

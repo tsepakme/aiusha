@@ -248,17 +248,20 @@ const TournamentPage: React.FC = () => {
                     <TableRow>
                       <TableCell>Name</TableCell>
                       <TableCell>Points</TableCell>
+                      <TableCell>Buc1</TableCell>
                       <TableCell>BucT</TableCell>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
                     {tournament.players
-                      .sort((a, b) => b.points - a.points || b.buchholzT - a.buchholzT)
+                      .sort((a, b) => b.points - a.points || b.buc1 - a.buc1 || b.bucT - a.bucT)
                       .map((player) => (
+                        console.log(player, 'player'),
                         <TableRow key={player.id}>
                           <TableCell>{player.name}</TableCell>
                           <TableCell>{player.points}</TableCell>
-                          <TableCell>{player.buchholzT}</TableCell>
+                          <TableCell>{player.buc1}</TableCell>
+                          <TableCell>{player.bucT}</TableCell>
                         </TableRow>
                       ))}
                   </TableBody>
