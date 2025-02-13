@@ -278,18 +278,20 @@ const TournamentPage: React.FC = () => {
                         <Drawer>
                           <DrawerTrigger>Buc1</DrawerTrigger>
                           <DrawerContent>
-                            <DrawerHeader>
-                              <DrawerTitle>What is Buc1?</DrawerTitle>
-                              <DrawerDescription>
-                                <p>The Buchholz Cut 1 is the Buchholz score reduced by the lowest score of the opponents.</p>
-                                <a className='decoration-solid' href='https://chess.stackexchange.com/questions/24915/how-is-buchholz-score-calculated-in-a-swiss-tournament'>How is Buchholz score calculated in a Swiss tournament?</a>
-                              </DrawerDescription>
-                            </DrawerHeader>
-                            <DrawerFooter>
-                              <DrawerClose>
-                                <Button variant="outline">Close</Button>
-                              </DrawerClose>
-                            </DrawerFooter>
+                            <div className='mx-auto w-full max-w-sm'>
+                              <DrawerHeader>
+                                <DrawerTitle>What is Buc1?</DrawerTitle>
+                                <DrawerDescription>
+                                  <p>The Buchholz Cut 1 is the Buchholz score reduced by the lowest score of the opponents.</p>
+                                  <a className='underline' href='https://chess.stackexchange.com/questions/24915/how-is-buchholz-score-calculated-in-a-swiss-tournament'>How is Buchholz score calculated in a Swiss tournament?</a>
+                                </DrawerDescription>
+                              </DrawerHeader>
+                              <DrawerFooter>
+                                <DrawerClose>
+                                  {/* <Button variant="outline">Close</Button> */}
+                                </DrawerClose>
+                              </DrawerFooter>
+                            </div>
                           </DrawerContent>
                         </Drawer>
                       </TableCell>
@@ -297,18 +299,20 @@ const TournamentPage: React.FC = () => {
                         <Drawer>
                           <DrawerTrigger>BucT</DrawerTrigger>
                           <DrawerContent>
-                            <DrawerHeader>
-                              <DrawerTitle>What is BucT?</DrawerTitle>
-                              <DrawerDescription>
-                                <p>The Buchholz System is the sum of the scores of each of the opponents of a player.</p>
-                                <a href='https://chess.stackexchange.com/questions/24915/how-is-buchholz-score-calculated-in-a-swiss-tournament'>How is Buchholz score calculated in a Swiss tournament?</a>
-                              </DrawerDescription>
-                            </DrawerHeader>
-                            <DrawerFooter>
-                              <DrawerClose>
-                                <Button variant="outline">Close</Button>
-                              </DrawerClose>
-                            </DrawerFooter>
+                            <div className='mx-auto w-full max-w-sm'>
+                              <DrawerHeader>
+                                <DrawerTitle>What is BucT?</DrawerTitle>
+                                <DrawerDescription>
+                                  <p>The Buchholz System is the sum of the scores of each of the opponents of a player.</p>
+                                  <a className='underline' href='https://chess.stackexchange.com/questions/24915/how-is-buchholz-score-calculated-in-a-swiss-tournament'>How is Buchholz score calculated in a Swiss tournament?</a>
+                                </DrawerDescription>
+                              </DrawerHeader>
+                              <DrawerFooter>
+                                <DrawerClose>
+                                  {/* <Button variant="outline">Close</Button> */}
+                                </DrawerClose>
+                              </DrawerFooter>
+                            </div>
                           </DrawerContent>
                         </Drawer>
                       </TableCell>
