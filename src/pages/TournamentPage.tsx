@@ -7,10 +7,10 @@ import { Table, TableBody, TableCaption, TableCell, TableHeader, TableRow } from
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/shared/components/tabs"
 import { Separator } from "@/shared/components/separator"
 import DeleteConfirmationDialog from "@/shared/components/DeleteConfirmationDialog"
-
 import { ModeToggle } from '@/shared/components/mode-toggle';
 import { Tournament } from "@/entities/tournament/model/tournament";
 import { runTournament, generateSwissRound, updateResults, calculateRounds } from "@/features/manageTournament/model/manageTournament";
+import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/shared/components/hover-card"
 
 const TournamentPage: React.FC = () => {
   const [players, setPlayers] = useState<{ name: string; rating?: number }[]>(() => {
@@ -273,8 +273,22 @@ const TournamentPage: React.FC = () => {
                       {tournament.rounds.map((_, roundIndex) => (
                         <TableCell key={roundIndex}>Round {roundIndex + 1}</TableCell>
                       ))}
-                      <TableCell>Buc1</TableCell>
-                      <TableCell>BucT</TableCell>
+                      <TableCell>
+                        <HoverCard>
+                          <HoverCardTrigger>Buc1</HoverCardTrigger>
+                          <HoverCardContent>
+                            Buchholz 1: Sum of all opponent points, minus the lowest
+                          </HoverCardContent>
+                        </HoverCard>
+                      </TableCell>
+                      <TableCell>
+                        <HoverCard>
+                          <HoverCardTrigger>BucT</HoverCardTrigger>
+                          <HoverCardContent>
+                            Buchholz Total: Sum of all opponent points
+                          </HoverCardContent>
+                        </HoverCard>
+                      </TableCell>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
