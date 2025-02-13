@@ -191,38 +191,59 @@ const TournamentPage: React.FC = () => {
                   tournament.rounds.map((round, roundIndex) => (
                     <div className='' key={roundIndex}>
                       <h3>Round {roundIndex + 1}</h3>
-                      <ul>
+                      <Table>
+                        <TableHeader>
+                          <TableRow>
+                            <TableCell>Player 1</TableCell>
+                            <TableCell>Color</TableCell>
+                            <TableCell>Pts</TableCell>
+                            <TableCell>Result</TableCell>
+                            <TableCell>Pts</TableCell>
+                            <TableCell>Color</TableCell>
+                            <TableCell>Player 2</TableCell>
+                          </TableRow>
+                        </TableHeader>
+                        <TableBody>
                         {round.matches.map((match, matchIndex) => (
-                          <li className='flex flex-col gap-2 my-5' key={matchIndex}>
-                            {match.player1.name} ({match.player1Color}) vs {match.player2?.name || 'Bye'} ({match.player2Color || 'N/A'})
-                            {match.player2 ? (
-                              roundIndex === tournament.rounds.length - 1 && !isFinished ? (
-                                <Select onValueChange={(e) => {
-                                  handleResultChange(roundIndex, matchIndex, parseInt(e))
-                                }}>
-                                  <SelectTrigger>
-                                    <SelectValue placeholder="Select result" />
-                                  </SelectTrigger>
-                                  <SelectContent>
-                                    <SelectItem value="1">{match.player1.name} Wins</SelectItem>
-                                    <SelectItem value="-1">{match.player2?.name} Wins</SelectItem>
-                                    <SelectItem value="0">Draw</SelectItem>
-                                  </SelectContent>
-                                </Select>
+                          <TableRow key={matchIndex}>
+                            <TableCell>{match.player1.name}</TableCell>
+                            <TableCell>{match.player1Color}</TableCell>
+                            <TableCell>{match.player1.points}</TableCell>
+                            <TableCell>{match.player2 ? (
+                                roundIndex === tournament.rounds.length - 1 && !isFinished ? (
+                                  <Select onValueChange={(e) => {
+                                    handleResultChange(roundIndex, matchIndex, parseInt(e))
+                                  }}>
+                                    <SelectTrigger>
+                                      <SelectValue placeholder="Select result" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                      <SelectItem value="1">1 - 0</SelectItem>
+                                      <SelectItem value="-1">0 - 1</SelectItem>
+                                      <SelectItem value="0">0.5 - 0.5</SelectItem>
+                                    </SelectContent>
+                                  </Select>
+                                ) : (
+                                  <span>
+                                    {roundResults[roundIndex][matchIndex] === 1 ?
+                                      `1 - 0` : roundResults[roundIndex][matchIndex] === -1 ?
+                                        `0 - 1` : '0.5 - 0.5'}
+                                  </span>
+                                )
                               ) : (
-                                <span>{roundResults[roundIndex][matchIndex] === 1 ? `${match.player1.name} wins` : roundResults[roundIndex][matchIndex] === -1 ? `${match.player2?.name} wins` : 'Draw'}</span>
-                              )
-                            ) : (
-                              'Win by default'
-                            )}
-                          </li>
+                                'Bye'
+                            )}</TableCell>
+                            <TableCell>{match.player2?.points}</TableCell>
+                            <TableCell>{match.player2Color || ''}</TableCell>
+                            <TableCell>{match.player2?.name || ''}</TableCell>
+                          </TableRow>
                         ))}
-                      </ul>
+                        </TableBody>
+                      </Table>
                       <Separator className='my-4' />
                     </div>
                   ))
                 }
-
                 <div className='flex flex-col sm:flex-row justify-between gap-2 mt-5 w-full'>
                   {tournament.rounds.length < calculateRounds(tournament.players.length) && (
                     <Button className='' onClick={nextRound}>Next Round</Button>
@@ -246,8 +267,12 @@ const TournamentPage: React.FC = () => {
                   <TableCaption>Final Standings</TableCaption>
                   <TableHeader>
                     <TableRow>
+                      <TableCell>Pos</TableCell>
                       <TableCell>Name</TableCell>
                       <TableCell>Points</TableCell>
+                      {tournament.rounds.map((_, roundIndex) => (
+                        <TableCell key={roundIndex}>Round {roundIndex + 1}</TableCell>
+                      ))}
                       <TableCell>Buc1</TableCell>
                       <TableCell>BucT</TableCell>
                     </TableRow>
@@ -256,10 +281,22 @@ const TournamentPage: React.FC = () => {
                     {tournament.players
                       .sort((a, b) => b.points - a.points || b.buc1 - a.buc1 || b.bucT - a.bucT)
                       .map((player) => (
-                        console.log(player, 'player'),
                         <TableRow key={player.id}>
+                          <TableCell>{tournament.players.indexOf(player) + 1}</TableCell>
                           <TableCell>{player.name}</TableCell>
                           <TableCell>{player.points}</TableCell>
+                          {tournament.rounds.map((round, roundIndex) => {
+                            const match = round.matches.find(m => m.player1.id === player.id || m.player2?.id === player.id);
+                            if (match) {
+                              const opponent = match.player1.id === player.id ? match.player2 : match.player1;
+                              return (
+                                <TableCell key={roundIndex}>
+                                  {opponent ? opponent.name : '='}
+                                </TableCell>
+                              );
+                            }
+                            return <TableCell key={roundIndex}>Bye</TableCell>;
+                          })}
                           <TableCell>{player.buc1}</TableCell>
                           <TableCell>{player.bucT}</TableCell>
                         </TableRow>

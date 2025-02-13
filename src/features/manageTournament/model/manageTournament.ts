@@ -14,6 +14,8 @@ export function generateFirstRound(players: Player[]): Match[] {
       })
       players[i].colorHistory.push('white')
       players[i + 1].colorHistory.push('black')
+      players[i].opponents.push(players[i + 1].id)
+      players[i + 1].opponents.push(players[i].id)
     } else {
       matches.push({
         player1: players[i],
@@ -28,7 +30,7 @@ export function generateFirstRound(players: Player[]): Match[] {
 
 export function generateSwissRound(players: Player[]): Match[] {
   const sortedPlayers = [...players].sort(
-    (a, b) => b.points - a.points || b.buc1 - a.buc1 || b.bucT - a.bucT
+    (a, b) => b.points - a.points || b.bucT - a.bucT
   )
   const matches: Match[] = []
   const unmatched: Player[] = []
