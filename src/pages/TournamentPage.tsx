@@ -12,6 +12,7 @@ import { Tournament } from "@/entities/tournament/model/tournament";
 import { runTournament, generateSwissRound, updateResults, calculateRounds } from "@/features/manageTournament/model/manageTournament";
 // import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/shared/components/hover-card"
 import { Drawer, DrawerClose, DrawerContent, DrawerDescription, DrawerFooter, DrawerHeader, DrawerTitle, DrawerTrigger } from "@/shared/components/drawer"
+import { toast } from "sonner"
 
 const TournamentPage: React.FC = () => {
   const [players, setPlayers] = useState<{ name: string; rating?: number }[]>(() => {
@@ -82,7 +83,7 @@ const TournamentPage: React.FC = () => {
       const allResultsEntered = currentRoundResults.every(result => result !== undefined && result !== null);
 
       if (!allResultsEntered) {
-        alert('Please enter all results before proceeding to the next round.');
+        toast.error('Please enter all results before proceeding to the next round.');
         return;
       }
 
@@ -95,11 +96,15 @@ const TournamentPage: React.FC = () => {
         setRoundResults([...roundResults, []]);
       }
     }
+    toast.success('Round finished');
   };
 
   const finishTournament = () => {
     finishRound(tournament!.rounds.length - 1);
     setIsFinished(true);
+    toast.success('Tournament finished', {
+      description: 'The tournament has finished. Go to the "Standings" tab to see the final standings.',
+    });
   };
 
   const startNewTournament = () => {
@@ -113,6 +118,9 @@ const TournamentPage: React.FC = () => {
     localStorage.removeItem('tournament');
     localStorage.removeItem('isFinished');
     localStorage.removeItem('roundResults');
+    toast.success('Tournament started', {
+      description: 'The tournament has started. Go to the "Rounds" tab to begin.',
+    });
   };
 
   return (
@@ -159,6 +167,7 @@ const TournamentPage: React.FC = () => {
                 {/* <TableCaption>Players</TableCaption> */}
                 <TableHeader>
                   <TableRow>
+                    <TableCell>#</TableCell>
                     <TableCell>Name</TableCell>
                     <TableCell>Rating</TableCell>
                   </TableRow>
@@ -166,16 +175,13 @@ const TournamentPage: React.FC = () => {
                 <TableBody>
                   {players.map((player, index) => (
                     <TableRow key={index}>
+                      <TableCell>{index + 1}</TableCell>
                       <TableCell>{player.name}</TableCell>
                       <TableCell>{player.rating}</TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
               </Table>
-            )}
-
-            {tournament && (
-              <p className='mt-10'>The draw has taken place. Go to the 'Rounds' tab.</p>
             )}
 
             {players.length > 0 && !tournament && (
@@ -198,7 +204,31 @@ const TournamentPage: React.FC = () => {
                             <TableCell>Player 1</TableCell>
                             <TableCell>Color</TableCell>
                             <TableCell>Pts</TableCell>
-                            <TableCell>Result</TableCell>
+                            <TableCell>
+                              <Drawer>
+                                <DrawerTrigger>Result</DrawerTrigger>
+                                <DrawerContent>
+                                  <div className='mx-auto w-full max-w-sm'>
+                                    <DrawerHeader>
+                                      <DrawerTitle>The meanings of results</DrawerTitle>
+                                      <DrawerDescription>
+                                        <p>In chess, the results are typically represented as follows:</p>
+                                        <ul>
+                                          <li>1 - 0 Means that person from fre right wins</li>
+                                          <li>0 - 1 Means that person from fre left wins</li>
+                                          <li>0.5 - 0.5 Means that it was a draw</li>
+                                        </ul>
+                                      </DrawerDescription>
+                                    </DrawerHeader>
+                                    <DrawerFooter>
+                                      <DrawerClose>
+                                        {/* <Button variant="outline">Close</Button> */}
+                                      </DrawerClose>
+                                    </DrawerFooter>
+                                  </div>
+                                </DrawerContent>
+                              </Drawer>
+                            </TableCell>
                             <TableCell>Pts</TableCell>
                             <TableCell>Color</TableCell>
                             <TableCell>Player 2</TableCell>
@@ -254,10 +284,6 @@ const TournamentPage: React.FC = () => {
                   )}
                   <DeleteConfirmationDialog onConfirm={startNewTournament} value='Delete all' variant={'destructive'} />
                 </div>
-
-                {isFinished && (
-                  <p>The tournament has finished. Go to the 'Standings' tab to see the final standings.</p>
-                )}
               </div>
             )}
           </TabsContent>
@@ -270,6 +296,7 @@ const TournamentPage: React.FC = () => {
                     <TableRow>
                       <TableCell>Pos</TableCell>
                       <TableCell>Name</TableCell>
+                      <TableCell>Rating</TableCell>
                       <TableCell>Points</TableCell>
                       {tournament.rounds.map((_, roundIndex) => (
                         <TableCell key={roundIndex}>Round {roundIndex + 1}</TableCell>
@@ -325,6 +352,7 @@ const TournamentPage: React.FC = () => {
                         <TableRow key={player.id}>
                           <TableCell>{tournament.players.indexOf(player) + 1}</TableCell>
                           <TableCell>{player.name}</TableCell>
+                          <TableCell>{player.rating}</TableCell>
                           <TableCell>{player.points}</TableCell>
                           {tournament.rounds.map((round, roundIndex) => {
                             const match = round.matches.find(m => m.player1.id === player.id || m.player2?.id === player.id);

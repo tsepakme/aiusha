@@ -9,6 +9,7 @@ export function generateFirstRound(players: Player[]): Match[] {
       matches.push({
         player1: players[i],
         player2: players[i + 1],
+        result: undefined,
         player1Color: 'white',
         player2Color: 'black'
       })
@@ -44,7 +45,7 @@ export function generateSwissRound(players: Player[]): Match[] {
         player.colorHistory[player.colorHistory.length - 1] === 'white' ? 'black' : 'white'
       const player2Color = player1Color === 'white' ? 'black' : 'white'
 
-      matches.push({ player1: player, player2: opponent, player1Color, player2Color })
+      matches.push({ player1: player, player2: opponent, player1Color: player1Color, player2Color: player2Color, result: undefined })
       sortedPlayers.splice(sortedPlayers.indexOf(opponent), 1)
       player.opponents.push(opponent.id)
       opponent.opponents.push(player.id)

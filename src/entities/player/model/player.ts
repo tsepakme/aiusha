@@ -1,3 +1,5 @@
+export type ColorType = 'white' | 'black'
+
 export type Player = {
   id: number
   name: string
@@ -6,5 +8,5 @@ export type Player = {
   buc1: number
   bucT: number
   opponents: number[]
-  colorHistory: string[]
+  colorHistory: ColorType[]
 }

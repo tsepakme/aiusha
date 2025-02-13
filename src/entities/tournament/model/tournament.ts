@@ -1,11 +1,14 @@
 import { Player } from '@/entities/player/model/player'
+import { ColorType } from '@/entities/player/model/player'
+
+type ResultType = -1 | 1 | 0 | unknown
 
 export type Match = {
   player1: Player
   player2?: Player
-  result?: number
-  player1Color: string
-  player2Color?: string
+  result: ResultType
+  player1Color: ColorType
+  player2Color?: ColorType
 }
 
 export type Round = {
