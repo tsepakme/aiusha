@@ -10,7 +10,8 @@ import DeleteConfirmationDialog from "@/shared/components/DeleteConfirmationDial
 import { ModeToggle } from '@/shared/components/mode-toggle';
 import { Tournament } from "@/entities/tournament/model/tournament";
 import { runTournament, generateSwissRound, updateResults, calculateRounds } from "@/features/manageTournament/model/manageTournament";
-import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/shared/components/hover-card"
+// import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/shared/components/hover-card"
+import { Drawer, DrawerClose, DrawerContent, DrawerDescription, DrawerFooter, DrawerHeader, DrawerTitle, DrawerTrigger } from "@/shared/components/drawer"
 
 const TournamentPage: React.FC = () => {
   const [players, setPlayers] = useState<{ name: string; rating?: number }[]>(() => {
@@ -204,12 +205,12 @@ const TournamentPage: React.FC = () => {
                           </TableRow>
                         </TableHeader>
                         <TableBody>
-                        {round.matches.map((match, matchIndex) => (
-                          <TableRow key={matchIndex}>
-                            <TableCell>{match.player1.name}</TableCell>
-                            <TableCell>{match.player1Color}</TableCell>
-                            <TableCell>{match.player1.points}</TableCell>
-                            <TableCell>{match.player2 ? (
+                          {round.matches.map((match, matchIndex) => (
+                            <TableRow key={matchIndex}>
+                              <TableCell>{match.player1.name}</TableCell>
+                              <TableCell>{match.player1Color}</TableCell>
+                              <TableCell>{match.player1.points}</TableCell>
+                              <TableCell>{match.player2 ? (
                                 roundIndex === tournament.rounds.length - 1 && !isFinished ? (
                                   <Select onValueChange={(e) => {
                                     handleResultChange(roundIndex, matchIndex, parseInt(e))
@@ -232,12 +233,12 @@ const TournamentPage: React.FC = () => {
                                 )
                               ) : (
                                 'Bye'
-                            )}</TableCell>
-                            <TableCell>{match.player2?.points}</TableCell>
-                            <TableCell>{match.player2Color || ''}</TableCell>
-                            <TableCell>{match.player2?.name || ''}</TableCell>
-                          </TableRow>
-                        ))}
+                              )}</TableCell>
+                              <TableCell>{match.player2?.points}</TableCell>
+                              <TableCell>{match.player2Color || ''}</TableCell>
+                              <TableCell>{match.player2?.name || ''}</TableCell>
+                            </TableRow>
+                          ))}
                         </TableBody>
                       </Table>
                       <Separator className='my-4' />
@@ -274,20 +275,42 @@ const TournamentPage: React.FC = () => {
                         <TableCell key={roundIndex}>Round {roundIndex + 1}</TableCell>
                       ))}
                       <TableCell>
-                        <HoverCard>
-                          <HoverCardTrigger>Buc1</HoverCardTrigger>
-                          <HoverCardContent>
-                            Buchholz 1: Sum of all opponent points, minus the lowest
-                          </HoverCardContent>
-                        </HoverCard>
+                        <Drawer>
+                          <DrawerTrigger>Buc1</DrawerTrigger>
+                          <DrawerContent>
+                            <DrawerHeader>
+                              <DrawerTitle>What is Buc1?</DrawerTitle>
+                              <DrawerDescription>
+                                <p>The Buchholz Cut 1 is the Buchholz score reduced by the lowest score of the opponents.</p>
+                                <a className='decoration-solid' href='https://chess.stackexchange.com/questions/24915/how-is-buchholz-score-calculated-in-a-swiss-tournament'>How is Buchholz score calculated in a Swiss tournament?</a>
+                              </DrawerDescription>
+                            </DrawerHeader>
+                            <DrawerFooter>
+                              <DrawerClose>
+                                <Button variant="outline">Close</Button>
+                              </DrawerClose>
+                            </DrawerFooter>
+                          </DrawerContent>
+                        </Drawer>
                       </TableCell>
                       <TableCell>
-                        <HoverCard>
-                          <HoverCardTrigger>BucT</HoverCardTrigger>
-                          <HoverCardContent>
-                            Buchholz Total: Sum of all opponent points
-                          </HoverCardContent>
-                        </HoverCard>
+                        <Drawer>
+                          <DrawerTrigger>BucT</DrawerTrigger>
+                          <DrawerContent>
+                            <DrawerHeader>
+                              <DrawerTitle>What is BucT?</DrawerTitle>
+                              <DrawerDescription>
+                                <p>The Buchholz System is the sum of the scores of each of the opponents of a player.</p>
+                                <a href='https://chess.stackexchange.com/questions/24915/how-is-buchholz-score-calculated-in-a-swiss-tournament'>How is Buchholz score calculated in a Swiss tournament?</a>
+                              </DrawerDescription>
+                            </DrawerHeader>
+                            <DrawerFooter>
+                              <DrawerClose>
+                                <Button variant="outline">Close</Button>
+                              </DrawerClose>
+                            </DrawerFooter>
+                          </DrawerContent>
+                        </Drawer>
                       </TableCell>
                     </TableRow>
                   </TableHeader>
