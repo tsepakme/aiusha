@@ -1,4 +1,4 @@
-# My React App
+# Swiss system
 
 This project is a Swiss System Tournament application built with React and TypeScript. It allows users to manage players, organize tournaments, and track results.
 
