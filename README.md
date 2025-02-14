@@ -30,7 +30,7 @@ This project is a Swiss System Tournament application built with React and TypeS
 
 1. Start the development server:
    ```
-   npm run start
+   npm start
    ```
 
 2. Open your browser and go to `http://localhost:5173` to view the application.
