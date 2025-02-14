@@ -29,16 +29,36 @@ export function generateFirstRound(players: Player[]): Match[] {
   return matches
 }
 
-export function generateSwissRound(players: Player[]): Match[] {
-  const sortedPlayers = [...players].sort(
-    (a, b) => b.points - a.points || b.bucT - a.bucT
-  )
+export function generateSwissRound(players: Player[], timeLimit: number = 3000): Match[] {
+  const startTime = Date.now()
+
+  const sortedPlayers = [...players].sort((a, b) => b.points - a.points || b.bucT - a.bucT)
   const matches: Match[] = []
   const unmatched: Player[] = []
 
+  function shuffleArray<T>(array: T[]): void {
+    for (let i = array.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1))
+      ;[array[i], array[j]] = [array[j], array[i]]
+    }
+  }
+
   while (sortedPlayers.length > 0) {
+    if (Date.now() - startTime > timeLimit) {
+      throw new Error('Timeout error')
+    }
+
     const player = sortedPlayers.shift()!
-    const opponent = sortedPlayers.find((p) => !player.opponents.includes(p.id))
+    let opponent = sortedPlayers.find((p) => !player.opponents.includes(p.id))
+
+    if (!opponent) {
+      shuffleArray(sortedPlayers)
+      opponent = sortedPlayers.find((p) => !player.opponents.includes(p.id))
+    }
+
+    if (!opponent && sortedPlayers.length > 0) {
+      opponent = sortedPlayers[0]
+    }
 
     if (opponent) {
       const player1Color =
