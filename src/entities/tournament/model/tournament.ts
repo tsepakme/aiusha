@@ -1,7 +1,7 @@
 import { Player } from '@/entities/player/model/player'
 import { ColorType } from '@/entities/player/model/player'
 
-type ResultType = -1 | 1 | 0 | unknown
+type ResultType = '-' | '+' | '=' | unknown
 
 export type Match = {
   player1: Player

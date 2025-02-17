@@ -29,7 +29,7 @@ const TournamentPage: React.FC = () => {
     const savedIsFinished = localStorage.getItem('isFinished');
     return savedIsFinished ? JSON.parse(savedIsFinished) : false;
   });
-  const [roundResults, setRoundResults] = useState<number[][]>(() => {
+  const [roundResults, setRoundResults] = useState<string[][]>(() => {
     const savedRoundResults = localStorage.getItem('roundResults');
     return savedRoundResults ? JSON.parse(savedRoundResults) : [];
   });
@@ -62,7 +62,7 @@ const TournamentPage: React.FC = () => {
     setRoundResults(newTournament.rounds.map(() => []));
   };
 
-  const handleResultChange = (roundIndex: number, matchIndex: number, result: number) => {
+  const handleResultChange = (roundIndex: number, matchIndex: number, result: string) => {
     const newRoundResults = [...roundResults];
     newRoundResults[roundIndex][matchIndex] = result;
     setRoundResults(newRoundResults);
@@ -243,21 +243,21 @@ const TournamentPage: React.FC = () => {
                               <TableCell>{match.player2 ? (
                                 roundIndex === tournament.rounds.length - 1 && !isFinished ? (
                                   <Select onValueChange={(e) => {
-                                    handleResultChange(roundIndex, matchIndex, parseInt(e))
+                                    handleResultChange(roundIndex, matchIndex, e)
                                   }}>
                                     <SelectTrigger>
                                       <SelectValue placeholder="Select result" />
                                     </SelectTrigger>
                                     <SelectContent>
-                                      <SelectItem value="1">1 - 0</SelectItem>
-                                      <SelectItem value="-1">0 - 1</SelectItem>
-                                      <SelectItem value="0">0.5 - 0.5</SelectItem>
+                                      <SelectItem value="+">1 - 0</SelectItem>
+                                      <SelectItem value="-">0 - 1</SelectItem>
+                                      <SelectItem value="=">0.5 - 0.5</SelectItem>
                                     </SelectContent>
                                   </Select>
                                 ) : (
                                   <span>
-                                    {roundResults[roundIndex][matchIndex] === 1 ?
-                                      `1 - 0` : roundResults[roundIndex][matchIndex] === -1 ?
+                                    {roundResults[roundIndex][matchIndex] === '+' ?
+                                      `1 - 0` : roundResults[roundIndex][matchIndex] === '-' ?
                                         `0 - 1` : '0.5 - 0.5'}
                                   </span>
                                 )
@@ -360,7 +360,7 @@ const TournamentPage: React.FC = () => {
                               const opponent = match.player1.id === player.id ? match.player2 : match.player1;
                               return (
                                 <TableCell key={roundIndex}>
-                                  {opponent ? opponent.name : '='}
+                                  {opponent ? opponent.name : '+'}
                                 </TableCell>
                               );
                             }

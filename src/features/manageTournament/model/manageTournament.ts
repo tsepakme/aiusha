@@ -87,17 +87,17 @@ export function generateSwissRound(players: Player[], timeLimit: number = 3000):
 
 export function updateResults(
   matches: Match[],
-  results: number[],
+  results: string[],
   players: Player[],
   allMatches: Match[]
 ): void {
   matches.forEach((match, index) => {
     const result = results[index]
-    if (result === 1) {
+    if (result === '+') {
       match.player1.points += 1
-    } else if (result === -1 && match.player2) {
+    } else if (result === '-' && match.player2) {
       match.player2.points += 1
-    } else if (result === 0 && match.player2) {
+    } else if (result === '=' && match.player2) {
       match.player1.points += 0.5
       match.player2.points += 0.5
     }
