@@ -10,7 +10,9 @@ export function initializePlayers(namesAndRatings: { name: string; rating?: numb
       buc1: 0,
       bucT: 0,
       opponents: [],
-      colorHistory: []
+      colorHistory: [],
+      resultHistory: [],
+      result: undefined
     }))
     .sort((a, b) => (b.rating ?? 0) - (a.rating ?? 0))
 }

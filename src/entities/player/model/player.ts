@@ -10,6 +10,6 @@ export type Player = {
   bucT: number
   opponents: number[]
   colorHistory: ColorType[]
-  result: string
+  result: ResultType
   resultHistory: ResultType[]
 }
