@@ -1,4 +1,5 @@
 export type ColorType = 'white' | 'black'
+export type ResultType = '-' | '+' | '=' | unknown
 
 export type Player = {
   id: number
@@ -9,4 +10,6 @@ export type Player = {
   bucT: number
   opponents: number[]
   colorHistory: ColorType[]
+  result: string
+  resultHistory: ResultType[]
 }
