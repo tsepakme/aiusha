@@ -358,9 +358,12 @@ const TournamentPage: React.FC = () => {
                             const match = round.matches.find(m => m.player1.id === player.id || m.player2?.id === player.id);
                             if (match) {
                               const opponent = match.player1.id === player.id ? match.player2 : match.player1;
+                              // const result = match.result;
+                              const color = match.player1.id === player.id ? (match.player1Color === 'white' ? 'W' : 'B') : (match.player2Color === 'white' ? 'W' : 'B');
+                              const opponentPosition = opponent ? tournament.players.indexOf(opponent) + 1 : '';
                               return (
                                 <TableCell key={roundIndex}>
-                                  {opponent ? opponent.name : '+'}
+                                  {opponent ? `${color}${opponentPosition}` : '+'}
                                 </TableCell>
                               );
                             }
