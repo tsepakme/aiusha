@@ -79,14 +79,6 @@ const TournamentPage: React.FC = () => {
 
   const nextRound = () => {
     if (tournament) {
-      const currentRoundResults = roundResults[tournament.rounds.length - 1];
-      const allResultsEntered = currentRoundResults.every(result => result !== undefined && result !== null);
-
-      if (!allResultsEntered) {
-        toast.error('Please enter all results before proceeding to the next round.');
-        return;
-      }
-
       if (tournament.rounds.length < calculateRounds(tournament.players.length)) {
         finishRound(tournament.rounds.length - 1);
         const newTournament = { ...tournament };
@@ -94,9 +86,11 @@ const TournamentPage: React.FC = () => {
         newTournament.rounds.push({ matches: newRoundMatches });
         setTournament(newTournament);
         setRoundResults([...roundResults, []]);
+        
+        toast.success('Round finished');
       }
     }
-    toast.success('Round finished');
+    
   };
 
   const finishTournament = () => {
@@ -358,12 +352,12 @@ const TournamentPage: React.FC = () => {
                             const match = round.matches.find(m => m.player1.id === player.id || m.player2?.id === player.id);
                             if (match) {
                               const opponent = match.player1.id === player.id ? match.player2 : match.player1;
-                              // const result = match.result;
                               const color = match.player1.id === player.id ? (match.player1Color === 'white' ? 'W' : 'B') : (match.player2Color === 'white' ? 'W' : 'B');
                               const opponentPosition = opponent ? tournament.players.indexOf(opponent) + 1 : '';
+                              const result = match.player1.id === player.id ? player.resultHistory[roundIndex] : opponent?.resultHistory[roundIndex];
                               return (
                                 <TableCell key={roundIndex}>
-                                  {opponent ? `${color}${opponentPosition}` : '+'}
+                                  {opponent ? `${result}${color}${opponentPosition}` : '+'}
                                 </TableCell>
                               );
                             }

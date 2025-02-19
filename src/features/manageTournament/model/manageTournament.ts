@@ -21,9 +21,10 @@ export function generateFirstRound(players: Player[]): Match[] {
       matches.push({
         player1: players[i],
         player1Color: 'white',
-        result: 1
+        result: undefined
       })
       players[i].points += 1
+      players[i].resultHistory.push('+')
     }
   }
   return matches
@@ -79,7 +80,8 @@ export function generateSwissRound(players: Player[], timeLimit: number = 3000):
   if (unmatched.length > 0) {
     const outsider = unmatched.pop()!
     outsider.points += 1
-    matches.push({ player1: outsider, player1Color: 'white', result: 1 })
+    matches.push({ player1: outsider, player1Color: 'white', result: '+' })
+    outsider.resultHistory.push('+')
   }
 
   return matches
@@ -92,18 +94,31 @@ export function updateResults(
   allMatches: Match[]
 ): void {
   matches.forEach((match, index) => {
-    const result = results[index]
+    const result = results[index];
+    match.result = result;
     if (result === '+') {
-      match.player1.points += 1
-    } else if (result === '-' && match.player2) {
-      match.player2.points += 1
-    } else if (result === '=' && match.player2) {
-      match.player1.points += 0.5
-      match.player2.points += 0.5
+      match.player1.points += 1;
+      match.player1.resultHistory.push('+');
+      if (match.player2) {
+        match.player2.resultHistory.push('-');
+      }
+    } else if (result === '-') {
+      if (match.player2) {
+        match.player2.points += 1;
+        match.player2.resultHistory.push('+');
+        match.player1.resultHistory.push('-');
+      }
+    } else if (result === '=') {
+      if (match.player2) {
+        match.player1.points += 0.5;
+        match.player2.points += 0.5;
+        match.player1.resultHistory.push('=');
+        match.player2.resultHistory.push('=');
+      }
     }
-  })
+  });
 
-  calculateBuchholz(players, allMatches)
+  calculateBuchholz(players, allMatches);
 }
 
 function calculateBuchholz(players: Player[], matches: Match[]): void {
