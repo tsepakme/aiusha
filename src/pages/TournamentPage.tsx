@@ -23,6 +23,10 @@ const TournamentPage: React.FC = () => {
     const savedTournament = localStorage.getItem('tournament');
     return savedTournament ? JSON.parse(savedTournament) : null;
   });
+  const [tournamentData, setTournamentData] = useState(() => {
+    const savedTournamentData = localStorage.getItem('tournamentData');
+    return savedTournamentData ? JSON.parse(savedTournamentData) : null;
+  });
   const [playerName, setPlayerName] = useState('');
   const [playerRating, setPlayerRating] = useState<string>('');
   const [isFinished, setIsFinished] = useState(() => {
@@ -50,6 +54,10 @@ const TournamentPage: React.FC = () => {
     localStorage.setItem('roundResults', JSON.stringify(roundResults));
   }, [roundResults]);
 
+  useEffect(() => {
+    localStorage.setItem('tournamentData', JSON.stringify(tournamentData));
+  }, [tournamentData]);
+
   const addPlayer = () => {
     setPlayers([...players, { name: playerName, rating: playerRating ? parseInt(playerRating) : undefined }]);
     setPlayerName('');
@@ -59,6 +67,7 @@ const TournamentPage: React.FC = () => {
   const startTournament = () => {
     const newTournament = runTournament(players);
     setTournament(newTournament);
+    setTournamentData(newTournament);
     setRoundResults(newTournament.rounds.map(() => []));
   };
 
@@ -74,6 +83,7 @@ const TournamentPage: React.FC = () => {
       const allMatches = newTournament.rounds.flatMap(round => round.matches);
       updateResults(newTournament.rounds[roundIndex].matches, roundResults[roundIndex], newTournament.players, allMatches);
       setTournament(newTournament);
+      setTournamentData(newTournament);
     }
   };
 
@@ -85,6 +95,7 @@ const TournamentPage: React.FC = () => {
         const newRoundMatches = generateSwissRound(newTournament.players);
         newTournament.rounds.push({ matches: newRoundMatches });
         setTournament(newTournament);
+        setTournamentData(newTournament);
         setRoundResults([...roundResults, []]);
         
         toast.success('Round finished');
@@ -96,6 +107,7 @@ const TournamentPage: React.FC = () => {
   const finishTournament = () => {
     finishRound(tournament!.rounds.length - 1);
     setIsFinished(true);
+    setTournamentData({ ...tournament, isFinished: true });
     toast.success('Tournament finished', {
       description: 'The tournament has finished. Go to the "Standings" tab to see the final standings.',
     });
@@ -104,6 +116,7 @@ const TournamentPage: React.FC = () => {
   const startNewTournament = () => {
     setPlayers([]);
     setTournament(null);
+    setTournamentData(null);
     setPlayerName('');
     setPlayerRating('');
     setIsFinished(false);
@@ -112,10 +125,16 @@ const TournamentPage: React.FC = () => {
     localStorage.removeItem('tournament');
     localStorage.removeItem('isFinished');
     localStorage.removeItem('roundResults');
+    localStorage.removeItem('tournamentData');
     toast.success('Tournament started', {
       description: 'The tournament has started. Go to the "Rounds" tab to begin.',
     });
   };
+
+  console.log('tournamentData', tournamentData);
+  console.log('players', tournamentData.players);
+  console.log('rounds', tournamentData.rounds);
+  
 
   return (
     <ThemeProvider defaultTheme="system" storageKey="vite-ui-theme">
@@ -359,7 +378,7 @@ const TournamentPage: React.FC = () => {
                                 <TableCell key={roundIndex}>
                                   {opponent ? `${result}${color}${opponentPosition}` : '+'}
                                 </TableCell>
-                              );
+                              );                              
                             }
                             return <TableCell key={roundIndex}>Bye</TableCell>;
                           })}
