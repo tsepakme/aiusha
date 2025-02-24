@@ -97,11 +97,11 @@ const TournamentPage: React.FC = () => {
         setTournament(newTournament);
         setTournamentData(newTournament);
         setRoundResults([...roundResults, []]);
-        
+
         toast.success('Round finished');
       }
     }
-    
+
   };
 
   const finishTournament = () => {
@@ -131,10 +131,9 @@ const TournamentPage: React.FC = () => {
     });
   };
 
-  console.log('tournamentData', tournamentData);
-  console.log('players', tournamentData.players);
-  console.log('rounds', tournamentData.rounds);
-  
+  // console.log('tournamentData', tournamentData);
+  // console.log('players', tournamentData.players);
+  // console.log('rounds', tournamentData.rounds);
 
   return (
     <ThemeProvider defaultTheme="system" storageKey="vite-ui-theme">
@@ -374,11 +373,25 @@ const TournamentPage: React.FC = () => {
                               const color = match.player1.id === player.id ? (match.player1Color === 'white' ? 'W' : 'B') : (match.player2Color === 'white' ? 'W' : 'B');
                               const opponentPosition = opponent ? tournament.players.indexOf(opponent) + 1 : '';
                               const result = match.player1.id === player.id ? player.resultHistory[roundIndex] : opponent?.resultHistory[roundIndex];
+                              if (!isFinished) {
+                                if (!result) {
+                                  return (
+                                    <TableCell key={roundIndex}>
+                                      pending
+                                    </TableCell>
+                                  )
+                                }
+                                return (
+                                  <TableCell key={roundIndex}>
+                                    {opponent ? `${result}${color}${opponent.name}` : '+'}
+                                  </TableCell>
+                                );
+                              }
                               return (
                                 <TableCell key={roundIndex}>
                                   {opponent ? `${result}${color}${opponentPosition}` : '+'}
                                 </TableCell>
-                              );                              
+                              );
                             }
                             return <TableCell key={roundIndex}>Bye</TableCell>;
                           })}
