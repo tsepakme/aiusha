@@ -10,7 +10,7 @@ import DeleteConfirmationDialog from "@/shared/components/DeleteConfirmationDial
 import { ModeToggle } from '@/shared/components/mode-toggle';
 import { Tournament } from "@/entities/tournament/model/tournament";
 import { runTournament, generateSwissRound, updateResults, calculateRounds } from "@/features/manageTournament/model/manageTournament";
-// import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/shared/components/hover-card"
+import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/shared/components/hover-card"
 import { Drawer, DrawerClose, DrawerContent, DrawerDescription, DrawerFooter, DrawerHeader, DrawerTitle, DrawerTrigger } from "@/shared/components/drawer"
 import { toast } from "sonner"
 
@@ -73,6 +73,9 @@ const TournamentPage: React.FC = () => {
 
   const handleResultChange = (roundIndex: number, matchIndex: number, result: string) => {
     const newRoundResults = [...roundResults];
+    if (!newRoundResults[roundIndex]) {
+      newRoundResults[roundIndex] = [];
+    }
     newRoundResults[roundIndex][matchIndex] = result;
     setRoundResults(newRoundResults);
   };
@@ -81,9 +84,11 @@ const TournamentPage: React.FC = () => {
     if (tournament) {
       const newTournament = { ...tournament };
       const allMatches = newTournament.rounds.flatMap(round => round.matches);
-      updateResults(newTournament.rounds[roundIndex].matches, roundResults[roundIndex], newTournament.players, allMatches);
-      setTournament(newTournament);
-      setTournamentData(newTournament);
+      if (newTournament.rounds[roundIndex]) {
+        updateResults(newTournament.rounds[roundIndex].matches, roundResults[roundIndex] || [], newTournament.players, allMatches);
+        setTournament(newTournament);
+        setTournamentData(newTournament);
+      }
     }
   };
 
@@ -101,16 +106,17 @@ const TournamentPage: React.FC = () => {
         toast.success('Round finished');
       }
     }
-
   };
 
   const finishTournament = () => {
-    finishRound(tournament!.rounds.length - 1);
-    setIsFinished(true);
-    setTournamentData({ ...tournament, isFinished: true });
-    toast.success('Tournament finished', {
-      description: 'The tournament has finished. Go to the "Standings" tab to see the final standings.',
-    });
+    if (tournament) {
+      finishRound(tournament.rounds.length - 1);
+      setIsFinished(true);
+      setTournamentData({ ...tournament, isFinished: true });
+      toast.success('Tournament finished', {
+        description: 'The tournament has finished. Go to the "Standings" tab to see the final standings.',
+      });
+    }
   };
 
   const startNewTournament = () => {
@@ -130,10 +136,6 @@ const TournamentPage: React.FC = () => {
       description: 'The tournament has started. Go to the "Rounds" tab to begin.',
     });
   };
-
-  // console.log('tournamentData', tournamentData);
-  // console.log('players', tournamentData.players);
-  // console.log('rounds', tournamentData.rounds);
 
   return (
     <ThemeProvider defaultTheme="system" storageKey="vite-ui-theme">
@@ -372,24 +374,45 @@ const TournamentPage: React.FC = () => {
                               const opponent = match.player1.id === player.id ? match.player2 : match.player1;
                               const color = match.player1.id === player.id ? (match.player1Color === 'white' ? 'W' : 'B') : (match.player2Color === 'white' ? 'W' : 'B');
                               const opponentPosition = opponent ? tournament.players.indexOf(opponent) + 1 : '';
-                              const result = match.player1.id === player.id ? player.resultHistory[roundIndex] : opponent?.resultHistory[roundIndex];
+                              const result = match.player1.id === player.id ? player.resultHistory?.[roundIndex] : opponent?.resultHistory?.[roundIndex];
                               if (!isFinished) {
                                 if (!result) {
                                   return (
                                     <TableCell key={roundIndex}>
-                                      pending
+                                      <HoverCard>
+                                        <HoverCardTrigger>
+                                          pending
+                                        </HoverCardTrigger>
+                                        <HoverCardContent>
+                                          results is not yet available
+                                        </HoverCardContent>
+                                      </HoverCard>
                                     </TableCell>
                                   )
                                 }
                                 return (
                                   <TableCell key={roundIndex}>
-                                    {opponent ? `${result}${color}${opponent.name}` : '+'}
+                                    <HoverCard>
+                                      <HoverCardTrigger>
+                                        {opponent ? `${result}${color}${opponent.name}` : '+'}
+                                      </HoverCardTrigger>
+                                      <HoverCardContent>
+                                        {match.player1.name} {opponent?.result ? '1-0' : '0-1'} {match.player2?.name}
+                                      </HoverCardContent>
+                                    </HoverCard>
                                   </TableCell>
                                 );
                               }
                               return (
                                 <TableCell key={roundIndex}>
-                                  {opponent ? `${result}${color}${opponentPosition}` : '+'}
+                                  <HoverCard>
+                                    <HoverCardTrigger>
+                                      {opponent ? `${result}${color}${opponentPosition}` : '+'}
+                                    </HoverCardTrigger>
+                                    <HoverCardContent>
+                                      {match.player1.name} {opponent?.result ? '1-0' : '0-1'} {match.player2?.name}
+                                    </HoverCardContent>
+                                  </HoverCard>
                                 </TableCell>
                               );
                             }
