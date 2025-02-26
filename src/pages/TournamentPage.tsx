@@ -396,9 +396,15 @@ const TournamentPage: React.FC = () => {
                                       <HoverCardTrigger>
                                         {opponent ? `${result}${color}${opponent.name}` : '+'}
                                       </HoverCardTrigger>
-                                      <HoverCardContent>
-                                        {match.player1.name} {opponent?.result ? '1-0' : '0-1'} {match.player2?.name}
-                                      </HoverCardContent>
+                                      {!opponent ? (
+                                        <HoverCardContent>
+                                          player has a bye
+                                        </HoverCardContent>
+                                      ) : (
+                                        <HoverCardContent>
+                                          {match.player1.name} {result === '=' ? '0.5 - 0.5' : result === '+' ? '1 - 0' : '0 - 1'} {match.player2?.name}
+                                        </HoverCardContent>
+                                      )}
                                     </HoverCard>
                                   </TableCell>
                                 );
@@ -410,7 +416,7 @@ const TournamentPage: React.FC = () => {
                                       {opponent ? `${result}${color}${opponentPosition}` : '+'}
                                     </HoverCardTrigger>
                                     <HoverCardContent>
-                                      {match.player1.name} {opponent?.result ? '1-0' : '0-1'} {match.player2?.name}
+                                      {match.player1.name} {result === '=' ? '0.5 - 0.5' : result === '+' ? '1 - 0' : '0 - 1'} {match.player2?.name}
                                     </HoverCardContent>
                                   </HoverCard>
                                 </TableCell>
