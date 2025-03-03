@@ -14,49 +14,39 @@ import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/shared/componen
 import { Drawer, DrawerClose, DrawerContent, DrawerDescription, DrawerFooter, DrawerHeader, DrawerTitle, DrawerTrigger } from "@/shared/components/drawer"
 import { toast } from "sonner"
 
+type PlayerState = { name: string; rating?: number };
+type TournamentState = Tournament | null;
+type RoundResultsState = string[][];
+
+const useLocalStorageState = <T,>(key: string, initialValue: T): [T, React.Dispatch<React.SetStateAction<T>>] => {
+  const [state, setState] = useState<T>(() => {
+    try {
+      const saved = localStorage.getItem(key);
+      return saved ? JSON.parse(saved) : initialValue;
+    } catch {
+      return initialValue;
+    }
+  });
+
+  useEffect(() => {
+    try {
+      localStorage.setItem(key, JSON.stringify(state));
+    } catch {
+      console.error('Failed to save state to localStorage');
+    }
+  }, [key, state]);
+
+  return [state, setState];
+};
+
 const TournamentPage: React.FC = () => {
-  const [players, setPlayers] = useState<{ name: string; rating?: number }[]>(() => {
-    const savedPlayers = localStorage.getItem('players');
-    return savedPlayers ? JSON.parse(savedPlayers) : [];
-  });
-  const [tournament, setTournament] = useState<Tournament | null>(() => {
-    const savedTournament = localStorage.getItem('tournament');
-    return savedTournament ? JSON.parse(savedTournament) : null;
-  });
-  const [tournamentData, setTournamentData] = useState(() => {
-    const savedTournamentData = localStorage.getItem('tournamentData');
-    return savedTournamentData ? JSON.parse(savedTournamentData) : null;
-  });
+  const [players, setPlayers] = useLocalStorageState<PlayerState[]>('players', []);
+  const [tournament, setTournament] = useLocalStorageState<TournamentState>('tournament', null);
+  // const [tournamentData, setTournamentData] = useLocalStorageState<any>('tournamentData', null);
   const [playerName, setPlayerName] = useState('');
   const [playerRating, setPlayerRating] = useState<string>('');
-  const [isFinished, setIsFinished] = useState(() => {
-    const savedIsFinished = localStorage.getItem('isFinished');
-    return savedIsFinished ? JSON.parse(savedIsFinished) : false;
-  });
-  const [roundResults, setRoundResults] = useState<string[][]>(() => {
-    const savedRoundResults = localStorage.getItem('roundResults');
-    return savedRoundResults ? JSON.parse(savedRoundResults) : [];
-  });
-
-  useEffect(() => {
-    localStorage.setItem('players', JSON.stringify(players));
-  }, [players]);
-
-  useEffect(() => {
-    localStorage.setItem('tournament', JSON.stringify(tournament));
-  }, [tournament]);
-
-  useEffect(() => {
-    localStorage.setItem('isFinished', JSON.stringify(isFinished));
-  }, [isFinished]);
-
-  useEffect(() => {
-    localStorage.setItem('roundResults', JSON.stringify(roundResults));
-  }, [roundResults]);
-
-  useEffect(() => {
-    localStorage.setItem('tournamentData', JSON.stringify(tournamentData));
-  }, [tournamentData]);
+  const [isFinished, setIsFinished] = useLocalStorageState<boolean>('isFinished', false);
+  const [roundResults, setRoundResults] = useLocalStorageState<RoundResultsState>('roundResults', []);
 
   const addPlayer = () => {
     setPlayers([...players, { name: playerName, rating: playerRating ? parseInt(playerRating) : undefined }]);
@@ -67,7 +57,7 @@ const TournamentPage: React.FC = () => {
   const startTournament = () => {
     const newTournament = runTournament(players);
     setTournament(newTournament);
-    setTournamentData(newTournament);
+    // setTournamentData(newTournament);
     setRoundResults(newTournament.rounds.map(() => []));
   };
 
@@ -87,7 +77,7 @@ const TournamentPage: React.FC = () => {
       if (newTournament.rounds[roundIndex]) {
         updateResults(newTournament.rounds[roundIndex].matches, roundResults[roundIndex] || [], newTournament.players, allMatches);
         setTournament(newTournament);
-        setTournamentData(newTournament);
+        // setTournamentData(newTournament);
       }
     }
   };
@@ -100,7 +90,7 @@ const TournamentPage: React.FC = () => {
         const newRoundMatches = generateSwissRound(newTournament.players);
         newTournament.rounds.push({ matches: newRoundMatches });
         setTournament(newTournament);
-        setTournamentData(newTournament);
+        // setTournamentData(newTournament);
         setRoundResults([...roundResults, []]);
 
         toast.success('Round finished');
@@ -112,7 +102,7 @@ const TournamentPage: React.FC = () => {
     if (tournament) {
       finishRound(tournament.rounds.length - 1);
       setIsFinished(true);
-      setTournamentData({ ...tournament, isFinished: true });
+      // setTournamentData({ ...tournament, isFinished: true });
       toast.success('Tournament finished', {
         description: 'The tournament has finished. Go to the "Standings" tab to see the final standings.',
       });
@@ -122,7 +112,7 @@ const TournamentPage: React.FC = () => {
   const startNewTournament = () => {
     setPlayers([]);
     setTournament(null);
-    setTournamentData(null);
+    // setTournamentData(null);
     setPlayerName('');
     setPlayerRating('');
     setIsFinished(false);
