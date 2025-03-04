@@ -384,7 +384,7 @@ const TournamentPage: React.FC = () => {
                                   <TableCell key={roundIndex}>
                                     <HoverCard>
                                       <HoverCardTrigger>
-                                        {opponent ? `${result}${color}${opponent.name}` : '+'}
+                                        {opponent ? `${color}${opponent.name}` : '+'}
                                       </HoverCardTrigger>
                                       {!opponent ? (
                                         <HoverCardContent>
@@ -403,7 +403,7 @@ const TournamentPage: React.FC = () => {
                                 <TableCell key={roundIndex}>
                                   <HoverCard>
                                     <HoverCardTrigger>
-                                      {opponent ? `${result}${color}${opponentPosition}` : '+'}
+                                      {opponent ? `${color}${opponentPosition}` : '+'}
                                     </HoverCardTrigger>
                                     <HoverCardContent>
                                       {match.player1.name} {result === '=' ? '0.5 - 0.5' : result === '+' ? '1 - 0' : '0 - 1'} {match.player2?.name}
