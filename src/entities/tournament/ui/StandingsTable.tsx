@@ -19,7 +19,6 @@ export const StandingsTable: React.FC<StandingsTableProps> = ({
   );
 
   const getResultDisplay = (
-    player: Player, 
     opponent: Player | undefined, 
     result: ResultType, 
     color: string, 
