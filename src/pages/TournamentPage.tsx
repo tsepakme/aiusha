@@ -1,436 +1,80 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { ThemeProvider } from "@/shared/theme-provider"
-import { Button } from "@/shared/components/button"
-import { Input } from "@/shared/components/input"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shared/components/select"
-import { Table, TableBody, TableCaption, TableCell, TableHeader, TableRow } from "@/shared/components/table"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/shared/components/tabs"
-import { Separator } from "@/shared/components/separator"
-import DeleteConfirmationDialog from "@/shared/components/DeleteConfirmationDialog"
 import { ModeToggle } from '@/shared/components/mode-toggle';
-import { Tournament } from "@/entities/tournament/model/tournament";
-import { runTournament, generateSwissRound, updateResults, calculateRounds } from "@/features/manageTournament/model/manageTournament";
-import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/shared/components/hover-card"
-import { Drawer, DrawerClose, DrawerContent, DrawerDescription, DrawerFooter, DrawerHeader, DrawerTitle, DrawerTrigger } from "@/shared/components/drawer"
-import { toast } from "sonner"
-
-type PlayerState = { name: string; rating?: number };
-type TournamentState = Tournament | null;
-type RoundResultsState = string[][];
-
-const useLocalStorageState = <T,>(key: string, initialValue: T): [T, React.Dispatch<React.SetStateAction<T>>] => {
-  const [state, setState] = useState<T>(() => {
-    try {
-      const saved = localStorage.getItem(key);
-      return saved ? JSON.parse(saved) : initialValue;
-    } catch {
-      return initialValue;
-    }
-  });
-
-  useEffect(() => {
-    try {
-      localStorage.setItem(key, JSON.stringify(state));
-    } catch {
-      console.error('Failed to save state to localStorage');
-    }
-  }, [key, state]);
-
-  return [state, setState];
-};
+import { PlayersTab } from '@/features/addPlayer/ui/PlayersTab';
+import { TournamentRoundsTab } from '@/features/manageTournament/ui/TournamentRoundsTab';
+import { StandingsTab } from '@/features/manageTournament/ui/StandingsTab';
+import { useTournament } from '@/features/manageTournament/model/useTournament';
+import { Toaster } from 'sonner';
 
 const TournamentPage: React.FC = () => {
-  const [players, setPlayers] = useLocalStorageState<PlayerState[]>('players', []);
-  const [tournament, setTournament] = useLocalStorageState<TournamentState>('tournament', null);
-  const [playerName, setPlayerName] = useState('');
-  const [playerRating, setPlayerRating] = useState<string>('');
-  const [isFinished, setIsFinished] = useLocalStorageState<boolean>('isFinished', false);
-  const [roundResults, setRoundResults] = useLocalStorageState<RoundResultsState>('roundResults', []);
-
-  const addPlayer = () => {
-    setPlayers([...players, { name: playerName, rating: playerRating ? parseInt(playerRating) : undefined }]);
-    setPlayerName('');
-    setPlayerRating('');
-  };
-
-  const startTournament = () => {
-    const newTournament = runTournament(players);
-    setTournament(newTournament);
-    setRoundResults(newTournament.rounds.map(() => []));
-  };
-
-  const handleResultChange = (roundIndex: number, matchIndex: number, result: string) => {
-    const newRoundResults = [...roundResults];
-    if (!newRoundResults[roundIndex]) {
-      newRoundResults[roundIndex] = [];
-    }
-    newRoundResults[roundIndex][matchIndex] = result;
-    setRoundResults(newRoundResults);
-  };
-
-  const finishRound = (roundIndex: number) => {
-    if (tournament) {
-      const newTournament = { ...tournament };
-      const allMatches = newTournament.rounds.flatMap(round => round.matches);
-      if (newTournament.rounds[roundIndex]) {
-        updateResults(newTournament.rounds[roundIndex].matches, roundResults[roundIndex] || [], newTournament.players, allMatches);
-        setTournament(newTournament);
-      }
-    }
-  };
-
-  const nextRound = () => {
-    if (tournament) {
-      if (tournament.rounds.length < calculateRounds(tournament.players.length)) {
-        finishRound(tournament.rounds.length - 1);
-        const newTournament = { ...tournament };
-        const newRoundMatches = generateSwissRound(newTournament.players);
-        newTournament.rounds.push({ matches: newRoundMatches });
-        setTournament(newTournament);
-        setRoundResults([...roundResults, []]);
-
-        toast.success('Round finished');
-      }
-    }
-  };
-
-  const finishTournament = () => {
-    if (tournament) {
-      finishRound(tournament.rounds.length - 1);
-      setIsFinished(true);
-      toast.success('Tournament finished', {
-        description: 'The tournament has finished. Go to the "Standings" tab to see the final standings.',
-      });
-    }
-  };
-
-  const startNewTournament = () => {
-    setPlayers([]);
-    setTournament(null);
-    setPlayerName('');
-    setPlayerRating('');
-    setIsFinished(false);
-    setRoundResults([]);
-    localStorage.removeItem('players');
-    localStorage.removeItem('tournament');
-    localStorage.removeItem('isFinished');
-    localStorage.removeItem('roundResults');
-    toast.success('Tournament started', {
-      description: 'The tournament has started. Go to the "Rounds" tab to begin.',
-    });
-  };
+  const {
+    players,
+    tournament,
+    isFinished,
+    roundResults,
+    addPlayer,
+    removePlayer,
+    startTournament,
+    handleResultChange,
+    nextRound,
+    finishTournament,
+    resetTournament
+  } = useTournament();
 
   return (
     <ThemeProvider defaultTheme="system" storageKey="vite-ui-theme">
-      <div className="w-full md:w-1/2 mx-auto">
+      <div className="w-full md:w-1/2 mx-auto p-4">
         <div className='w-full flex justify-between items-top my-5'>
           <div className=''>
-            <h1 className='text-lg'>Swiss System Tournament</h1>
-            <p className='text-base mt-5'>Ideal for Chess, but adaptable for Go, Checkers, and other games with black and white sides.
-              Supports custom points for various games like football, tennis, darts, etc.</p>
+            <h1 className='text-lg font-bold'>Swiss System Tournament</h1>
+            <p className='text-base mt-2'>
+              Ideal for Chess, but adaptable for Go, Checkers, and other games with black and white sides.
+              Supports custom points for various games like football, tennis, darts, etc.
+            </p>
           </div>
           <div>
             <ModeToggle />
           </div>
         </div>
         <Tabs defaultValue="players" className="w-full">
-          <TabsList>
+          <TabsList className="mb-4">
             <TabsTrigger value="players">Players</TabsTrigger>
             <TabsTrigger value="rounds">Rounds</TabsTrigger>
             <TabsTrigger value="standings">Standings</TabsTrigger>
-          </TabsList>
+          </TabsList>          
           <TabsContent value="players">
-            {!tournament && (
-              <div className='flex flex-col gap-2 my-3'>
-                <h2>Add Players</h2>
-                <Input
-                  type="text"
-                  placeholder="Player Name"
-                  value={playerName}
-                  onChange={(e) => setPlayerName(e.target.value)}
-                />
-                <Input
-                  type="number"
-                  placeholder="Player Rating (optional)"
-                  value={playerRating}
-                  onChange={(e) => setPlayerRating(e.target.value)}
-                />
-                <Button variant={'secondary'} onClick={addPlayer}>Add Player</Button>
-              </div>
-            )}
-
-            {players.length > 0 && (
-              <Table>
-                {/* <TableCaption>Players</TableCaption> */}
-                <TableHeader>
-                  <TableRow>
-                    <TableCell>#</TableCell>
-                    <TableCell>Name</TableCell>
-                    <TableCell>Rating</TableCell>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {players.map((player, index) => (
-                    <TableRow key={index}>
-                      <TableCell>{index + 1}</TableCell>
-                      <TableCell>{player.name}</TableCell>
-                      <TableCell>{player.rating}</TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            )}
-
-            {players.length > 0 && !tournament && (
-              <div className='flex flex-col sm:flex-row justify-between gap-2 mt-5'>
-                <Button onClick={startTournament}>Start Tournament</Button>
-                <DeleteConfirmationDialog onConfirm={startNewTournament} value='Delete all' variant={'destructive'} />
-              </div>
-            )}
-          </TabsContent>
+            <PlayersTab 
+              players={players}
+              tournament={tournament}
+              onAddPlayer={addPlayer}
+              onRemovePlayer={removePlayer}
+              onStartTournament={startTournament}
+              onResetPlayers={resetTournament}
+            />
+          </TabsContent>          
           <TabsContent value="rounds">
-            {tournament && (
-              <div>
-                {
-                  tournament.rounds.map((round, roundIndex) => (
-                    <div className='' key={roundIndex}>
-                      <h3>Round {roundIndex + 1}</h3>
-                      <Table>
-                        <TableHeader>
-                          <TableRow>
-                            <TableCell>Player 1</TableCell>
-                            <TableCell>Color</TableCell>
-                            <TableCell>Pts</TableCell>
-                            <TableCell>
-                              <Drawer>
-                                <DrawerTrigger>Result</DrawerTrigger>
-                                <DrawerContent>
-                                  <div className='mx-auto w-full max-w-sm'>
-                                    <DrawerHeader>
-                                      <DrawerTitle>The meanings of results</DrawerTitle>
-                                      <DrawerDescription>
-                                        <p>In chess, the results are typically represented as follows:</p>
-                                        <ul>
-                                          <li>1 - 0 Means that person from fre right wins</li>
-                                          <li>0 - 1 Means that person from fre left wins</li>
-                                          <li>0.5 - 0.5 Means that it was a draw</li>
-                                        </ul>
-                                      </DrawerDescription>
-                                    </DrawerHeader>
-                                    <DrawerFooter>
-                                      <DrawerClose>
-                                        {/* <Button variant="outline">Close</Button> */}
-                                      </DrawerClose>
-                                    </DrawerFooter>
-                                  </div>
-                                </DrawerContent>
-                              </Drawer>
-                            </TableCell>
-                            <TableCell>Pts</TableCell>
-                            <TableCell>Color</TableCell>
-                            <TableCell>Player 2</TableCell>
-                          </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                          {round.matches.map((match, matchIndex) => (
-                            <TableRow key={matchIndex}>
-                              <TableCell>{match.player1.name}</TableCell>
-                              <TableCell>{match.player1Color}</TableCell>
-                              <TableCell>{match.player1.points}</TableCell>
-                              <TableCell>{match.player2 ? (
-                                roundIndex === tournament.rounds.length - 1 && !isFinished ? (
-                                  <Select onValueChange={(e) => {
-                                    handleResultChange(roundIndex, matchIndex, e)
-                                  }}>
-                                    <SelectTrigger>
-                                      <SelectValue placeholder="Select result" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                      <SelectItem value="+">1 - 0</SelectItem>
-                                      <SelectItem value="-">0 - 1</SelectItem>
-                                      <SelectItem value="=">0.5 - 0.5</SelectItem>
-                                    </SelectContent>
-                                  </Select>
-                                ) : (
-                                  <span>
-                                    {roundResults[roundIndex][matchIndex] === '+' ?
-                                      `1 - 0` : roundResults[roundIndex][matchIndex] === '-' ?
-                                        `0 - 1` : '0.5 - 0.5'}
-                                  </span>
-                                )
-                              ) : (
-                                'Bye'
-                              )}</TableCell>
-                              <TableCell>{match.player2?.points}</TableCell>
-                              <TableCell>{match.player2Color || ''}</TableCell>
-                              <TableCell>{match.player2?.name || ''}</TableCell>
-                            </TableRow>
-                          ))}
-                        </TableBody>
-                      </Table>
-                      <Separator className='my-4' />
-                    </div>
-                  ))
-                }
-                <div className='flex flex-col sm:flex-row justify-between gap-2 mt-5 w-full'>
-                  {tournament.rounds.length < calculateRounds(tournament.players.length) && (
-                    <Button className='' onClick={nextRound}>Next Round</Button>
-                  )}
-                  {tournament.rounds.length === calculateRounds(tournament.players.length) && !isFinished && (
-                    <Button onClick={finishTournament}>Finish Tournament</Button>
-                  )}
-                  <DeleteConfirmationDialog onConfirm={startNewTournament} value='Delete all' variant={'destructive'} />
-                </div>
-              </div>
-            )}
-          </TabsContent>
+            <TournamentRoundsTab 
+              tournament={tournament}
+              roundResults={roundResults}
+              isFinished={isFinished}
+              onResultChange={handleResultChange}
+              onNextRound={nextRound}
+              onFinishTournament={finishTournament}
+              onResetTournament={resetTournament}
+            />
+          </TabsContent>          
           <TabsContent value="standings">
-            {tournament && (
-              <div>
-                <Table>
-                  <TableCaption>Final Standings</TableCaption>
-                  <TableHeader>
-                    <TableRow>
-                      <TableCell>Pos</TableCell>
-                      <TableCell>Name</TableCell>
-                      <TableCell>Rating</TableCell>
-                      <TableCell>Points</TableCell>
-                      {tournament.rounds.map((_, roundIndex) => (
-                        <TableCell key={roundIndex}>Round {roundIndex + 1}</TableCell>
-                      ))}
-                      <TableCell>
-                        <Drawer>
-                          <DrawerTrigger>Buc1</DrawerTrigger>
-                          <DrawerContent>
-                            <div className='mx-auto w-full max-w-sm'>
-                              <DrawerHeader>
-                                <DrawerTitle>What is Buc1?</DrawerTitle>
-                                <DrawerDescription>
-                                  <p>The Buchholz Cut 1 is the Buchholz score reduced by the lowest score of the opponents.</p>
-                                  <a className='underline' href='https://chess.stackexchange.com/questions/24915/how-is-buchholz-score-calculated-in-a-swiss-tournament'>How is Buchholz score calculated in a Swiss tournament?</a>
-                                </DrawerDescription>
-                              </DrawerHeader>
-                              <DrawerFooter>
-                                <DrawerClose>
-                                  {/* <Button variant="outline">Close</Button> */}
-                                </DrawerClose>
-                              </DrawerFooter>
-                            </div>
-                          </DrawerContent>
-                        </Drawer>
-                      </TableCell>
-                      <TableCell>
-                        <Drawer>
-                          <DrawerTrigger>BucT</DrawerTrigger>
-                          <DrawerContent>
-                            <div className='mx-auto w-full max-w-sm'>
-                              <DrawerHeader>
-                                <DrawerTitle>What is BucT?</DrawerTitle>
-                                <DrawerDescription>
-                                  <p>The Buchholz System is the sum of the scores of each of the opponents of a player.</p>
-                                  <a className='underline' href='https://chess.stackexchange.com/questions/24915/how-is-buchholz-score-calculated-in-a-swiss-tournament'>How is Buchholz score calculated in a Swiss tournament?</a>
-                                </DrawerDescription>
-                              </DrawerHeader>
-                              <DrawerFooter>
-                                <DrawerClose>
-                                  {/* <Button variant="outline">Close</Button> */}
-                                </DrawerClose>
-                              </DrawerFooter>
-                            </div>
-                          </DrawerContent>
-                        </Drawer>
-                      </TableCell>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {tournament.players
-                      .sort((a, b) => b.points - a.points || b.buc1 - a.buc1 || b.bucT - a.bucT)
-                      .map((player) => (
-                        <TableRow key={player.id}>
-                          <TableCell>{tournament.players.indexOf(player) + 1}</TableCell>
-                          <TableCell>{player.name}</TableCell>
-                          <TableCell>{player.rating}</TableCell>
-                          <TableCell>{player.points}</TableCell>
-                          {tournament.rounds.map((round, roundIndex) => {
-                            const match = round.matches.find(m => m.player1.id === player.id || m.player2?.id === player.id);
-                            if (match) {
-                              const isPlayer1 = match.player1.id === player.id;
-                              const opponent = isPlayer1 ? match.player2 : match.player1;
-                              const color = isPlayer1 ? (match.player1Color === 'white' ? 'W' : 'B') : (match.player2Color === 'white' ? 'W' : 'B');
-                              const opponentPosition = opponent ? tournament.players.indexOf(opponent) + 1 : '';
-                              
-                              const matchResult = match.player1.resultHistory?.[roundIndex];
-                              
-                              let playerResult;
-                              if (isPlayer1) {
-                                playerResult = matchResult;
-                              } else {
-                                if (matchResult === '+') playerResult = '-';
-                                else if (matchResult === '-') playerResult = '+';
-                                else playerResult = '=';
-                              }
-                              
-                              if (!isFinished) {
-                                if (!matchResult) {
-                                  return (
-                                    <TableCell key={roundIndex}>
-                                      <HoverCard>
-                                        <HoverCardTrigger>
-                                          pending
-                                        </HoverCardTrigger>
-                                        <HoverCardContent>
-                                          results is not yet available
-                                        </HoverCardContent>
-                                      </HoverCard>
-                                    </TableCell>
-                                  )
-                                }
-                                return (
-                                  <TableCell key={roundIndex}>
-                                    <HoverCard>
-                                      <HoverCardTrigger>
-                                        {opponent ? `${playerResult}${color}${opponent.name}` : '+'}
-                                      </HoverCardTrigger>
-                                      {!opponent ? (
-                                        <HoverCardContent>
-                                          player has a bye
-                                        </HoverCardContent>
-                                      ) : (
-                                        <HoverCardContent>
-                                          {match.player1.name} {matchResult === '=' ? '0.5 - 0.5' : matchResult === '+' ? '1 - 0' : '0 - 1'} {match.player2?.name}
-                                        </HoverCardContent>
-                                      )}
-                                    </HoverCard>
-                                  </TableCell>
-                                );
-                              }
-                              return (
-                                <TableCell key={roundIndex}>
-                                  <HoverCard>
-                                    <HoverCardTrigger>
-                                        {opponent ? `${playerResult}${color}${opponentPosition}` : '+'}
-                                    </HoverCardTrigger>
-                                    <HoverCardContent>
-                                      {match.player1.name} {matchResult === '=' ? '0.5 - 0.5' : matchResult === '+' ? '1 - 0' : '0 - 1'} {match.player2?.name}
-                                    </HoverCardContent>
-                                  </HoverCard>
-                                </TableCell>
-                              );
-                            }
-                            return <TableCell key={roundIndex}>Bye</TableCell>;
-                          })}
-                          <TableCell>{player.buc1}</TableCell>
-                          <TableCell>{player.bucT}</TableCell>
-                        </TableRow>
-                      ))}
-                  </TableBody>
-                </Table>
-                <DeleteConfirmationDialog onConfirm={startNewTournament} value='Start New Tournament' variant={'default'} />
-              </div>
-            )}
+            <StandingsTab 
+              tournament={tournament}
+              isFinished={isFinished}
+              onResetTournament={resetTournament}
+            />
           </TabsContent>
         </Tabs>
       </div>
+      <Toaster position="bottom-right" />
     </ThemeProvider>
   );
 };
