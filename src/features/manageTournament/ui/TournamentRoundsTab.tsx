@@ -3,29 +3,21 @@ import { Button } from "@/shared/components/button";
 import { Separator } from "@/shared/components/separator";
 import { RoundView } from '@/entities/tournament/ui/RoundView';
 import DeleteConfirmationDialog from "@/shared/components/DeleteConfirmationDialog";
-import { Tournament } from '@/entities/tournament/model/tournament';
 import { calculateRounds } from '../model/manageTournament';
 import { toast } from "sonner";
+import { useTournamentContext } from '../model/TournamentContext';
 
-interface TournamentRoundsTabProps {
-  tournament: Tournament | null;
-  roundResults: string[][];
-  isFinished: boolean;
-  onResultChange: (roundIndex: number, matchIndex: number, result: string) => void;
-  onNextRound: () => void;
-  onFinishTournament: () => void;
-  onResetTournament: () => void;
-}
+export const TournamentRoundsTab: React.FC = () => {
+  const {
+    tournament,
+    roundResults,
+    isFinished,
+    handleResultChange,
+    nextRound,
+    finishTournament,
+    resetTournament
+  } = useTournamentContext();
 
-export const TournamentRoundsTab: React.FC<TournamentRoundsTabProps> = ({
-  tournament,
-  roundResults,
-  isFinished,
-  onResultChange,
-  onNextRound,
-  onFinishTournament,
-  onResetTournament
-}) => {
   if (!tournament) {
     return (
       <div className="p-4 text-center">
@@ -35,12 +27,12 @@ export const TournamentRoundsTab: React.FC<TournamentRoundsTabProps> = ({
   }
 
   const handleNextRound = () => {
-    onNextRound();
+    nextRound();
     toast.success('Round finished');
   };
 
   const handleFinishTournament = () => {
-    onFinishTournament();
+    finishTournament();
     toast.success('Tournament finished', {
       description: 'The tournament has finished. Go to the "Standings" tab to see the final standings.',
     });
@@ -54,7 +46,7 @@ export const TournamentRoundsTab: React.FC<TournamentRoundsTabProps> = ({
             roundNumber={roundIndex + 1}
             matches={round.matches}
             results={roundResults[roundIndex] || []}
-            onResultChange={(matchIndex, result) => onResultChange(roundIndex, matchIndex, result)}
+            onResultChange={(matchIndex, result) => handleResultChange(roundIndex, matchIndex, result)}
             isCurrentRound={roundIndex === tournament.rounds.length - 1}
             isFinished={isFinished}
           />
@@ -70,7 +62,7 @@ export const TournamentRoundsTab: React.FC<TournamentRoundsTabProps> = ({
           <Button onClick={handleFinishTournament}>Finish Tournament</Button>
         )}
         <DeleteConfirmationDialog 
-          onConfirm={onResetTournament} 
+          onConfirm={resetTournament} 
           value='Delete all' 
           variant={'destructive'} 
         />

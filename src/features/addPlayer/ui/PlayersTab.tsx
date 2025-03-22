@@ -1,29 +1,23 @@
 import React from 'react';
 import { PlayerForm } from './PlayerForm';
 import { PlayersList } from '@/entities/tournament/ui/PlayersList';
+import { useTournamentContext } from '@/features/manageTournament/model/TournamentContext';
 
-interface PlayersTabProps {
-  players: Array<{ name: string; rating?: number }>;
-  tournament: any | null;
-  onAddPlayer: (name: string, rating?: string) => void;
-  onRemovePlayer: (index: number) => void;
-  onStartTournament: () => void;
-  onResetPlayers: () => void;
-}
+export const PlayersTab: React.FC = () => {
+  const {
+    players,
+    tournament,
+    addPlayer,
+    removePlayer,
+    startTournament,
+    resetTournament
+  } = useTournamentContext();
 
-export const PlayersTab: React.FC<PlayersTabProps> = ({
-  players,
-  tournament,
-  onAddPlayer,
-  onRemovePlayer,
-  onStartTournament,
-  onResetPlayers
-}) => {
   return (
     <div>
       {!tournament && (
         <PlayerForm 
-          onAddPlayer={onAddPlayer}
+          onAddPlayer={addPlayer}
           disabled={!!tournament}
         />
       )}
@@ -31,9 +25,9 @@ export const PlayersTab: React.FC<PlayersTabProps> = ({
       <PlayersList
         players={players}
         isTournamentActive={!!tournament}
-        onRemovePlayer={!tournament ? onRemovePlayer : undefined}
-        onStartTournament={!tournament ? onStartTournament : undefined}
-        onResetPlayers={!tournament ? onResetPlayers : undefined}
+        onRemovePlayer={!tournament ? removePlayer : undefined}
+        onStartTournament={!tournament ? startTournament : undefined}
+        onResetPlayers={!tournament ? resetTournament : undefined}
       />
     </div>
   );
