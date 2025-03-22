@@ -42,7 +42,6 @@ const useLocalStorageState = <T,>(key: string, initialValue: T): [T, React.Dispa
 const TournamentPage: React.FC = () => {
   const [players, setPlayers] = useLocalStorageState<PlayerState[]>('players', []);
   const [tournament, setTournament] = useLocalStorageState<TournamentState>('tournament', null);
-  // const [tournamentData, setTournamentData] = useLocalStorageState<any>('tournamentData', null);
   const [playerName, setPlayerName] = useState('');
   const [playerRating, setPlayerRating] = useState<string>('');
   const [isFinished, setIsFinished] = useLocalStorageState<boolean>('isFinished', false);
@@ -57,7 +56,6 @@ const TournamentPage: React.FC = () => {
   const startTournament = () => {
     const newTournament = runTournament(players);
     setTournament(newTournament);
-    // setTournamentData(newTournament);
     setRoundResults(newTournament.rounds.map(() => []));
   };
 
@@ -77,7 +75,6 @@ const TournamentPage: React.FC = () => {
       if (newTournament.rounds[roundIndex]) {
         updateResults(newTournament.rounds[roundIndex].matches, roundResults[roundIndex] || [], newTournament.players, allMatches);
         setTournament(newTournament);
-        // setTournamentData(newTournament);
       }
     }
   };
@@ -90,7 +87,6 @@ const TournamentPage: React.FC = () => {
         const newRoundMatches = generateSwissRound(newTournament.players);
         newTournament.rounds.push({ matches: newRoundMatches });
         setTournament(newTournament);
-        // setTournamentData(newTournament);
         setRoundResults([...roundResults, []]);
 
         toast.success('Round finished');
@@ -102,7 +98,6 @@ const TournamentPage: React.FC = () => {
     if (tournament) {
       finishRound(tournament.rounds.length - 1);
       setIsFinished(true);
-      // setTournamentData({ ...tournament, isFinished: true });
       toast.success('Tournament finished', {
         description: 'The tournament has finished. Go to the "Standings" tab to see the final standings.',
       });
@@ -112,7 +107,6 @@ const TournamentPage: React.FC = () => {
   const startNewTournament = () => {
     setPlayers([]);
     setTournament(null);
-    // setTournamentData(null);
     setPlayerName('');
     setPlayerRating('');
     setIsFinished(false);
@@ -121,7 +115,6 @@ const TournamentPage: React.FC = () => {
     localStorage.removeItem('tournament');
     localStorage.removeItem('isFinished');
     localStorage.removeItem('roundResults');
-    localStorage.removeItem('tournamentData');
     toast.success('Tournament started', {
       description: 'The tournament has started. Go to the "Rounds" tab to begin.',
     });
@@ -361,12 +354,24 @@ const TournamentPage: React.FC = () => {
                           {tournament.rounds.map((round, roundIndex) => {
                             const match = round.matches.find(m => m.player1.id === player.id || m.player2?.id === player.id);
                             if (match) {
-                              const opponent = match.player1.id === player.id ? match.player2 : match.player1;
-                              const color = match.player1.id === player.id ? (match.player1Color === 'white' ? 'W' : 'B') : (match.player2Color === 'white' ? 'W' : 'B');
+                              const isPlayer1 = match.player1.id === player.id;
+                              const opponent = isPlayer1 ? match.player2 : match.player1;
+                              const color = isPlayer1 ? (match.player1Color === 'white' ? 'W' : 'B') : (match.player2Color === 'white' ? 'W' : 'B');
                               const opponentPosition = opponent ? tournament.players.indexOf(opponent) + 1 : '';
-                              const result = match.player1.id === player.id ? player.resultHistory?.[roundIndex] : opponent?.resultHistory?.[roundIndex];
+                              
+                              const matchResult = match.player1.resultHistory?.[roundIndex];
+                              
+                              let playerResult;
+                              if (isPlayer1) {
+                                playerResult = matchResult;
+                              } else {
+                                if (matchResult === '+') playerResult = '-';
+                                else if (matchResult === '-') playerResult = '+';
+                                else playerResult = '=';
+                              }
+                              
                               if (!isFinished) {
-                                if (!result) {
+                                if (!matchResult) {
                                   return (
                                     <TableCell key={roundIndex}>
                                       <HoverCard>
@@ -384,7 +389,7 @@ const TournamentPage: React.FC = () => {
                                   <TableCell key={roundIndex}>
                                     <HoverCard>
                                       <HoverCardTrigger>
-                                        {opponent ? `${color}${opponent.name}` : '+'}
+                                        {opponent ? `${playerResult}${color}${opponent.name}` : '+'}
                                       </HoverCardTrigger>
                                       {!opponent ? (
                                         <HoverCardContent>
@@ -392,7 +397,7 @@ const TournamentPage: React.FC = () => {
                                         </HoverCardContent>
                                       ) : (
                                         <HoverCardContent>
-                                          {match.player1.name} {result === '=' ? '0.5 - 0.5' : result === '+' ? '1 - 0' : '0 - 1'} {match.player2?.name}
+                                          {match.player1.name} {matchResult === '=' ? '0.5 - 0.5' : matchResult === '+' ? '1 - 0' : '0 - 1'} {match.player2?.name}
                                         </HoverCardContent>
                                       )}
                                     </HoverCard>
@@ -403,10 +408,10 @@ const TournamentPage: React.FC = () => {
                                 <TableCell key={roundIndex}>
                                   <HoverCard>
                                     <HoverCardTrigger>
-                                      {opponent ? `${color}${opponentPosition}` : '+'}
+                                        {opponent ? `${playerResult}${color}${opponentPosition}` : '+'}
                                     </HoverCardTrigger>
                                     <HoverCardContent>
-                                      {match.player1.name} {result === '=' ? '0.5 - 0.5' : result === '+' ? '1 - 0' : '0 - 1'} {match.player2?.name}
+                                      {match.player1.name} {matchResult === '=' ? '0.5 - 0.5' : matchResult === '+' ? '1 - 0' : '0 - 1'} {match.player2?.name}
                                     </HoverCardContent>
                                   </HoverCard>
                                 </TableCell>
