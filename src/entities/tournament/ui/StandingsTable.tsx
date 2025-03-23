@@ -48,7 +48,7 @@ export const StandingsTable: React.FC<StandingsTableProps> = ({
 
   return (
     <Table>
-      <TableCaption>Tournament Standings</TableCaption>
+      {/* <TableCaption>Tournament Standings</TableCaption> */}
       <TableHeader>
         <TableRow>
           <TableCell>Pos</TableCell>
