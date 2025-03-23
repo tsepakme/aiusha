@@ -140,7 +140,6 @@ export const StandingsTable: React.FC<StandingsTableProps> = ({
               }
               
               const resultDisplay = getResultDisplay(
-                player, 
                 opponent, 
                 playerResult, 
                 color, 
