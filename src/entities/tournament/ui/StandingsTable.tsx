@@ -1,5 +1,5 @@
 import React from 'react';
-import { Table, TableBody, TableCaption, TableCell, TableHeader, TableRow } from "@/shared/components/table";
+import { Table, TableBody, TableCell, TableHeader, TableRow } from "@/shared/components/table";
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/shared/components/hover-card";
 import { Drawer, DrawerContent, DrawerDescription, DrawerHeader, DrawerTitle, DrawerTrigger } from "@/shared/components/drawer";
 import { Player, ResultType } from '@/entities/player/model/player';
