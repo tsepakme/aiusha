@@ -21,9 +21,6 @@ const TournamentPage: React.FC = () => {
                 Supports custom points for various games like football, tennis, darts, etc.
               </p>
             </div>
-            <div>
-              <ModeToggle />
-            </div>
           </div>
           <Tabs defaultValue="players" className="w-full">
             <TabsList className="mb-4">
