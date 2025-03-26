@@ -1,7 +1,6 @@
 import React from 'react';
 import { ThemeProvider } from "@/shared/theme-provider"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/shared/components/tabs"
-import { ModeToggle } from '@/shared/components/mode-toggle';
 import { PlayersTab } from '@/features/addPlayer/ui/PlayersTab';
 import { TournamentRoundsTab } from '@/features/manageTournament/ui/TournamentRoundsTab';
 import { StandingsTab } from '@/features/manageTournament/ui/StandingsTab';
