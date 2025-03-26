@@ -1,7 +1,6 @@
 import React from 'react';
 import { ThemeProvider } from "@/shared/theme-provider"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/shared/components/tabs"
-import { ModeToggle } from '@/shared/components/mode-toggle';
 import { PlayersTab } from '@/features/addPlayer/ui/PlayersTab';
 import { TournamentRoundsTab } from '@/features/manageTournament/ui/TournamentRoundsTab';
 import { StandingsTab } from '@/features/manageTournament/ui/StandingsTab';
@@ -20,9 +19,6 @@ const TournamentPage: React.FC = () => {
                 Ideal for Chess, but adaptable for Go, Checkers, and other games with black and white sides.
                 Supports custom points for various games like football, tennis, darts, etc.
               </p>
-            </div>
-            <div>
-              <ModeToggle />
             </div>
           </div>
           <Tabs defaultValue="players" className="w-full">
