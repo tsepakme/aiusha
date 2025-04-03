@@ -2,9 +2,44 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
+    <meta name="color-scheme" content="dark light">
     <link rel="icon" type="image/svg+xml" href="src/assets/favicon-32x32.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Aiusha Mikhailov</title>
+    <style>
+      :root {
+        color-scheme: light dark;
+      }
+      html.dark {
+        color-scheme: dark;
+      }
+      html.theme-pending {
+        visibility: hidden;
+      }
+    </style>
+    <script>
+      (function() {
+        document.documentElement.classList.add("theme-pending");
+        
+        try {
+          const storedTheme = localStorage.getItem("vite-ui-theme");
+          const theme = storedTheme || 
+            (window.matchMedia("(prefers-color-scheme: dark)").matches ? 'dark' : 'light');
+          
+          if (theme === 'dark') {
+            document.documentElement.classList.add("dark");
+          } else {
+            document.documentElement.classList.remove("dark");
+          }
+        } catch (e) {
+          console.error("Error setting initial theme:", e);
+        } finally {
+          requestAnimationFrame(() => {
+            document.documentElement.classList.remove("theme-pending");
+          });
+        }
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>
