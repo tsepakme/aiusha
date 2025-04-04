@@ -7,44 +7,37 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Aiusha Mikhailov</title>
     <style>
-      html {
-        background-color: rgb(9, 9, 11);
-      }
-      
       :root {
-        --bg: rgb(255, 255, 255);
         color-scheme: light dark;
       }
-      
       html.dark {
-        --bg: rgb(9, 9, 11);
         color-scheme: dark;
       }
-      
-      body {
-        display: none;
+      html.theme-pending {
+        visibility: hidden;
       }
     </style>
-    
     <script>
       (function() {
-        const storedTheme = localStorage.getItem("vite-ui-theme");
-        const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-        const theme = storedTheme || (prefersDark ? 'dark' : 'light');
+        document.documentElement.classList.add("theme-pending");
         
-        if (theme === 'dark') {
-          document.documentElement.classList.add("dark");
-        } else {
-          document.documentElement.classList.remove("dark");
-          document.documentElement.style.backgroundColor = "rgb(9, 9, 11)";
+        try {
+          const storedTheme = localStorage.getItem("vite-ui-theme");
+          const theme = storedTheme || 
+            (window.matchMedia("(prefers-color-scheme: dark)").matches ? 'dark' : 'light');
+          
+          if (theme === 'dark') {
+            document.documentElement.classList.add("dark");
+          } else {
+            document.documentElement.classList.remove("dark");
+          }
+        } catch (e) {
+          console.error("Error setting initial theme:", e);
+        } finally {
+          requestAnimationFrame(() => {
+            document.documentElement.classList.remove("theme-pending");
+          });
         }
-        
-        document.addEventListener('DOMContentLoaded', function() {
-          document.body.style.backgroundColor = theme === 'dark' ? 
-            'rgb(9, 9, 11)' : 'rgb(255, 255, 255)';
-          document.body.style.display = 'block';
-          document.body.style.transition = 'background-color 0.15s';
-        });
       })();
     </script>
   </head>
