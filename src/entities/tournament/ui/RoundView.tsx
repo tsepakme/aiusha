@@ -69,9 +69,9 @@ export const RoundView: React.FC<RoundViewProps> = ({
                         <SelectValue placeholder="Select result" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="+">1 - 0</SelectItem>
-                        <SelectItem value="-">0 - 1</SelectItem>
-                        <SelectItem value="=">0.5 - 0.5</SelectItem>
+                        <SelectItem value="+" aria-label='first player won'>1 - 0</SelectItem>
+                        <SelectItem value="-" aria-label='second player won'>0 - 1</SelectItem>
+                        <SelectItem value="=" aria-label='draw'>0.5 - 0.5</SelectItem>
                       </SelectContent>
                     </Select>
                   ) : (

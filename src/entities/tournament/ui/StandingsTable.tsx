@@ -59,7 +59,7 @@ export const StandingsTable: React.FC<StandingsTableProps> = ({
           ))}
           <TableCell>
             <Drawer>
-              <DrawerTrigger>Buc1</DrawerTrigger>
+              <DrawerTrigger aria-label='Buchholz Cut 1 score'>Buc1</DrawerTrigger>
               <DrawerContent>
                 <div className='mx-auto w-full max-w-sm'>
                   <DrawerHeader>
@@ -77,7 +77,7 @@ export const StandingsTable: React.FC<StandingsTableProps> = ({
           </TableCell>
           <TableCell>
             <Drawer>
-              <DrawerTrigger>BucT</DrawerTrigger>
+              <DrawerTrigger aria-label='Buchholz System score'>BucT</DrawerTrigger>
               <DrawerContent>
                 <div className='mx-auto w-full max-w-sm'>
                   <DrawerHeader>

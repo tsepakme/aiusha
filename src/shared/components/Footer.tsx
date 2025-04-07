@@ -38,24 +38,24 @@ export function Footer() {
           <div>
             <h3 className="text-lg font-medium mb-4">Contact</h3>
             <address className="not-italic text-sm text-muted-foreground">
-              <p className='flex items-center gap-1 hover:underline'>
-                <ArrowUpRight size={20} />
+              <p className='flex items-center gap-1 hover:underline' aria-label='write a mail'>
+                <ArrowUpRight size={20} aria-hidden='true' />
                 <a href="mailto:aiusha@aiusha.com" target="_blank" rel="noopener noreferrer">mail</a>
               </p>
-              <p className='flex items-center gap-1 hover:underline'>
-                <ArrowUpRight size={20} />
+              <p className='flex items-center gap-1 hover:underline' aria-label='visit my GitHub page'>
+                <ArrowUpRight size={20} aria-hidden='true' />
                 <a href="https://www.github.com/tsepakme/aiusha" className="hover:underline" target="_blank" rel="noopener noreferrer">github</a>
               </p>
-              <p className='flex items-center gap-1 hover:underline'>
-                <ArrowUpRight size={20} />
+              <p className='flex items-center gap-1 hover:underline' aria-label='visit my LinkedIn page'>
+                <ArrowUpRight size={20} aria-hidden='true' />
                 <a href="https://www.linkedin.com/in/aiusha-mikhailov/" className="hover:underline" target="_blank" rel="noopener noreferrer">linkedin</a>
               </p>
-              <p className='flex items-center gap-1 hover:underline'>
-                <ArrowUpRight size={20} />
+              <p className='flex items-center gap-1 hover:underline' aria-label='write me via telegram'>
+                <ArrowUpRight size={20} aria-hidden='true' />
                 <a href="https://www.t.me/tsepakme" className="hover:underline" target="_blank" rel="noopener noreferrer">telegram</a>
               </p>
-              <p className='flex items-center gap-1 hover:underline'>
-                <ArrowUpRight size={20} />
+              <p className='flex items-center gap-1 hover:underline' aria-label='visit my portfolio and blog'>
+                <ArrowUpRight size={20} aria-hidden='true' />
                 <a href="https://www.tsepakme.com" className="hover:underline" target="_blank" rel="noopener noreferrer">portfolio & blog</a>
               </p>
             </address>

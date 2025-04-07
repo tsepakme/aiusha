@@ -11,7 +11,7 @@ export function Header() {
             <span className="font-bold text-xl">Tournament Manager</span>
           </Link>
         </div>
-        <nav className="hidden md:flex items-center gap-6">
+        <nav className="hidden md:flex items-center gap-6" aria-label='Main Navigation'>
           <Link to="/" className="text-sm font-medium hover:underline">Home</Link>
           <Link to="/swiss" className="text-sm font-medium hover:underline">Swiss System</Link>
         </nav>
