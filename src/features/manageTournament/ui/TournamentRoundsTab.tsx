@@ -27,11 +27,41 @@ export const TournamentRoundsTab: React.FC = () => {
   }
 
   const handleNextRound = () => {
+    const currentRoundIndex = tournament.rounds.length - 1;
+    const currentRoundMatches = tournament.rounds[currentRoundIndex]?.matches || [];
+    const currentRoundResults = roundResults[currentRoundIndex] || [];
+
+    const unfilledMatches = currentRoundMatches
+      .filter((match, index) => match.player2 && !currentRoundResults[index]);
+
+    if (unfilledMatches.length > 0) {
+      toast.error('Cannot proceed to next round', {
+        description: `Please fill in results for all matches before continuing.`,
+        duration: 5000,
+      });
+      return;
+    }
+
     nextRound();
     toast.success('Round finished');
   };
 
   const handleFinishTournament = () => {
+    const currentRoundIndex = tournament.rounds.length - 1;
+    const currentRoundMatches = tournament.rounds[currentRoundIndex]?.matches || [];
+    const currentRoundResults = roundResults[currentRoundIndex] || [];
+
+    const unfilledMatches = currentRoundMatches
+      .filter((match, index) => match.player2 && !currentRoundResults[index]);
+
+    if (unfilledMatches.length > 0) {
+      toast.error('Cannot finish tournament', {
+        description: `Please fill in results for all matches in round ${currentRoundIndex + 1} before finishing.`,
+        duration: 5000,
+      });
+      return;
+    }
+
     finishTournament();
     toast.success('Tournament finished', {
       description: 'The tournament has finished. Go to the "Standings" tab to see the final standings.',
@@ -41,9 +71,9 @@ export const TournamentRoundsTab: React.FC = () => {
   const currentRoundIndex = tournament.rounds.length - 1;
   const currentRoundMatches = tournament.rounds[currentRoundIndex]?.matches || [];
   const currentRoundResults = roundResults[currentRoundIndex] || [];
-  const allResultsFilled = currentRoundMatches.length > 0 && 
-    currentRoundMatches.every((match, index) => 
-      !match.player2 || currentRoundResults[index]);
+  const unfilledMatchesCount = currentRoundMatches
+    .filter((match, index) => match.player2 && !currentRoundResults[index])
+    .length;
 
   return (
     <div>
@@ -65,20 +95,16 @@ export const TournamentRoundsTab: React.FC = () => {
         {tournament.rounds.length < calculateRounds(tournament.players.length) && !isFinished && (
           <Button 
             className='' 
-            onClick={handleNextRound} 
-            disabled={!allResultsFilled}
-            title={!allResultsFilled ? "Fill all match results before proceeding" : ""}
+            onClick={handleNextRound}
           >
-            Next Round
+            Next Round {unfilledMatchesCount > 0 ? `(${unfilledMatchesCount} results missing)` : ''}
           </Button>
         )}
         {tournament.rounds.length === calculateRounds(tournament.players.length) && !isFinished && (
           <Button 
             onClick={handleFinishTournament}
-            disabled={!allResultsFilled}
-            title={!allResultsFilled ? "Fill all match results before finishing" : ""}  
           >
-            Finish Tournament
+            Finish Tournament {unfilledMatchesCount > 0 ? `(${unfilledMatchesCount} results missing)` : ''}
           </Button>
         )}
         <DeleteConfirmationDialog 
