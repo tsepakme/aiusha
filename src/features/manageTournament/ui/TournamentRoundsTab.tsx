@@ -38,6 +38,13 @@ export const TournamentRoundsTab: React.FC = () => {
     });
   };
 
+  const currentRoundIndex = tournament.rounds.length - 1;
+  const currentRoundMatches = tournament.rounds[currentRoundIndex]?.matches || [];
+  const currentRoundResults = roundResults[currentRoundIndex] || [];
+  const allResultsFilled = currentRoundMatches.length > 0 && 
+    currentRoundMatches.every((match, index) => 
+      !match.player2 || currentRoundResults[index]);
+
   return (
     <div>
       {tournament.rounds.map((round, roundIndex) => (
@@ -56,10 +63,23 @@ export const TournamentRoundsTab: React.FC = () => {
       
       <div className='flex flex-col sm:flex-row justify-between gap-2 mt-5 w-full'>
         {tournament.rounds.length < calculateRounds(tournament.players.length) && !isFinished && (
-          <Button className='' onClick={handleNextRound}>Next Round</Button>
+          <Button 
+            className='' 
+            onClick={handleNextRound} 
+            disabled={!allResultsFilled}
+            title={!allResultsFilled ? "Fill all match results before proceeding" : ""}
+          >
+            Next Round
+          </Button>
         )}
         {tournament.rounds.length === calculateRounds(tournament.players.length) && !isFinished && (
-          <Button onClick={handleFinishTournament}>Finish Tournament</Button>
+          <Button 
+            onClick={handleFinishTournament}
+            disabled={!allResultsFilled}
+            title={!allResultsFilled ? "Fill all match results before finishing" : ""}  
+          >
+            Finish Tournament
+          </Button>
         )}
         <DeleteConfirmationDialog 
           onConfirm={resetTournament} 
@@ -69,4 +89,4 @@ export const TournamentRoundsTab: React.FC = () => {
       </div>
     </div>
   );
-}; 
+};
