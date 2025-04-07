@@ -37,7 +37,7 @@ export function Footer() {
           </div>
           <div>
             <h3 className="text-lg font-medium mb-4">Contact</h3>
-            <address className="not-italic text-sm text-muted-foreground">
+            <address className="space-y-2 sm:space-y-0 not-italic text-sm text-muted-foreground">
               <p className='flex items-center gap-1 hover:underline' aria-label='write a mail'>
                 <ArrowUpRight size={20} aria-hidden='true' />
                 <a href="mailto:aiusha@aiusha.com" target="_blank" rel="noopener noreferrer">mail</a>
