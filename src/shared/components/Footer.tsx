@@ -50,7 +50,7 @@ export function Footer() {
                 <ArrowUpRight size={20} aria-hidden='true' />
                 <a href="https://www.linkedin.com/in/aiusha-mikhailov/" className="hover:underline" target="_blank" rel="noopener noreferrer">linkedin</a>
               </p>
-              <p className='flex items-center gap-1 hover:underline' aria-label='write me via telegram' aria-hidden='true'>
+              <p className='flex items-center gap-1 hover:underline' aria-label='write me via telegram'>
                 <ArrowUpRight size={20} aria-hidden='true' />
                 <a href="https://www.t.me/tsepakme" className="hover:underline" target="_blank" rel="noopener noreferrer">telegram</a>
               </p>
