@@ -26,17 +26,19 @@ export const PlayerForm: React.FC<PlayerFormProps> = ({
   return (
     <form onSubmit={handleSubmit} className='flex flex-col gap-2 my-3'>
       <h2 className="text-lg font-medium">Add Players</h2>
+      <label htmlFor='playerName' className="text-sm font-medium">Player Name</label>
       <Input
+        id='playerName'
         type="text"
-        placeholder="Player Name"
         value={playerName}
         onChange={(e) => setPlayerName(e.target.value)}
         disabled={disabled}
         required
       />
+      <label htmlFor='playerRating' className="text-sm font-medium">Player Rating (optional)</label>
       <Input
+        id='playerRating'
         type="number"
-        placeholder="Player Rating (optional)"
         value={playerRating}
         onChange={(e) => setPlayerRating(e.target.value)}
         disabled={disabled}
