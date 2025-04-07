@@ -42,7 +42,7 @@ export function Footer() {
                 <ArrowUpRight size={20} aria-hidden='true' />
                 <a href="mailto:aiusha@aiusha.com" target="_blank" rel="noopener noreferrer">mail</a>
               </p>
-              <p className='flex items-center gap-1 hover:underline' aria-activedescendant='visit my GitHub page'>
+              <p className='flex items-center gap-1 hover:underline' aria-label='visit my GitHub page'>
                 <ArrowUpRight size={20} aria-hidden='true' />
                 <a href="https://www.github.com/tsepakme/aiusha" className="hover:underline" target="_blank" rel="noopener noreferrer">github</a>
               </p>
