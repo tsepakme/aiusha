@@ -92,7 +92,7 @@ export const useTournament = () => {
     const newPlayers = [...players];
     newPlayers[index] = {
       name,
-      rating: rating ? parseInt(rating) : undefined
+      rating: rating ? parseInt(rating, 10) : undefined
     };
     setPlayers(newPlayers);
   }
