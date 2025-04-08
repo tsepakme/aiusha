@@ -10,6 +10,7 @@ interface TournamentContextType {
   roundResults: string[][];
   addPlayer: (name: string, rating?: string) => void;
   removePlayer: (index: number) => void;
+  editPlayer: (index: number, name: string, rating?: string) => void;
   startTournament: () => void;
   handleResultChange: (roundIndex: number, matchIndex: number, result: string) => void;
   finishRound: (roundIndex: number) => void;

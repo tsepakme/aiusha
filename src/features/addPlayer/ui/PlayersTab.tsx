@@ -2,6 +2,7 @@ import React from 'react';
 import { PlayerForm } from './PlayerForm';
 import { PlayersList } from '@/entities/tournament/ui/PlayersList';
 import { useTournamentContext } from '@/features/manageTournament/model/TournamentContext';
+import { toast } from 'sonner';
 
 export const PlayersTab: React.FC = () => {
   const {
@@ -9,14 +10,25 @@ export const PlayersTab: React.FC = () => {
     tournament,
     addPlayer,
     removePlayer,
+    editPlayer,
     startTournament,
     resetTournament
   } = useTournamentContext();
 
+  const handleEditPlayer = (index: number, name: string, rating?: string) => {
+    editPlayer(index, name, rating);
+    toast.success('Player updated successfully');
+  };
+
+  const handleRemovePlayer = (index: number) => {
+    removePlayer(index);
+    toast.success('Player removed');
+  };
+
   return (
     <div>
       {!tournament && (
-        <PlayerForm 
+        <PlayerForm
           onAddPlayer={addPlayer}
           disabled={!!tournament}
         />
@@ -25,10 +37,11 @@ export const PlayersTab: React.FC = () => {
       <PlayersList
         players={players}
         isTournamentActive={!!tournament}
-        onRemovePlayer={!tournament ? removePlayer : undefined}
-        onStartTournament={!tournament ? startTournament : undefined}
-        onResetPlayers={!tournament ? resetTournament : undefined}
+        onRemovePlayer={!tournament ? handleRemovePlayer : undefined}
+        onEditPlayer={!tournament ? handleEditPlayer : undefined}
+        onStartTournament={!tournament && players.length >= 2 ? startTournament : undefined}
+        onResetPlayers={resetTournament}
       />
     </div>
   );
-}; 
+};

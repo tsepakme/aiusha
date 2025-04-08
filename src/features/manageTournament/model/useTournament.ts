@@ -87,6 +87,15 @@ export const useTournament = () => {
     newPlayers.splice(index, 1);
     setPlayers(newPlayers);
   };
+  
+  const editPlayer = (index: number, name: string, rating?: string) => {
+    const newPlayers = [...players];
+    newPlayers[index] = {
+      name,
+      rating: rating ? parseInt(rating, 10) : undefined
+    };
+    setPlayers(newPlayers);
+  }
 
   const startTournament = () => {
     const newTournament = runTournament(players);
@@ -164,6 +173,7 @@ export const useTournament = () => {
     roundResults,
     addPlayer,
     removePlayer,
+    editPlayer,
     startTournament,
     handleResultChange,
     finishRound,
