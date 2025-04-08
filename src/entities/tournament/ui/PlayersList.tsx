@@ -46,59 +46,79 @@ export const PlayersList: React.FC<PlayersListProps> = ({
   };
 
   if (players.length === 0) {
-    return <p className="text-center py-4">No players added yet.</p>;
+    return <p className="text-center py-4" role="status">No players added yet.</p>;
   }
 
   return (
     <div>
-      <Table>
+      <Table aria-label="Players list" aria-describedby="players-description">
+        <caption className="sr-only" id="players-description">
+          Table of registered players with their names and ratings
+        </caption>
         <TableHeader>
           <TableRow>
-            <TableCell>#</TableCell>
-            <TableCell>Name</TableCell>
-            <TableCell>Rating</TableCell>
+            <TableCell scope="col">#</TableCell>
+            <TableCell scope="col">Name</TableCell>
+            <TableCell scope="col">Rating</TableCell>
             {!isTournamentActive && (onRemovePlayer || onEditPlayer) && (
-              <TableCell>Actions</TableCell>
+              <TableCell scope="col">Actions</TableCell>
             )}
           </TableRow>
         </TableHeader>
         <TableBody>
           {players.map((player, index) => (
             <TableRow key={index}>
-              <TableCell>{index + 1}</TableCell>
+              <TableCell scope="row">{index + 1}</TableCell>
 
               {editingPlayerIndex === index ? (
                 <>
                   <TableCell>
                     <Input
+                      id={`edit-player-name-${index}`}
                       value={editName}
                       onChange={(e) => setEditName(e.target.value)}
                       autoFocus
+                      aria-label="Edit player name"
+                      aria-describedby={`edit-player-name-help-${index}`}
+                      aria-required="true"
                     />
+                    <span id={`edit-player-name-help-${index}`} className="sr-only">
+                      Enter the player's name
+                    </span>
                   </TableCell>
                   <TableCell>
                     <Input
+                      id={`edit-player-rating-${index}`}
                       type="number"
                       value={editRating}
                       onChange={(e) => setEditRating(e.target.value)}
+                      aria-label="Edit player rating"
+                      aria-describedby={`edit-player-rating-help-${index}`}
                     />
+                    <span id={`edit-player-rating-help-${index}`} className="sr-only">
+                      Enter the player's rating (optional)
+                    </span>
                   </TableCell>
                   <TableCell>
-                    <div className="flex space-x-2">
+                    <div className="flex space-x-2" role="group" aria-label="Edit actions">
                       <Button
                         variant="ghost"
                         size="sm"
                         onClick={() => handleSaveEdit(index)}
                         disabled={!editName.trim()}
+                        aria-label={`Save changes for player ${player.name}`}
                       >
-                        <Save className="h-4 w-4 mr-1" />
+                        <Save className="h-4 w-4 mr-1" aria-hidden="true" />
+                        <span className="sr-only">Save</span>
                       </Button>
                       <Button
                         variant="ghost"
                         size="sm"
                         onClick={handleCancelEdit}
+                        aria-label="Cancel editing"
                       >
-                        <X className="h-4 w-4 mr-1" />
+                        <X className="h-4 w-4 mr-1" aria-hidden="true" />
+                        <span className="sr-only">Cancel</span>
                       </Button>
                     </div>
                   </TableCell>
@@ -106,17 +126,19 @@ export const PlayersList: React.FC<PlayersListProps> = ({
               ) : (
                 <>
                   <TableCell>{player.name}</TableCell>
-                  <TableCell>{player.rating}</TableCell>
+                  <TableCell>{player.rating || 'Not set'}</TableCell>
                   {!isTournamentActive && (onRemovePlayer || onEditPlayer) && (
                     <TableCell>
-                      <div className="flex space-x-2">
+                      <div className="flex space-x-2" role="group" aria-label={`Actions for player ${player.name}`}>
                         {onEditPlayer && (
                           <Button
                             variant="ghost"
                             size="sm"
                             onClick={() => handleEditClick(index)}
+                            aria-label={`Edit player ${player.name}`}
                           >
-                            <Edit className="h-4 w-4 mr-1" />
+                            <Edit className="h-4 w-4 mr-1" aria-hidden="true" />
+                            <span className="sr-only">Edit</span>
                           </Button>
                         )}
                         {onRemovePlayer && (
@@ -124,8 +146,10 @@ export const PlayersList: React.FC<PlayersListProps> = ({
                             variant="ghost"
                             size="sm"
                             onClick={() => onRemovePlayer(index)}
+                            aria-label={`Remove player ${player.name}`}
                           >
-                            <Trash />
+                            <Trash aria-hidden="true" />
+                            <span className="sr-only">Remove</span>
                           </Button>
                         )}
                       </div>
@@ -139,15 +163,25 @@ export const PlayersList: React.FC<PlayersListProps> = ({
       </Table>
 
       {!isTournamentActive && players.length > 0 && (
-        <div className='flex flex-col sm:flex-row justify-between gap-2 mt-5'>
+        <div
+          className='flex flex-col sm:flex-row justify-between gap-2 mt-5'
+          role="group"
+          aria-label="Tournament actions"
+        >
           {onStartTournament && (
-            <Button onClick={onStartTournament}>Start Tournament</Button>
+            <Button
+              onClick={onStartTournament}
+              aria-label="Start tournament with current players"
+            >
+              Start Tournament
+            </Button>
           )}
           {onResetPlayers && (
             <DeleteConfirmationDialog
               onConfirm={onResetPlayers}
               value='Delete all'
               variant={'destructive'}
+              aria-label="Delete all players"
             />
           )}
         </div>
