@@ -1,176 +1,134 @@
-import { useState, useEffect } from 'react';
+import { useMemo } from 'react';
 import { Tournament } from "@/entities/tournament/model/tournament";
 import { runTournament, generateSwissRound, updateResults, calculateRounds } from "./manageTournament";
+import { useLocalStorage } from '@/shared/hooks/useLocalStorage'
 
 type PlayerInput = { name: string; rating?: number };
-type TournamentState = Tournament | null;
-type RoundResultsState = string[][];
 
 export const useTournament = () => {
-  const [players, setPlayers] = useState<PlayerInput[]>(() => {
-    try {
-      const saved = localStorage.getItem('players');
-      return saved ? JSON.parse(saved) : [];
-    } catch {
-      return [];
-    }
-  });
-  
-  const [tournament, setTournament] = useState<TournamentState>(() => {
-    try {
-      const saved = localStorage.getItem('tournament');
-      return saved ? JSON.parse(saved) : null;
-    } catch {
-      return null;
-    }
-  });
-  
-  const [isFinished, setIsFinished] = useState<boolean>(() => {
-    try {
-      const saved = localStorage.getItem('isFinished');
-      return saved ? JSON.parse(saved) : false;
-    } catch {
-      return false;
-    }
-  });
-  
-  const [roundResults, setRoundResults] = useState<RoundResultsState>(() => {
-    try {
-      const saved = localStorage.getItem('roundResults');
-      return saved ? JSON.parse(saved) : [];
-    } catch {
-      return [];
-    }
-  });
-
-  useEffect(() => {
-    try {
-      localStorage.setItem('players', JSON.stringify(players));
-    } catch {
-      console.error('Failed to save players to localStorage');
-    }
-  }, [players]);
-
-  useEffect(() => {
-    try {
-      localStorage.setItem('tournament', JSON.stringify(tournament));
-    } catch {
-      console.error('Failed to save tournament to localStorage');
-    }
-  }, [tournament]);
-
-  useEffect(() => {
-    try {
-      localStorage.setItem('isFinished', JSON.stringify(isFinished));
-    } catch {
-      console.error('Failed to save isFinished state to localStorage');
-    }
-  }, [isFinished]);
-
-  useEffect(() => {
-    try {
-      localStorage.setItem('roundResults', JSON.stringify(roundResults));
-    } catch {
-      console.error('Failed to save roundResults to localStorage');
-    }
-  }, [roundResults]);
+  const [players, setPlayers, removePlayers] = useLocalStorage<PlayerInput[]>('players', []);
+  const [tournament, setTournament, removeTournament] = useLocalStorage<Tournament | null>('tournament', null);
+  const [isFinished, setIsFinished, removeIsFinished] = useLocalStorage<boolean>('isFinished', false);
+  const [roundResults, setRoundResults, removeRoundResults] = useLocalStorage<string[][]>('roundResults', []);
 
   const addPlayer = (name: string, rating?: string) => {
+    if (!name.trim()) return false;
+    
     setPlayers([...players, { 
-      name, 
+      name: name.trim(), 
       rating: rating ? parseInt(rating) : undefined 
     }]);
+    return true;
   };
 
   const removePlayer = (index: number) => {
+    if (index < 0 || index >= players.length) return false;
+    
     const newPlayers = [...players];
     newPlayers.splice(index, 1);
     setPlayers(newPlayers);
+    return true;
   };
   
   const editPlayer = (index: number, name: string, rating?: string) => {
+    if (index < 0 || index >= players.length) return false;
+    if (!name.trim()) return false;
+    
     const newPlayers = [...players];
     newPlayers[index] = {
-      name,
+      name: name.trim(),
       rating: rating ? parseInt(rating, 10) : undefined
     };
     setPlayers(newPlayers);
-  }
+    return true;
+  };
 
   const startTournament = () => {
+    if (players.length < 2) return false;
+    
     const newTournament = runTournament(players);
     setTournament(newTournament);
     setRoundResults(newTournament.rounds.map(() => []));
+    return true;
   };
 
   const handleResultChange = (roundIndex: number, matchIndex: number, result: string) => {
-    const newRoundResults = [...roundResults];
-    if (!newRoundResults[roundIndex]) {
-      newRoundResults[roundIndex] = [];
-    }
-    newRoundResults[roundIndex][matchIndex] = result;
-    setRoundResults(newRoundResults);
+    setRoundResults(prevResults => {
+      const newResults = [...prevResults];
+      if (!newResults[roundIndex]) {
+        newResults[roundIndex] = [];
+      }
+      newResults[roundIndex][matchIndex] = result;
+      return newResults;
+    });
   };
 
   const finishRound = (roundIndex: number) => {
-    if (tournament) {
-      const newTournament = { ...tournament };
-      const allMatches = newTournament.rounds.flatMap(round => round.matches);
-      if (newTournament.rounds[roundIndex]) {
-        updateResults(newTournament.rounds[roundIndex].matches, roundResults[roundIndex] || [], newTournament.players, allMatches);
-        setTournament(newTournament);
-      }
+    if (!tournament) return false;
+
+    const newTournament = { ...tournament };
+    const allMatches = newTournament.rounds.flatMap(round => round.matches);
+    
+    if (newTournament.rounds[roundIndex]) {
+      updateResults(
+        newTournament.rounds[roundIndex].matches, 
+        roundResults[roundIndex] || [], 
+        newTournament.players, 
+        allMatches
+      );
+      setTournament(newTournament);
+      return true;
     }
+    
+    return false;
   };
 
   const nextRound = () => {
-    if (tournament) {
-      if (tournament.rounds.length < calculateRounds(tournament.players.length)) {
-        finishRound(tournament.rounds.length - 1);
-        const newTournament = { ...tournament };
-        const newRoundMatches = generateSwissRound(newTournament.players);
-        newTournament.rounds.push({ matches: newRoundMatches });
-        setTournament(newTournament);
-        setRoundResults([...roundResults, []]);
-        return true;
-      }
+    if (!tournament) return false;
+    
+    if (tournament.rounds.length < calculateRounds(tournament.players.length)) {
+      finishRound(tournament.rounds.length - 1);
+      
+      const newTournament = { ...tournament };
+      const newRoundMatches = generateSwissRound(newTournament.players);
+      newTournament.rounds.push({ matches: newRoundMatches });
+      setTournament(newTournament);
+      setRoundResults([...roundResults, []]);
+      return true;
     }
+    
     return false;
   };
 
   const finishTournament = () => {
-    if (tournament) {
-      finishRound(tournament.rounds.length - 1);
-      setIsFinished(true);
-      return true;
-    }
-    return false;
+    if (!tournament) return false;
+    
+    finishRound(tournament.rounds.length - 1);
+    setIsFinished(true);
+    return true;
   };
 
   const resetTournament = () => {
-    setPlayers([]);
-    setTournament(null);
-    setIsFinished(false);
-    setRoundResults([]);
-    localStorage.removeItem('players');
-    localStorage.removeItem('tournament');
-    localStorage.removeItem('isFinished');
-    localStorage.removeItem('roundResults');
+    removePlayers();
+    removeTournament();
+    removeIsFinished();
+    removeRoundResults();
   };
 
-  const getSortedPlayers = () => {
+  const sortedPlayers = useMemo(() => {
     if (!tournament) return [];
     
     return [...tournament.players].sort(
       (a, b) => b.points - a.points || b.buc1 - a.buc1 || b.bucT - a.bucT
     );
-  };
+  }, [tournament]);
   
   return {
     players,
     tournament,
     isFinished,
     roundResults,
+    sortedPlayers,
     addPlayer,
     removePlayer,
     editPlayer,
@@ -179,7 +137,6 @@ export const useTournament = () => {
     finishRound,
     nextRound,
     finishTournament,
-    resetTournament,
-    getSortedPlayers
+    resetTournament
   };
-}; 
+};
