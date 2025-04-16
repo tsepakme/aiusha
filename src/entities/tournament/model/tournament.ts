@@ -5,9 +5,6 @@ export enum MatchResult {
   WIN = '+',
   LOSS = '-',
   DRAW = '=',
-  DEFAULT_WIN = '1-0',
-  DEFAULT_LOSS = '0-1',
-  BYE = 'bye'
 }
 
 export type ResultType = MatchResult | undefined;
