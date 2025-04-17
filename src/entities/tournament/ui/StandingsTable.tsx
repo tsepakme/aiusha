@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Table, TableBody, TableCell, TableHeader, TableRow } from "@/shared/components/table";
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/shared/components/hover-card";
 import { Drawer, DrawerContent, DrawerDescription, DrawerHeader, DrawerTitle, DrawerTrigger } from "@/shared/components/drawer";
@@ -14,25 +14,29 @@ export const StandingsTable: React.FC<StandingsTableProps> = ({
   tournament,
   isFinished
 }) => {
-  const sortedPlayers = [...tournament.players].sort(
-    (a, b) => b.points - a.points || b.buc1 - a.buc1 || b.bucT - a.bucT
-  );
+  const sortedPlayers = useMemo(() => {
+    return [...tournament.players].sort(
+      (a, b) => b.points - a.points || b.buc1 - a.buc1 || b.bucT - a.bucT
+    );
+  }, [tournament.players]);
 
-  const getResultDisplay = (
-    opponent: Player | undefined, 
-    result: MatchResult | undefined, 
-    color: string, 
-    opponentPosition: number
-  ) => {
-    if (!opponent) return MatchResult.WIN;
-    
-    const displayColor = color === 'white' ? 'W' : 'B';
-    if (isFinished) {
-      return `${result}${displayColor}${opponentPosition}`;
-    } else {
-      return `${result}${displayColor}${opponent.name}`;
-    }
-  };
+  const getResultDisplay = useMemo(() => {
+    return (
+      opponent: Player | undefined, 
+      result: MatchResult | undefined, 
+      color: string, 
+      opponentPosition: number
+    ) => {
+      if (!opponent) return MatchResult.WIN;
+      
+      const displayColor = color === 'white' ? 'W' : 'B';
+      if (isFinished) {
+        return `${result}${displayColor}${opponentPosition}`;
+      } else {
+        return `${result}${displayColor}${opponent.name}`;
+      }
+    };
+  }, [isFinished]);
 
   const getPlayerResult = (matchResult: MatchResult | undefined, isPlayer1: boolean): MatchResult | undefined => {
     if (matchResult === undefined) return undefined;

@@ -13,7 +13,7 @@ interface RoundViewProps {
   isFinished: boolean;
 }
 
-export const RoundView: React.FC<RoundViewProps> = ({
+export const RoundView: React.FC<RoundViewProps> = React.memo(({
   roundNumber,
   matches,
   results,
@@ -96,4 +96,4 @@ export const RoundView: React.FC<RoundViewProps> = ({
       </Table>
     </div>
   );
-};
+});
