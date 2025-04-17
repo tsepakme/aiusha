@@ -22,6 +22,7 @@ export function useLocalStorage<T>(key: string, initialValue: T) {
   const removeItem = () => {
     try {
       localStorage.removeItem(key);
+      setStoredValue(initialValue);
     } catch (error) {
       console.error(`Error removing localStorage key "${key}":`, error);
     }

@@ -2,6 +2,7 @@ import { useMemo } from 'react';
 import { Tournament } from "@/entities/tournament/model/tournament";
 import { runTournament, generateSwissRound, updateResults, calculateRounds } from "./manageTournament";
 import { useLocalStorage } from '@/shared/hooks/useLocalStorage'
+import { toast } from 'sonner';
 
 type PlayerInput = { name: string; rating?: number };
 
@@ -22,13 +23,11 @@ export const useTournament = () => {
   };
 
   const removePlayer = (index: number) => {
-    if (index < 0 || index >= players.length) return false;
-    
-    const newPlayers = [...players];
-    newPlayers.splice(index, 1);
-    setPlayers(newPlayers);
-    return true;
-  };
+    if (index < 0 || index >= players.length) return false
+
+    setPlayers(players.filter((_, i) => i !== index))
+    return true
+  }
   
   const editPlayer = (index: number, name: string, rating?: string) => {
     if (index < 0 || index >= players.length) return false;
@@ -109,10 +108,22 @@ export const useTournament = () => {
   };
 
   const resetTournament = () => {
-    removePlayers();
-    removeTournament();
-    removeIsFinished();
-    removeRoundResults();
+    try {
+      removePlayers();
+      removeTournament();
+      removeIsFinished();
+      removeRoundResults();
+      setPlayers([]);
+      setTournament(null);
+      setIsFinished(false);
+      setRoundResults([]);
+      toast.success('Tournament data reset successfully');
+      return true;
+    } catch (error) {
+      console.error('Error resetting tournament data:', error);
+      toast.error('Failed to reset tournament data');
+      return false;
+    }
   };
 
   const sortedPlayers = useMemo(() => {
