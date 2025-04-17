@@ -1,18 +1,18 @@
 import React, { createContext, useContext, ReactNode } from 'react';
 import { useTournament } from './useTournament';
-import { Tournament } from '@/entities/tournament/model/tournament';
+import { Tournament, MatchResult } from '@/entities/tournament/model/tournament';
 import { Player } from '@/entities/player/model/player';
 
 interface TournamentContextType {
   players: Array<{ name: string; rating?: number }>;
   tournament: Tournament | null;
   isFinished: boolean;
-  roundResults: string[][];
+  roundResults: (MatchResult | undefined)[][];
   addPlayer: (name: string, rating?: string) => void;
   removePlayer: (index: number) => void;
   editPlayer: (index: number, name: string, rating?: string) => void;
   startTournament: () => void;
-  handleResultChange: (roundIndex: number, matchIndex: number, result: string) => void;
+  handleResultChange: (roundIndex: number, matchIndex: number, result: MatchResult) => void;
   finishRound: (roundIndex: number) => void;
   nextRound: () => boolean;
   finishTournament: () => boolean;
@@ -25,8 +25,13 @@ const TournamentContext = createContext<TournamentContextType | null>(null);
 export const TournamentProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const tournamentData = useTournament();
   
+  const contextValue: TournamentContextType = {
+    ...tournamentData,
+    getSortedPlayers: () => tournamentData.sortedPlayers || []
+  };
+  
   return (
-    <TournamentContext.Provider value={tournamentData}>
+    <TournamentContext.Provider value={contextValue}>
       {children}
     </TournamentContext.Provider>
   );
@@ -40,4 +45,4 @@ export const useTournamentContext = (): TournamentContextType => {
   }
   
   return context;
-}; 
+};

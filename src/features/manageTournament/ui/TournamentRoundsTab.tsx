@@ -71,9 +71,9 @@ export const TournamentRoundsTab: React.FC = () => {
   const currentRoundIndex = tournament.rounds.length - 1;
   const currentRoundMatches = tournament.rounds[currentRoundIndex]?.matches || [];
   const currentRoundResults = roundResults[currentRoundIndex] || [];
-  const unfilledMatchesCount = currentRoundMatches
-    .filter((match, index) => match.player2 && !currentRoundResults[index])
-    .length;
+  const unfilledMatches = currentRoundMatches
+    .filter((match, index) => match.player2 && !currentRoundResults[index]);
+  const unfilledMatchesCount = unfilledMatches.length;
 
   return (
     <div>
