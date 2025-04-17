@@ -4,31 +4,54 @@ import { initializePlayers } from '@/features/addPlayer/model/addPlayer'
 import { MatchResult } from '@/entities/tournament/model/tournament'
 
 export function generateFirstRound(players: Player[]): Match[] {
-  const matches: Match[] = []
-  for (let i = 0; i < players.length; i += 2) {
-    if (players[i + 1]) {
+  const sortedPlayers = [...players].sort((a, b) => (b.rating ?? 0) - (a.rating ?? 0));
+  const matches: Match[] = [];
+  
+  const midpoint = Math.ceil(sortedPlayers.length / 2);
+  const topHalf = sortedPlayers.slice(0, midpoint);
+  const bottomHalf = sortedPlayers.slice(midpoint);
+  
+  for (let i = 0; i < topHalf.length; i++) {
+    const player1 = topHalf[i];
+    
+    if (i < bottomHalf.length) {
+      const player2 = bottomHalf[i];
+      
       matches.push({
-        player1: players[i],
-        player2: players[i + 1],
+        player1,
+        player2,
         result: undefined,
         player1Color: 'white',
         player2Color: 'black'
-      })
-      players[i].colorHistory.push('white')
-      players[i + 1].colorHistory.push('black')
-      players[i].opponents.push(players[i + 1].id)
-      players[i + 1].opponents.push(players[i].id)
+      });
+      
+      player1.colorHistory.push('white');
+      player2.colorHistory.push('black');
+      player1.opponents.push(player2.id);
+      player2.opponents.push(player1.id);
     } else {
       matches.push({
-        player1: players[i],
+        player1,
         player1Color: 'white',
         result: undefined
-      })
-      players[i].points += 1
-      players[i].resultHistory.push(MatchResult.WIN)
+      });
+      
+      const updatedPlayer = {
+        ...player1,
+        points: player1.points + 1,
+        resultHistory: [...player1.resultHistory, MatchResult.WIN]
+      };
+      
+      const playerIndex = players.findIndex(p => p.id === player1.id);
+      if (playerIndex !== -1) {
+        players[playerIndex] = updatedPlayer;
+      }
+      
+      matches[matches.length - 1].player1 = updatedPlayer;
     }
   }
-  return matches
+  
+  return matches;
 }
 
 export function generateSwissRound(players: Player[], timeLimit: number = 3000): Match[] {
