@@ -1,6 +1,6 @@
 import React from 'react';
 import { PlayerForm } from './PlayerForm';
-import { PlayersList } from '@/entities/tournament/ui/PlayersList';
+import { PlayersList } from '@/entities/player/ui/PlayersList';
 import { useTournamentContext } from '@/features/manageTournament/model/TournamentContext';
 import { toast } from 'sonner';
 
