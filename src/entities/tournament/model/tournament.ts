@@ -1,10 +1,6 @@
-import { Player, PlayerColor } from '@/entities/player/model/player'
+import { Player } from '@/entities/player/model/player'
+import { PlayerColor, MatchResult, TournamentSystem } from '@/shared/types/enums'
 
-export enum MatchResult {
-  WIN = '+',
-  LOSS = '-',
-  DRAW = '=',
-}
 
 export type Match = {
   player1: Player
@@ -17,13 +13,6 @@ export type Match = {
 export type Round = {
   matches: Match[]
   isComplete?: boolean
-}
-
-export enum TournamentSystem {
-  SWISS = 'swiss',
-  ROUND_ROBIN = 'roundRobin',
-  ELIMINATION = 'elimination',
-  BERGVALL = 'bergvall'
 }
 
 export type Tournament = {

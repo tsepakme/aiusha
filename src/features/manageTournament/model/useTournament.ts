@@ -1,8 +1,9 @@
 import { useMemo } from 'react';
-import { Tournament, MatchResult } from "@/entities/tournament/model/tournament";
+import { Tournament } from "@/entities/tournament/model/tournament";
 import { runTournament, generateSwissRound, updateResults, calculateRounds } from "./manageTournament";
 import { useLocalStorage } from '@/shared/hooks/useLocalStorage'
 import { toast } from 'sonner';
+import { MatchResult } from "@/shared/types/enums";
 
 type PlayerInput = { name: string; rating?: number };
 

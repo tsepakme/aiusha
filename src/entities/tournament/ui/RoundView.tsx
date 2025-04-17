@@ -2,8 +2,8 @@ import React from 'react';
 import { Table, TableBody, TableCell, TableHeader, TableRow } from "@/shared/components/table"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shared/components/select"
 import { Drawer, DrawerContent, DrawerDescription, DrawerHeader, DrawerTitle, DrawerTrigger } from "@/shared/components/drawer"
-import { Match, MatchResult } from '@/entities/tournament/model/tournament';
-import { PlayerColor } from '@/entities/player/model/player';
+import { Match } from '@/entities/tournament/model/tournament';
+import { PlayerColor, MatchResult } from "@/shared/types/enums"
 
 interface RoundViewProps {
   roundNumber: number;

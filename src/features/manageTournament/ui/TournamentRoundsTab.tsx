@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Button } from "@/shared/components/button";
 import { Separator } from "@/shared/components/separator";
 import { RoundView } from '@/entities/tournament/ui/RoundView';
@@ -71,8 +71,12 @@ export const TournamentRoundsTab: React.FC = () => {
   const currentRoundIndex = tournament.rounds.length - 1;
   const currentRoundMatches = tournament.rounds[currentRoundIndex]?.matches || [];
   const currentRoundResults = roundResults[currentRoundIndex] || [];
-  const unfilledMatches = currentRoundMatches
-    .filter((match, index) => match.player2 && !currentRoundResults[index]);
+  const unfilledMatches = useMemo(() => 
+    currentRoundMatches.filter((match, index) => 
+      match.player2 && currentRoundResults[index] === undefined
+    ),
+    [currentRoundMatches, currentRoundResults]
+  );
   const unfilledMatchesCount = unfilledMatches.length;
 
   return (
@@ -90,27 +94,27 @@ export const TournamentRoundsTab: React.FC = () => {
           <Separator className='my-4' />
         </div>
       ))}
-      
+
       <div className='flex flex-col sm:flex-row justify-between gap-2 mt-5 w-full'>
         {tournament.rounds.length < calculateRounds(tournament.players.length) && !isFinished && (
-          <Button 
-            className='' 
+          <Button
+            className=''
             onClick={handleNextRound}
           >
             Next Round {unfilledMatchesCount > 0 ? `(${unfilledMatchesCount} results missing)` : ''}
           </Button>
         )}
         {tournament.rounds.length === calculateRounds(tournament.players.length) && !isFinished && (
-          <Button 
+          <Button
             onClick={handleFinishTournament}
           >
             Finish Tournament {unfilledMatchesCount > 0 ? `(${unfilledMatchesCount} results missing)` : ''}
           </Button>
         )}
-        <DeleteConfirmationDialog 
-          onConfirm={resetTournament} 
-          value='Delete all' 
-          variant={'destructive'} 
+        <DeleteConfirmationDialog
+          onConfirm={resetTournament}
+          value='Delete all'
+          variant={'destructive'}
         />
       </div>
     </div>

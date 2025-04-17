@@ -1,7 +1,8 @@
 import React, { createContext, useContext, ReactNode } from 'react';
 import { useTournament } from './useTournament';
-import { Tournament, MatchResult } from '@/entities/tournament/model/tournament';
+import { Tournament } from '@/entities/tournament/model/tournament';
 import { Player } from '@/entities/player/model/player';
+import { MatchResult } from '@/shared/types/enums';
 
 interface TournamentContextType {
   players: Array<{ name: string; rating?: number }>;

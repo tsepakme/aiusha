@@ -1,10 +1,4 @@
-import { MatchResult } from "@/entities/tournament/model/tournament"
-
-export enum PlayerColor {
-  WHITE = 'white',
-  BLACK = 'black',
-  NONE = 'none'
-}
+import { PlayerColor, MatchResult } from "@/shared/types/enums"
 
 export type Player = {
   id: number | string

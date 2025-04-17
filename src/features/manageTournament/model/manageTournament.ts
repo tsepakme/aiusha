@@ -1,7 +1,7 @@
-import { Player, PlayerColor } from '@/entities/player/model/player'
+import { Player } from '@/entities/player/model/player'
 import { Tournament, Match } from '@/entities/tournament/model/tournament'
 import { initializePlayers } from '@/features/addPlayer/model/addPlayer'
-import { MatchResult } from '@/entities/tournament/model/tournament'
+import { PlayerColor, MatchResult } from '@/shared/types/enums'
 
 export function generateFirstRound(players: Player[]): Match[] {
   const sortedPlayers = [...players].sort((a, b) => (b.rating ?? 0) - (a.rating ?? 0));

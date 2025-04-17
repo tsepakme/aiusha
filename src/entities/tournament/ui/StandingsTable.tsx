@@ -2,8 +2,9 @@ import React, { useMemo } from 'react';
 import { Table, TableBody, TableCell, TableHeader, TableRow } from "@/shared/components/table";
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/shared/components/hover-card";
 import { Drawer, DrawerContent, DrawerDescription, DrawerHeader, DrawerTitle, DrawerTrigger } from "@/shared/components/drawer";
-import { Player, PlayerColor } from '@/entities/player/model/player';
-import { Tournament, MatchResult } from '@/entities/tournament/model/tournament';
+import { Player } from '@/entities/player/model/player';
+import { Tournament } from '@/entities/tournament/model/tournament';
+import { PlayerColor, MatchResult } from '@/shared/types/enums';
 
 interface StandingsTableProps {
   tournament: Tournament;
