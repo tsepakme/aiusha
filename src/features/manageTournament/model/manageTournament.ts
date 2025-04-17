@@ -1,6 +1,7 @@
 import { Player } from '@/entities/player/model/player'
 import { Tournament, Match } from '@/entities/tournament/model/tournament'
 import { initializePlayers } from '@/features/addPlayer/model/addPlayer'
+import { MatchResult } from '@/entities/tournament/model/tournament'
 
 export function generateFirstRound(players: Player[]): Match[] {
   const matches: Match[] = []
@@ -24,7 +25,7 @@ export function generateFirstRound(players: Player[]): Match[] {
         result: undefined
       })
       players[i].points += 1
-      players[i].resultHistory.push('+')
+      players[i].resultHistory.push(MatchResult.WIN)
     }
   }
   return matches
@@ -37,11 +38,13 @@ export function generateSwissRound(players: Player[], timeLimit: number = 3000):
   const matches: Match[] = []
   const unmatched: Player[] = []
 
-  function shuffleArray<T>(array: T[]): void {
-    for (let i = array.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1))
-      ;[array[i], array[j]] = [array[j], array[i]]
+  function shuffleArray<T>(array: T[]): T[] {
+    const shuffled = [...array];
+    for (let i = shuffled.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]]
     }
+    return shuffled;
   }
 
   while (sortedPlayers.length > 0) {
@@ -53,8 +56,8 @@ export function generateSwissRound(players: Player[], timeLimit: number = 3000):
     let opponent = sortedPlayers.find((p) => !player.opponents.includes(p.id))
 
     if (!opponent) {
-      shuffleArray(sortedPlayers)
-      opponent = sortedPlayers.find((p) => !player.opponents.includes(p.id))
+      const shuffledPlayers = shuffleArray(sortedPlayers);
+      opponent = shuffledPlayers.find((p) => !player.opponents.includes(p.id))
     }
 
     if (!opponent && sortedPlayers.length > 0) {
@@ -79,9 +82,17 @@ export function generateSwissRound(players: Player[], timeLimit: number = 3000):
 
   if (unmatched.length > 0) {
     const outsider = unmatched.pop()!
-    outsider.points += 1
-    matches.push({ player1: outsider, player1Color: 'white', result: '+' })
-    outsider.resultHistory.push('+')
+    const updatedOutsider = {
+      ...outsider,
+      points: outsider.points + 1,
+      resultHistory: [...outsider.resultHistory, MatchResult.WIN],
+    };
+    matches.push({ player1: updatedOutsider, player1Color: 'white', result: MatchResult.WIN })
+    
+    const playerIndex = players.findIndex(p => p.id === outsider.id);
+    if (playerIndex !== -1) {
+      players[playerIndex] = updatedOutsider;
+    }
   }
 
   return matches
@@ -89,31 +100,31 @@ export function generateSwissRound(players: Player[], timeLimit: number = 3000):
 
 export function updateResults(
   matches: Match[],
-  results: string[],
+  results: (MatchResult | undefined)[],
   players: Player[],
   allMatches: Match[]
 ): void {
   matches.forEach((match, index) => {
     const result = results[index];
     match.result = result;
-    if (result === '+') {
+    if (result === MatchResult.WIN) {
       match.player1.points += 1;
-      match.player1.resultHistory.push('+');
+      match.player1.resultHistory.push(MatchResult.WIN);
       if (match.player2) {
-        match.player2.resultHistory.push('-');
+        match.player2.resultHistory.push(MatchResult.LOSS);
       }
-    } else if (result === '-') {
+    } else if (result === MatchResult.LOSS) {
       if (match.player2) {
         match.player2.points += 1;
-        match.player2.resultHistory.push('+');
-        match.player1.resultHistory.push('-');
+        match.player2.resultHistory.push(MatchResult.WIN);
+        match.player1.resultHistory.push(MatchResult.LOSS);
       }
-    } else if (result === '=') {
+    } else if (result === MatchResult.DRAW) {
       if (match.player2) {
         match.player1.points += 0.5;
         match.player2.points += 0.5;
-        match.player1.resultHistory.push('=');
-        match.player2.resultHistory.push('=');
+        match.player1.resultHistory.push(MatchResult.DRAW);
+        match.player2.resultHistory.push(MatchResult.DRAW);
       }
     }
   });

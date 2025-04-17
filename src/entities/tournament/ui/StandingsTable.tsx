@@ -2,8 +2,8 @@ import React from 'react';
 import { Table, TableBody, TableCell, TableHeader, TableRow } from "@/shared/components/table";
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/shared/components/hover-card";
 import { Drawer, DrawerContent, DrawerDescription, DrawerHeader, DrawerTitle, DrawerTrigger } from "@/shared/components/drawer";
-import { Player, ResultType } from '@/entities/player/model/player';
-import { Tournament } from '@/entities/tournament/model/tournament';
+import { Player } from '@/entities/player/model/player';
+import { Tournament, MatchResult } from '@/entities/tournament/model/tournament';
 
 interface StandingsTableProps {
   tournament: Tournament;
@@ -20,11 +20,11 @@ export const StandingsTable: React.FC<StandingsTableProps> = ({
 
   const getResultDisplay = (
     opponent: Player | undefined, 
-    result: ResultType, 
+    result: MatchResult | undefined, 
     color: string, 
     opponentPosition: number
   ) => {
-    if (!opponent) return '+';
+    if (!opponent) return MatchResult.WIN;
     
     const displayColor = color === 'white' ? 'W' : 'B';
     if (isFinished) {
@@ -34,15 +34,15 @@ export const StandingsTable: React.FC<StandingsTableProps> = ({
     }
   };
 
-  const getPlayerResult = (matchResult: ResultType, isPlayer1: boolean): ResultType => {
-    if (!matchResult) return undefined;
+  const getPlayerResult = (matchResult: MatchResult | undefined, isPlayer1: boolean): MatchResult | undefined => {
+    if (matchResult === undefined) return undefined;
     
-    if (matchResult === '=') return '=';
+    if (matchResult === MatchResult.DRAW) return MatchResult.DRAW;
     
     if (isPlayer1) {
       return matchResult;
     } else {
-      return matchResult === '+' ? '-' : '+';
+      return matchResult === MatchResult.WIN ? MatchResult.LOSS : MatchResult.WIN;
     }
   };
 
@@ -123,7 +123,7 @@ export const StandingsTable: React.FC<StandingsTableProps> = ({
               
               const matchResult = match.player1.resultHistory?.[roundIndex];
               
-              const playerResult = getPlayerResult(matchResult as ResultType, isPlayer1);
+              const playerResult = getPlayerResult(matchResult as MatchResult, isPlayer1);
               
               if (!playerResult) {
                 return (
@@ -145,9 +145,9 @@ export const StandingsTable: React.FC<StandingsTableProps> = ({
                 opponentPosition
               );
               
-              const matchDisplayText = matchResult === '=' 
+              const matchDisplayText = matchResult === MatchResult.DRAW 
                 ? '0.5 - 0.5' 
-                : matchResult === '+' 
+                : matchResult === MatchResult.WIN 
                   ? '1 - 0' 
                   : '0 - 1';
               
@@ -174,4 +174,4 @@ export const StandingsTable: React.FC<StandingsTableProps> = ({
       </TableBody>
     </Table>
   );
-}; 
+};

@@ -2,13 +2,13 @@ import React from 'react';
 import { Table, TableBody, TableCell, TableHeader, TableRow } from "@/shared/components/table"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shared/components/select"
 import { Drawer, DrawerContent, DrawerDescription, DrawerHeader, DrawerTitle, DrawerTrigger } from "@/shared/components/drawer"
-import { Match } from '@/entities/tournament/model/tournament';
+import { Match, MatchResult } from '@/entities/tournament/model/tournament';
 
 interface RoundViewProps {
   roundNumber: number;
   matches: Match[];
-  results: string[];
-  onResultChange?: (matchIndex: number, result: string) => void;
+  results: (MatchResult | undefined)[];
+  onResultChange?: (matchIndex: number, result: MatchResult) => void;
   isCurrentRound: boolean;
   isFinished: boolean;
 }
@@ -64,21 +64,21 @@ export const RoundView: React.FC<RoundViewProps> = ({
               <TableCell>
                 {match.player2 ? (
                   isCurrentRound && !isFinished ? (
-                    <Select onValueChange={(value) => onResultChange?.(matchIndex, value)}>
+                    <Select onValueChange={(value) => onResultChange?.(matchIndex, value as MatchResult)}>
                       <SelectTrigger>
                         <SelectValue placeholder="Select result" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="+" aria-label='first player won'>1 - 0</SelectItem>
-                        <SelectItem value="-" aria-label='second player won'>0 - 1</SelectItem>
-                        <SelectItem value="=" aria-label='draw'>0.5 - 0.5</SelectItem>
+                        <SelectItem value={MatchResult.WIN} aria-label='first player won'>1 - 0</SelectItem>
+                        <SelectItem value={MatchResult.LOSS} aria-label='second player won'>0 - 1</SelectItem>
+                        <SelectItem value={MatchResult.DRAW} aria-label='draw'>0.5 - 0.5</SelectItem>
                       </SelectContent>
                     </Select>
                   ) : (
                     <span>
-                      {results[matchIndex] === '+' 
+                      {results[matchIndex] === MatchResult.WIN 
                         ? `1 - 0` 
-                        : results[matchIndex] === '-' 
+                        : results[matchIndex] === MatchResult.LOSS 
                           ? `0 - 1` 
                           : '0.5 - 0.5'}
                     </span>
@@ -96,4 +96,4 @@ export const RoundView: React.FC<RoundViewProps> = ({
       </Table>
     </div>
   );
-}; 
+};

@@ -7,12 +7,10 @@ export enum MatchResult {
   DRAW = '=',
 }
 
-export type ResultType = MatchResult | undefined;
-
 export type Match = {
   player1: Player
   player2?: Player
-  result: ResultType
+  result: MatchResult | undefined
   player1Color: ColorType
   player2Color?: ColorType
 }
