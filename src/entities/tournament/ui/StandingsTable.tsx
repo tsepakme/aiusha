@@ -2,7 +2,7 @@ import React, { useMemo } from 'react';
 import { Table, TableBody, TableCell, TableHeader, TableRow } from "@/shared/components/table";
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/shared/components/hover-card";
 import { Drawer, DrawerContent, DrawerDescription, DrawerHeader, DrawerTitle, DrawerTrigger } from "@/shared/components/drawer";
-import { Player } from '@/entities/player/model/player';
+import { Player, PlayerColor } from '@/entities/player/model/player';
 import { Tournament, MatchResult } from '@/entities/tournament/model/tournament';
 
 interface StandingsTableProps {
@@ -24,12 +24,12 @@ export const StandingsTable: React.FC<StandingsTableProps> = ({
     return (
       opponent: Player | undefined, 
       result: MatchResult | undefined, 
-      color: string, 
+      color: PlayerColor, 
       opponentPosition: number
     ) => {
       if (!opponent) return MatchResult.WIN;
       
-      const displayColor = color === 'white' ? 'W' : 'B';
+      const displayColor = color === PlayerColor.WHITE ? 'W' : 'B';
       if (isFinished) {
         return `${result}${displayColor}${opponentPosition}`;
       } else {
@@ -120,7 +120,7 @@ export const StandingsTable: React.FC<StandingsTableProps> = ({
               const opponent = isPlayer1 ? match.player2 : match.player1;
               const color = isPlayer1 
                 ? match.player1Color 
-                : (match.player2Color || 'white');
+                : (match.player2Color || PlayerColor.WHITE);
               const opponentPosition = opponent 
                 ? sortedPlayers.findIndex(p => p.id === opponent.id) + 1 
                 : 0;
@@ -164,6 +164,12 @@ export const StandingsTable: React.FC<StandingsTableProps> = ({
                     ) : (
                       <HoverCardContent>
                         {match.player1.name} {matchDisplayText} {match.player2?.name}
+                        <div>
+                          {match.player1Color === PlayerColor.NONE ? 
+                            <span>Bye</span> : 
+                            <span>{match.player1Color}</span>
+                          }
+                        </div>
                       </HoverCardContent>
                     )}
                   </HoverCard>

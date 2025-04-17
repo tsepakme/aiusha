@@ -1,4 +1,4 @@
-import { Player } from '@/entities/player/model/player'
+import { Player, PlayerColor } from '@/entities/player/model/player'
 import { Tournament, Match } from '@/entities/tournament/model/tournament'
 import { initializePlayers } from '@/features/addPlayer/model/addPlayer'
 import { MatchResult } from '@/entities/tournament/model/tournament'
@@ -21,26 +21,27 @@ export function generateFirstRound(players: Player[]): Match[] {
         player1,
         player2,
         result: undefined,
-        player1Color: 'white',
-        player2Color: 'black'
+        player1Color: PlayerColor.WHITE,
+        player2Color: PlayerColor.BLACK
       });
       
-      player1.colorHistory.push('white');
-      player2.colorHistory.push('black');
+      player1.colorHistory.push(PlayerColor.WHITE);
+      player2.colorHistory.push(PlayerColor.BLACK);
       player1.opponents.push(player2.id);
       player2.opponents.push(player1.id);
     } else {
       matches.push({
         player1,
-        player1Color: 'white',
+        player1Color: PlayerColor.NONE,
         result: undefined
       });
       
       const updatedPlayer = {
         ...player1,
         points: player1.points + 1,
-        resultHistory: [...player1.resultHistory, MatchResult.WIN]
-      };
+        resultHistory: [...player1.resultHistory, MatchResult.WIN],
+        colorHistory: [...player1.colorHistory, PlayerColor.NONE]
+      }
       
       const playerIndex = players.findIndex(p => p.id === player1.id);
       if (playerIndex !== -1) {
@@ -89,8 +90,8 @@ export function generateSwissRound(players: Player[], timeLimit: number = 3000):
 
     if (opponent) {
       const player1Color =
-        player.colorHistory[player.colorHistory.length - 1] === 'white' ? 'black' : 'white'
-      const player2Color = player1Color === 'white' ? 'black' : 'white'
+        player.colorHistory[player.colorHistory.length - 1] === PlayerColor.WHITE ? PlayerColor.BLACK : PlayerColor.WHITE
+      const player2Color = player1Color === PlayerColor.WHITE ? PlayerColor.BLACK : PlayerColor.WHITE
 
       matches.push({ player1: player, player2: opponent, player1Color: player1Color, player2Color: player2Color, result: undefined })
       sortedPlayers.splice(sortedPlayers.indexOf(opponent), 1)
@@ -104,13 +105,19 @@ export function generateSwissRound(players: Player[], timeLimit: number = 3000):
   }
 
   if (unmatched.length > 0) {
-    const outsider = unmatched.pop()!
+    const outsider = unmatched.pop()!;
     const updatedOutsider = {
       ...outsider,
       points: outsider.points + 1,
       resultHistory: [...outsider.resultHistory, MatchResult.WIN],
+      colorHistory: [...outsider.colorHistory, PlayerColor.NONE]
     };
-    matches.push({ player1: updatedOutsider, player1Color: 'white', result: MatchResult.WIN })
+    
+    matches.push({ 
+      player1: updatedOutsider, 
+      player1Color: PlayerColor.NONE,
+      result: MatchResult.WIN 
+    });
     
     const playerIndex = players.findIndex(p => p.id === outsider.id);
     if (playerIndex !== -1) {

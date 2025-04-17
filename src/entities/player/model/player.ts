@@ -1,6 +1,10 @@
 import { MatchResult } from "@/entities/tournament/model/tournament"
 
-export type ColorType = 'white' | 'black'
+export enum PlayerColor {
+  WHITE = 'white',
+  BLACK = 'black',
+  NONE = 'none'
+}
 
 export type Player = {
   id: number | string
@@ -10,7 +14,7 @@ export type Player = {
   buc1: number
   bucT: number
   opponents: (number | string)[]
-  colorHistory: ColorType[]
+  colorHistory: PlayerColor[]
   result: MatchResult | undefined
   resultHistory: (MatchResult | undefined)[]
 }

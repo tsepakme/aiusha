@@ -1,5 +1,4 @@
-import { Player } from '@/entities/player/model/player'
-import { ColorType } from '@/entities/player/model/player'
+import { Player, PlayerColor } from '@/entities/player/model/player'
 
 export enum MatchResult {
   WIN = '+',
@@ -11,8 +10,8 @@ export type Match = {
   player1: Player
   player2?: Player
   result: MatchResult | undefined
-  player1Color: ColorType
-  player2Color?: ColorType
+  player1Color: PlayerColor
+  player2Color?: PlayerColor
 }
 
 export type Round = {

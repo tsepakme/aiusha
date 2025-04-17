@@ -3,6 +3,7 @@ import { Table, TableBody, TableCell, TableHeader, TableRow } from "@/shared/com
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shared/components/select"
 import { Drawer, DrawerContent, DrawerDescription, DrawerHeader, DrawerTitle, DrawerTrigger } from "@/shared/components/drawer"
 import { Match, MatchResult } from '@/entities/tournament/model/tournament';
+import { PlayerColor } from '@/entities/player/model/player';
 
 interface RoundViewProps {
   roundNumber: number;
@@ -59,7 +60,12 @@ export const RoundView: React.FC<RoundViewProps> = React.memo(({
           {matches.map((match, matchIndex) => (
             <TableRow key={matchIndex}>
               <TableCell>{match.player1.name}</TableCell>
-              <TableCell>{match.player1Color}</TableCell>
+              <TableCell>
+                {match.player1Color === PlayerColor.NONE ? 
+                  <span>Bye</span> : 
+                  <span>{match.player1Color}</span>
+                }
+              </TableCell>
               <TableCell>{match.player1.points}</TableCell>
               <TableCell>
                 {match.player2 ? (
@@ -88,7 +94,12 @@ export const RoundView: React.FC<RoundViewProps> = React.memo(({
                 )}
               </TableCell>
               <TableCell>{match.player2?.points}</TableCell>
-              <TableCell>{match.player2Color || ''}</TableCell>
+              <TableCell>
+                {match.player2Color === PlayerColor.NONE ? 
+                  <span>Bye</span> : 
+                  <span>{match.player2Color}</span>
+                }
+              </TableCell>
               <TableCell>{match.player2?.name || ''}</TableCell>
             </TableRow>
           ))}
