@@ -70,9 +70,20 @@ export const RoundView: React.FC<RoundViewProps> = React.memo(({
               <TableCell>
                 {match.player2 ? (
                   isCurrentRound && !isFinished ? (
-                    <Select onValueChange={(value) => onResultChange?.(matchIndex, value as MatchResult)}>
+                    <Select 
+                      value={results[matchIndex]} 
+                      onValueChange={(value) => onResultChange?.(matchIndex, value as MatchResult)}
+                    >
                       <SelectTrigger>
-                        <SelectValue placeholder="Select result" />
+                        <SelectValue placeholder="Select result">
+                          {results[matchIndex] === MatchResult.WIN 
+                            ? '1 - 0' 
+                            : results[matchIndex] === MatchResult.LOSS 
+                              ? '0 - 1' 
+                              : results[matchIndex] === MatchResult.DRAW
+                                ? '0.5 - 0.5'
+                                : 'Select result'}
+                        </SelectValue>
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value={MatchResult.WIN} aria-label='first player won'>1 - 0</SelectItem>

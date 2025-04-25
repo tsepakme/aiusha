@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from "@/shared/components/button";
 import { Separator } from "@/shared/components/separator";
 import { RoundView } from '@/entities/tournament/ui/RoundView';
@@ -6,6 +6,7 @@ import DeleteConfirmationDialog from "@/shared/components/DeleteConfirmationDial
 import { calculateRounds } from '../model/manageTournament';
 import { toast } from "sonner";
 import { useTournamentContext } from '../model/TournamentContext';
+import { MatchResult } from '@/shared/types/enums';
 
 export const TournamentRoundsTab: React.FC = () => {
   const {
@@ -18,6 +19,22 @@ export const TournamentRoundsTab: React.FC = () => {
     resetTournament
   } = useTournamentContext();
 
+  const [unfilledMatchesCount, setUnfilledMatchesCount] = useState(0);
+
+  useEffect(() => {
+    if (!tournament) return;
+    
+    const currentRoundIndex = tournament.rounds.length - 1;
+    const currentRoundMatches = tournament.rounds[currentRoundIndex]?.matches || [];
+    const currentRoundResults = roundResults[currentRoundIndex] || [];
+    
+    const unfilled = currentRoundMatches.filter((match, index) => 
+      match.player2 && currentRoundResults[index] === undefined
+    );
+    
+    setUnfilledMatchesCount(unfilled.length);
+  }, [tournament, roundResults]);
+
   if (!tournament) {
     return (
       <div className="p-4 text-center">
@@ -25,6 +42,22 @@ export const TournamentRoundsTab: React.FC = () => {
       </div>
     );
   }
+
+  const handleMatchResultChange = (roundIndex: number, matchIndex: number, result: MatchResult) => {
+    handleResultChange(roundIndex, matchIndex, result);
+    
+    setTimeout(() => {
+      const currentRoundIndex = tournament.rounds.length - 1;
+      const currentRoundMatches = tournament.rounds[currentRoundIndex]?.matches || [];
+      const currentRoundResults = roundResults[currentRoundIndex] || [];
+      
+      const unfilled = currentRoundMatches.filter((match, index) => 
+        match.player2 && currentRoundResults[index] === undefined
+      );
+      
+      setUnfilledMatchesCount(unfilled.length);
+    }, 50);
+  };
 
   const handleNextRound = () => {
     const currentRoundIndex = tournament.rounds.length - 1;
@@ -68,17 +101,6 @@ export const TournamentRoundsTab: React.FC = () => {
     });
   };
 
-  const currentRoundIndex = tournament.rounds.length - 1;
-  const currentRoundMatches = tournament.rounds[currentRoundIndex]?.matches || [];
-  const currentRoundResults = roundResults[currentRoundIndex] || [];
-  const unfilledMatches = useMemo(() => 
-    currentRoundMatches.filter((match, index) => 
-      match.player2 && currentRoundResults[index] === undefined
-    ),
-    [currentRoundMatches, currentRoundResults]
-  );
-  const unfilledMatchesCount = unfilledMatches.length;
-
   return (
     <div>
       {tournament.rounds.map((round, roundIndex) => (
@@ -87,7 +109,7 @@ export const TournamentRoundsTab: React.FC = () => {
             roundNumber={roundIndex + 1}
             matches={round.matches}
             results={roundResults[roundIndex] || []}
-            onResultChange={(matchIndex, result) => handleResultChange(roundIndex, matchIndex, result)}
+            onResultChange={(matchIndex, result) => handleMatchResultChange(roundIndex, matchIndex, result)}
             isCurrentRound={roundIndex === tournament.rounds.length - 1}
             isFinished={isFinished}
           />

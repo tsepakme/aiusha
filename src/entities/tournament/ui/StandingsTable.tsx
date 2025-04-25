@@ -50,6 +50,9 @@ export const StandingsTable: React.FC<StandingsTableProps> = ({
       return matchResult === MatchResult.WIN ? MatchResult.LOSS : MatchResult.WIN;
     }
   };
+  
+  const isRatingpresent = tournament.players.some(player => player.rating !== undefined);
+  const ratingColumn = isRatingpresent ? <TableCell>Rating</TableCell> : null;
 
   return (
     <Table>
@@ -57,7 +60,7 @@ export const StandingsTable: React.FC<StandingsTableProps> = ({
         <TableRow>
           <TableCell>Pos</TableCell>
           <TableCell>Name</TableCell>
-          <TableCell>Rating</TableCell>
+          {ratingColumn}
           <TableCell>Points</TableCell>
           {tournament.rounds.map((_, roundIndex) => (
             <TableCell key={roundIndex}>Round {roundIndex + 1}</TableCell>
@@ -105,7 +108,7 @@ export const StandingsTable: React.FC<StandingsTableProps> = ({
           <TableRow key={player.id}>
             <TableCell>{index + 1}</TableCell>
             <TableCell>{player.name}</TableCell>
-            <TableCell>{player.rating}</TableCell>
+            { ratingColumn ? <TableCell>{player.rating}</TableCell> : null }
             <TableCell>{player.points}</TableCell>
             
             {tournament.rounds.map((round, roundIndex) => {
