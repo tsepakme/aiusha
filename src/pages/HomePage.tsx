@@ -18,6 +18,13 @@ export default function HomePage() {
             </p>
           </Link>
 
+          <Link to="/round-robin" className="block p-6 border rounded-lg hover:bg-muted transition-colors">
+            <h2 className="text-xl font-semibold mb-2">Round-robin Tournament</h2>
+            <p className="text-muted-foreground">
+              Every participant plays against every other participant once.
+            </p>
+          </Link>
+
           <div className="p-6 border rounded-lg opacity-60">
             <h2 className="text-xl font-semibold mb-2">Bergvall System</h2>
             <p className="text-muted-foreground">
@@ -30,14 +37,6 @@ export default function HomePage() {
             <h2 className="text-xl font-semibold mb-2">Olympic System</h2>
             <p className="text-muted-foreground">
               Single or double elimination brackets with clear progression paths.
-            </p>
-            <span className="text-sm mt-2 inline-block">(Coming soon)</span>
-          </div>
-
-          <div className="p-6 border rounded-lg opacity-60">
-            <h2 className="text-xl font-semibold mb-2">Round-robin Tournament</h2>
-            <p className="text-muted-foreground">
-              Every participant plays against every other participant once.
             </p>
             <span className="text-sm mt-2 inline-block">(Coming soon)</span>
           </div>
