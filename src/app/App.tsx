@@ -2,6 +2,7 @@ import { ThemeProvider } from "@/shared/theme-provider";
 import { Router, RouterProvider, Route, RootRoute, Outlet } from '@tanstack/react-router';
 import HomePage from '@/pages/HomePage';
 import TournamentPage from '@/pages/TournamentPage';
+import StockfishPage from '@/pages/StockfishPage'; // Add this import
 import { Header } from "../shared/components/Header";
 import { Footer } from "../shared/components/Footer";
 
@@ -31,7 +32,13 @@ const swissRoute = new Route({
   component: TournamentPage,
 });
 
-const routeTree = rootRoute.addChildren([indexRoute, swissRoute]);
+const stockfishRoute = new Route({
+  getParentRoute: () => rootRoute,
+  path: '/stockfish',
+  component: StockfishPage,
+});
+
+const routeTree = rootRoute.addChildren([indexRoute, swissRoute, stockfishRoute]);
 
 const router = new Router({ routeTree });
 
