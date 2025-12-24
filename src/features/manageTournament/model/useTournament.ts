@@ -3,6 +3,8 @@ import { Tournament, MatchResult } from "@/entities/tournament/model/tournament"
 import { runTournament, generateSwissRound, updateResults, calculateRounds } from "./manageTournament";
 import { useLocalStorage } from '@/shared/hooks/useLocalStorage'
 import { toast } from 'sonner';
+import { analytics } from '@/shared/lib/analytics';
+
 
 type PlayerInput = { name: string; rating?: number };
 
@@ -15,10 +17,21 @@ export const useTournament = () => {
   const addPlayer = (name: string, rating?: string) => {
     if (!name.trim()) return false;
     
-    setPlayers([...players, { 
+    const newPlayers = [...players, { 
       name: name.trim(), 
       rating: rating ? parseInt(rating) : undefined 
-    }]);
+    }];
+    setPlayers(newPlayers);
+    
+    // Track participant added event
+    if (tournament) {
+      analytics.participantAdded({
+        tournament_id: `tournament_${Date.now()}`, // Using timestamp as ID since no explicit ID exists
+        participant_count: newPlayers.length,
+        method: 'manual'
+      });
+    }
+    
     return true;
   };
 
@@ -48,6 +61,22 @@ export const useTournament = () => {
     const newTournament = runTournament(players);
     setTournament(newTournament);
     setRoundResults(newTournament.rounds.map(() => []));
+    
+    // Track tournament creation
+    const tournamentId = `tournament_${Date.now()}`;
+    analytics.tournamentCreated({
+      tournament_id: tournamentId,
+      system_type: 'swiss',
+      participant_count: newTournament.players.length
+    });
+    
+    // Track first round generation
+    analytics.roundGenerated({
+      tournament_id: tournamentId,
+      round_number: 1,
+      system_type: 'swiss'
+    });
+    
     return true;
   };
 
@@ -59,6 +88,14 @@ export const useTournament = () => {
       }
       newResults[roundIndex][matchIndex] = result;
       return newResults;
+    });
+    
+    // Track match result entry
+    const tournamentId = `tournament_${Date.now()}`;
+    analytics.matchResultEntered({
+      tournament_id: tournamentId,
+      round_number: roundIndex + 1,
+      match_id: `match_${roundIndex}_${matchIndex}`
     });
   };
 
@@ -76,6 +113,15 @@ export const useTournament = () => {
         allMatches
       );
       setTournament(newTournament);
+      
+      // Track round completion
+      const tournamentId = `tournament_${Date.now()}`;
+      analytics.roundCompleted({
+        tournament_id: tournamentId,
+        round_number: roundIndex + 1,
+        time_to_complete_sec: 0 // TODO: Track actual time
+      });
+      
       return true;
     }
     
@@ -93,6 +139,15 @@ export const useTournament = () => {
       newTournament.rounds.push({ matches: newRoundMatches });
       setTournament(newTournament);
       setRoundResults([...roundResults, []]);
+      
+      // Track new round generation
+      const tournamentId = `tournament_${Date.now()}`;
+      analytics.roundGenerated({
+        tournament_id: tournamentId,
+        round_number: newTournament.rounds.length,
+        system_type: 'swiss'
+      });
+      
       return true;
     }
     
@@ -104,6 +159,16 @@ export const useTournament = () => {
     
     finishRound(tournament.rounds.length - 1);
     setIsFinished(true);
+    
+    // Track tournament completion
+    const tournamentId = `tournament_${Date.now()}`;
+    analytics.tournamentFinished({
+      tournament_id: tournamentId,
+      total_rounds: tournament.rounds.length,
+      total_participants: tournament.players.length,
+      duration_sec: 0 // TODO: Track actual duration
+    });
+    
     return true;
   };
 

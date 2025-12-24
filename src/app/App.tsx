@@ -4,6 +4,8 @@ import HomePage from '@/pages/HomePage';
 import TournamentPage from '@/pages/TournamentPage';
 import { Header } from "../shared/components/Header";
 import { Footer } from "../shared/components/Footer";
+import { useEffect } from 'react';
+import { initializeAnalytics, analytics } from '@/shared/lib/analytics';
 
 const rootRoute = new RootRoute({
   component: () => (
@@ -42,6 +44,28 @@ declare module '@tanstack/react-router' {
 }
 
 const App: React.FC = () => {
+  useEffect(() => {
+    // Initialize PostHog once on app mount
+    initializeAnalytics();
+  }, []);
+
+  useEffect(() => {
+    // Track page views on route changes
+    const handleRouteChange = () => {
+      analytics.pageView(window.location.pathname);
+    };
+
+    // Track initial page view
+    handleRouteChange();
+
+    // Subscribe to router changes
+    const unsubscribe = router.subscribe('onLoad', handleRouteChange);
+
+    return () => {
+      unsubscribe();
+    };
+  }, []);
+
   return <RouterProvider router={router} />;
 };
 
