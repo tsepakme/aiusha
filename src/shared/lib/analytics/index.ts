@@ -11,6 +11,8 @@ import type {
   ShareLinkCopiedEvent,
   TournamentViewedEvent,
   StandingsViewedEvent,
+  SupportClickedEvent,
+  PremiumFeatureViewedEvent,
 } from './types';
 
 const ANON_USER_ID_KEY = 'anon_user_id';
@@ -195,7 +197,22 @@ export const analytics = {
   standingsViewed: (params: Omit<StandingsViewedEvent, 'session_id'>): void => {
     trackEvent('standings_viewed', params);
   },
+
+  /**
+   * Track support button click (monetization signal)
+   */
+  supportClicked: (params: Omit<SupportClickedEvent, 'session_id'>): void => {
+    trackEvent('support_clicked', params);
+  },
+
+  /**
+   * Track premium feature view
+   */
+  premiumFeatureViewed: (params: Omit<PremiumFeatureViewedEvent, 'session_id'>): void => {
+    trackEvent('premium_feature_viewed', params);
+  },
 };
 
 // Export PostHog instance for advanced use cases
 export { posthog };
+

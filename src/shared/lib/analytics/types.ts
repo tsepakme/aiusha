@@ -71,6 +71,19 @@ export interface StandingsViewedEvent {
   session_id: string;
 }
 
+// Monetization Events
+export interface SupportClickedEvent {
+  source: string; // where the button was clicked (e.g., 'standings', 'header')
+  tournament_id?: string;
+  session_id: string;
+}
+
+export interface PremiumFeatureViewedEvent {
+  feature_name: string;
+  tournament_id?: string;
+  session_id: string;
+}
+
 // Union type for all events
 export type AnalyticsEvent =
   | { event: 'page_view'; properties: PageViewEvent }
@@ -83,4 +96,7 @@ export type AnalyticsEvent =
   | { event: 'share_clicked'; properties: ShareClickedEvent }
   | { event: 'share_link_copied'; properties: ShareLinkCopiedEvent }
   | { event: 'tournament_viewed'; properties: TournamentViewedEvent }
-  | { event: 'standings_viewed'; properties: StandingsViewedEvent };
+  | { event: 'standings_viewed'; properties: StandingsViewedEvent }
+  | { event: 'support_clicked'; properties: SupportClickedEvent }
+  | { event: 'premium_feature_viewed'; properties: PremiumFeatureViewedEvent };
+
