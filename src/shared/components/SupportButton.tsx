@@ -1,6 +1,5 @@
 import React from 'react';
 import { Button } from '@/shared/components/button';
-import { toast } from 'sonner';
 import { analytics } from '@/shared/lib/analytics';
 import { Heart } from 'lucide-react';
 
@@ -10,6 +9,8 @@ interface SupportButtonProps {
   variant?: 'default' | 'outline' | 'secondary';
   size?: 'default' | 'sm' | 'lg';
 }
+
+const BUY_ME_A_COFFEE_URL = 'https://buymeacoffee.com/aiusha';
 
 export const SupportButton: React.FC<SupportButtonProps> = ({
   source,
@@ -24,11 +25,8 @@ export const SupportButton: React.FC<SupportButtonProps> = ({
       tournament_id: tournamentId,
     });
 
-    // Show fake door message
-    toast.success('Thank you for your interest! 🙏', {
-      description: 'Payment support is coming soon. Your interest has been recorded.',
-      duration: 5000,
-    });
+    // Open Buy Me a Coffee in new tab
+    window.open(BUY_ME_A_COFFEE_URL, '_blank', 'noopener,noreferrer');
   };
 
   return (
@@ -39,7 +37,8 @@ export const SupportButton: React.FC<SupportButtonProps> = ({
       className="gap-2"
     >
       <Heart className="h-4 w-4" />
-      Support this Project
+      Buy Me a Coffee
     </Button>
   );
 };
+
