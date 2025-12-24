@@ -38,7 +38,7 @@ export const StandingsTab: React.FC = () => {
       {isFinished && (
         <div className="mt-6 p-4 border rounded-lg bg-muted/50">
           <div className="flex flex-col items-center gap-3 text-center">
-            <h3 className="font-semibold">Enjoyed this tournament manager?</h3>
+            <h3 className="font-semibold">Enjoyed using this tournament manager?</h3>
             <p className="text-sm text-muted-foreground">
               Support the development and keep it free for everyone
             </p>
