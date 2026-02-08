@@ -64,7 +64,10 @@ export const RoundView: React.FC<RoundViewProps> = ({
               <TableCell>
                 {match.player2 ? (
                   isCurrentRound && !isFinished ? (
-                    <Select onValueChange={(value) => onResultChange?.(matchIndex, value as MatchResult)}>
+                    <Select
+                      value={results[matchIndex] ?? ''}
+                      onValueChange={(value) => onResultChange?.(matchIndex, value as MatchResult)}
+                    >
                       <SelectTrigger>
                         <SelectValue placeholder="Select result" />
                       </SelectTrigger>

@@ -3,49 +3,93 @@ import { Tournament, Match } from '@/entities/tournament/model/tournament'
 import { initializePlayers } from '@/features/addPlayer/model/addPlayer'
 import { MatchResult } from '@/entities/tournament/model/tournament'
 
-export function generateFirstRound(players: Player[]): Match[] {
-  const matches: Match[] = []
-  for (let i = 0; i < players.length; i += 2) {
-    if (players[i + 1]) {
-      matches.push({
-        player1: players[i],
-        player2: players[i + 1],
-        result: undefined,
-        player1Color: 'white',
-        player2Color: 'black'
-      })
-      players[i].colorHistory.push('white')
-      players[i + 1].colorHistory.push('black')
-      players[i].opponents.push(players[i + 1].id)
-      players[i + 1].opponents.push(players[i].id)
-    } else {
-      matches.push({
-        player1: players[i],
-        player1Color: 'white',
-        result: undefined
-      })
-      players[i].points += 1
-      players[i].resultHistory.push(MatchResult.WIN)
-    }
+/** Deep-clone a player so mutations do not affect the original. */
+function clonePlayer(p: Player): Player {
+  return {
+    ...p,
+    opponents: [...p.opponents],
+    colorHistory: [...p.colorHistory],
+    resultHistory: [...p.resultHistory],
   }
-  return matches
 }
 
-export function generateSwissRound(players: Player[], timeLimit: number = 3000): Match[] {
-  const startTime = Date.now()
+/** Clone an array of players. */
+function clonePlayers(players: Player[]): Player[] {
+  return players.map(clonePlayer)
+}
 
-  const sortedPlayers = [...players].sort((a, b) => b.points - a.points || b.bucT - a.bucT)
+/** Map matches to use a new set of player references (by id). */
+function mapMatchesToPlayers(
+  matches: Match[],
+  newPlayers: Player[]
+): Match[] {
+  const byId = new Map(newPlayers.map((p) => [p.id, p]))
+  return matches.map((m) => ({
+    ...m,
+    player1: byId.get(m.player1.id) ?? m.player1,
+    player2: m.player2 ? (byId.get(m.player2.id) ?? m.player2) : undefined,
+  }))
+}
+
+/**
+ * Generate first round matches. Pure: does not mutate inputs.
+ * Returns new matches and updated player list (clones with round data).
+ */
+export function generateFirstRound(players: Player[]): { matches: Match[]; players: Player[] } {
+  const cloned = clonePlayers(players)
+  const matches: Match[] = []
+
+  for (let i = 0; i < cloned.length; i += 2) {
+    const p1 = cloned[i]
+    if (cloned[i + 1]) {
+      const p2 = cloned[i + 1]
+      matches.push({
+        player1: p1,
+        player2: p2,
+        result: undefined,
+        player1Color: 'white',
+        player2Color: 'black',
+      })
+      p1.colorHistory.push('white')
+      p2.colorHistory.push('black')
+      p1.opponents.push(p2.id)
+      p2.opponents.push(p1.id)
+    } else {
+      matches.push({
+        player1: p1,
+        player1Color: 'white',
+        result: undefined,
+      })
+      p1.points += 1
+      p1.resultHistory.push(MatchResult.WIN)
+    }
+  }
+
+  return { matches, players: cloned }
+}
+
+function shuffleArray<T>(array: T[]): T[] {
+  const shuffled = [...array]
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1))
+    ;[shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]]
+  }
+  return shuffled
+}
+
+/**
+ * Generate next Swiss round. Pure: does not mutate inputs.
+ * Returns new matches and updated player list (clones with round data; bye player updated).
+ */
+export function generateSwissRound(
+  players: Player[],
+  timeLimit: number = 3000
+): { matches: Match[]; players: Player[] } {
+  const startTime = Date.now()
+  const cloned = clonePlayers(players)
+  const sortedPlayers = [...cloned].sort((a, b) => b.points - a.points || b.bucT - a.bucT)
   const matches: Match[] = []
   const unmatched: Player[] = []
-
-  function shuffleArray<T>(array: T[]): T[] {
-    const shuffled = [...array];
-    for (let i = shuffled.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]]
-    }
-    return shuffled;
-  }
 
   while (sortedPlayers.length > 0) {
     if (Date.now() - startTime > timeLimit) {
@@ -56,7 +100,7 @@ export function generateSwissRound(players: Player[], timeLimit: number = 3000):
     let opponent = sortedPlayers.find((p) => !player.opponents.includes(p.id))
 
     if (!opponent) {
-      const shuffledPlayers = shuffleArray(sortedPlayers);
+      const shuffledPlayers = shuffleArray(sortedPlayers)
       opponent = shuffledPlayers.find((p) => !player.opponents.includes(p.id))
     }
 
@@ -69,7 +113,13 @@ export function generateSwissRound(players: Player[], timeLimit: number = 3000):
         player.colorHistory[player.colorHistory.length - 1] === 'white' ? 'black' : 'white'
       const player2Color = player1Color === 'white' ? 'black' : 'white'
 
-      matches.push({ player1: player, player2: opponent, player1Color: player1Color, player2Color: player2Color, result: undefined })
+      matches.push({
+        player1: player,
+        player2: opponent,
+        player1Color,
+        player2Color,
+        result: undefined,
+      })
       sortedPlayers.splice(sortedPlayers.indexOf(opponent), 1)
       player.opponents.push(opponent.id)
       opponent.opponents.push(player.id)
@@ -82,54 +132,23 @@ export function generateSwissRound(players: Player[], timeLimit: number = 3000):
 
   if (unmatched.length > 0) {
     const outsider = unmatched.pop()!
-    const updatedOutsider = {
+    const updatedOutsider: Player = {
       ...outsider,
       points: outsider.points + 1,
       resultHistory: [...outsider.resultHistory, MatchResult.WIN],
-    };
-    matches.push({ player1: updatedOutsider, player1Color: 'white', result: MatchResult.WIN })
-    
-    const playerIndex = players.findIndex(p => p.id === outsider.id);
-    if (playerIndex !== -1) {
-      players[playerIndex] = updatedOutsider;
+    }
+    matches.push({
+      player1: updatedOutsider,
+      player1Color: 'white',
+      result: MatchResult.WIN,
+    })
+    const idx = cloned.findIndex((p) => p.id === outsider.id)
+    if (idx !== -1) {
+      cloned[idx] = updatedOutsider
     }
   }
 
-  return matches
-}
-
-export function updateResults(
-  matches: Match[],
-  results: (MatchResult | undefined)[],
-  players: Player[],
-  allMatches: Match[]
-): void {
-  matches.forEach((match, index) => {
-    const result = results[index];
-    match.result = result;
-    if (result === MatchResult.WIN) {
-      match.player1.points += 1;
-      match.player1.resultHistory.push(MatchResult.WIN);
-      if (match.player2) {
-        match.player2.resultHistory.push(MatchResult.LOSS);
-      }
-    } else if (result === MatchResult.LOSS) {
-      if (match.player2) {
-        match.player2.points += 1;
-        match.player2.resultHistory.push(MatchResult.WIN);
-        match.player1.resultHistory.push(MatchResult.LOSS);
-      }
-    } else if (result === MatchResult.DRAW) {
-      if (match.player2) {
-        match.player1.points += 0.5;
-        match.player2.points += 0.5;
-        match.player1.resultHistory.push(MatchResult.DRAW);
-        match.player2.resultHistory.push(MatchResult.DRAW);
-      }
-    }
-  });
-
-  calculateBuchholz(players, allMatches);
+  return { matches, players: cloned }
 }
 
 function calculateBuchholz(players: Player[], matches: Match[]): void {
@@ -156,16 +175,77 @@ function calculateBuchholz(players: Player[], matches: Match[]): void {
   })
 }
 
+/**
+ * Apply round results and recalculate Buchholz. Pure: returns a new tournament.
+ */
+export function updateResults(
+  tournament: Tournament,
+  roundIndex: number,
+  results: (MatchResult | undefined)[]
+): Tournament {
+  const round = tournament.rounds[roundIndex]
+  if (!round) return tournament
+
+  const clonedPlayers = clonePlayers(tournament.players)
+  const byId = new Map(clonedPlayers.map((p) => [p.id, p]))
+
+  const updatedRoundMatches: Match[] = round.matches.map((match, index) => {
+    const result = results[index]
+    const p1 = byId.get(match.player1.id)!
+    const p2 = match.player2 ? byId.get(match.player2.id) : undefined
+
+    if (result === MatchResult.WIN) {
+      p1.points += 1
+      p1.resultHistory.push(MatchResult.WIN)
+      if (p2) {
+        p2.resultHistory.push(MatchResult.LOSS)
+      }
+    } else if (result === MatchResult.LOSS && p2) {
+      p2.points += 1
+      p2.resultHistory.push(MatchResult.WIN)
+      p1.resultHistory.push(MatchResult.LOSS)
+    } else if (result === MatchResult.DRAW && p2) {
+      p1.points += 0.5
+      p2.points += 0.5
+      p1.resultHistory.push(MatchResult.DRAW)
+      p2.resultHistory.push(MatchResult.DRAW)
+    }
+
+    return {
+      ...match,
+      result,
+      player1: p1,
+      player2: p2,
+    }
+  })
+
+  const allMatches = tournament.rounds.flatMap((r, i) =>
+    i === roundIndex ? updatedRoundMatches : mapMatchesToPlayers(r.matches, clonedPlayers)
+  )
+  calculateBuchholz(clonedPlayers, allMatches)
+
+  const newRounds = tournament.rounds.map((r, i) =>
+    i === roundIndex ? { matches: updatedRoundMatches } : { matches: mapMatchesToPlayers(r.matches, clonedPlayers) }
+  )
+
+  return {
+    ...tournament,
+    players: clonedPlayers,
+    rounds: newRounds,
+  }
+}
+
 export function calculateRounds(numPlayers: number): number {
   return Math.ceil(Math.log2(numPlayers))
 }
 
-export function runTournament(namesAndRatings: { name: string; rating?: number }[]): Tournament {
-  const players = initializePlayers(namesAndRatings)
-  const tournament: Tournament = { players, rounds: [] }
-
-  const firstRoundMatches = generateFirstRound(players)
-  tournament.rounds.push({ matches: firstRoundMatches })
-
-  return tournament
+export function runTournament(
+  namesAndRatings: { name: string; rating?: number }[]
+): Tournament {
+  const initialPlayers = initializePlayers(namesAndRatings)
+  const { matches, players } = generateFirstRound(initialPlayers)
+  return {
+    players,
+    rounds: [{ matches }],
+  }
 }
