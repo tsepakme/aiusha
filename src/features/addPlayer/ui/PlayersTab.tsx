@@ -39,7 +39,11 @@ export const PlayersTab: React.FC = () => {
         isTournamentActive={!!tournament}
         onRemovePlayer={!tournament ? handleRemovePlayer : undefined}
         onEditPlayer={!tournament ? handleEditPlayer : undefined}
-        onStartTournament={!tournament && players.length >= 2 ? startTournament : undefined}
+        onStartTournament={
+          !tournament && players.length >= 2
+            ? () => startTournament(players)
+            : undefined
+        }
         onResetPlayers={resetTournament}
       />
     </div>

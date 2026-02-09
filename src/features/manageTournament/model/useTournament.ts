@@ -55,10 +55,11 @@ export const useTournament = () => {
     return true;
   };
 
-  const startTournament = () => {
-    if (players.length < 2) return false;
-    
-    const newTournament = runTournament(players);
+  const startTournament = (playersOverride?: PlayerInput[]) => {
+    const list = playersOverride ?? players;
+    if (list.length < 2) return false;
+
+    const newTournament = runTournament(list);
     setTournament(newTournament);
     setRoundResults(newTournament.rounds.map(() => []));
     

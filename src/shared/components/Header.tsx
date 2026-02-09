@@ -14,6 +14,7 @@ export function Header() {
         <nav className="hidden md:flex items-center gap-6" aria-label='Main Navigation'>
           <Link to="/" className="text-sm font-medium hover:underline">Home</Link>
           <Link to="/swiss" className="text-sm font-medium hover:underline">Swiss System</Link>
+          <Link to="/olympic" className="text-sm font-medium hover:underline">Olympic System</Link>
         </nav>
         <ModeToggle />
       </div>

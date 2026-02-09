@@ -11,7 +11,7 @@ interface TournamentContextType {
   addPlayer: (name: string, rating?: string) => void;
   removePlayer: (index: number) => void;
   editPlayer: (index: number, name: string, rating?: string) => void;
-  startTournament: () => void;
+  startTournament: (playersOverride?: Array<{ name: string; rating?: number }>) => void;
   handleResultChange: (roundIndex: number, matchIndex: number, result: MatchResult) => void;
   finishRound: (roundIndex: number) => void;
   nextRound: () => boolean;

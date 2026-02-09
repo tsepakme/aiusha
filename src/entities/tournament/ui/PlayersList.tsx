@@ -170,7 +170,12 @@ export const PlayersList: React.FC<PlayersListProps> = ({
         >
           {onStartTournament && (
             <Button
-              onClick={onStartTournament}
+              type="button"
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                onStartTournament();
+              }}
               aria-label="Start tournament with current players"
             >
               Start Tournament
