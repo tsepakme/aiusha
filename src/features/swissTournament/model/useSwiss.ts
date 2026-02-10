@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import { Tournament, MatchResult } from "@/entities/tournament/model/tournament";
-import { runTournament, generateSwissRound, updateResults, calculateRounds } from "./manageTournament";
+import { runTournament, generateSwissRound, updateResults, calculateRounds } from "./swissTournament";
 import { useLocalStorage } from '@/shared/hooks/useLocalStorage'
 import { toast } from 'sonner';
 import { analytics } from '@/shared/lib/analytics';
@@ -8,7 +8,7 @@ import { analytics } from '@/shared/lib/analytics';
 
 type PlayerInput = { name: string; rating?: number };
 
-export const useTournament = () => {
+export const useSwiss = () => {
   const [players, setPlayers, removePlayers] = useLocalStorage<PlayerInput[]>('players', []);
   const [tournament, setTournament, removeTournament] = useLocalStorage<Tournament | null>('tournament', null);
   const [isFinished, setIsFinished, removeIsFinished] = useLocalStorage<boolean>('isFinished', false);
@@ -55,10 +55,11 @@ export const useTournament = () => {
     return true;
   };
 
-  const startTournament = () => {
-    if (players.length < 2) return false;
-    
-    const newTournament = runTournament(players);
+  const startTournament = (playersOverride?: PlayerInput[]) => {
+    const list = playersOverride ?? players;
+    if (list.length < 2) return false;
+
+    const newTournament = runTournament(list);
     setTournament(newTournament);
     setRoundResults(newTournament.rounds.map(() => []));
     
@@ -100,58 +101,55 @@ export const useTournament = () => {
   };
 
   const finishRound = (roundIndex: number) => {
-    if (!tournament) return false;
+    if (!tournament || !tournament.rounds[roundIndex]) return false;
 
-    const newTournament = { ...tournament };
-    const allMatches = newTournament.rounds.flatMap(round => round.matches);
-    
-    if (newTournament.rounds[roundIndex]) {
-      updateResults(
-        newTournament.rounds[roundIndex].matches, 
-        roundResults[roundIndex] || [], 
-        newTournament.players, 
-        allMatches
-      );
-      setTournament(newTournament);
-      
-      // Track round completion
-      const tournamentId = `tournament_${Date.now()}`;
-      analytics.roundCompleted({
-        tournament_id: tournamentId,
-        round_number: roundIndex + 1,
-        time_to_complete_sec: 0 // TODO: Track actual time
-      });
-      
-      return true;
-    }
-    
-    return false;
+    const newTournament = updateResults(
+      tournament,
+      roundIndex,
+      roundResults[roundIndex] || []
+    );
+    setTournament(newTournament);
+
+    const tournamentId = `tournament_${Date.now()}`;
+    analytics.roundCompleted({
+      tournament_id: tournamentId,
+      round_number: roundIndex + 1,
+      time_to_complete_sec: 0, // TODO: Track actual time
+    });
+
+    return true;
   };
 
   const nextRound = () => {
     if (!tournament) return false;
-    
-    if (tournament.rounds.length < calculateRounds(tournament.players.length)) {
-      finishRound(tournament.rounds.length - 1);
-      
-      const newTournament = { ...tournament };
-      const newRoundMatches = generateSwissRound(newTournament.players);
-      newTournament.rounds.push({ matches: newRoundMatches });
-      setTournament(newTournament);
-      setRoundResults([...roundResults, []]);
-      
-      // Track new round generation
-      const tournamentId = `tournament_${Date.now()}`;
-      analytics.roundGenerated({
-        tournament_id: tournamentId,
-        round_number: newTournament.rounds.length,
-        system_type: 'swiss'
-      });
-      
-      return true;
+
+    if (tournament.rounds.length >= calculateRounds(tournament.players.length)) {
+      return false;
     }
-    
-    return false;
+
+    const currentRoundIndex = tournament.rounds.length - 1;
+    const afterFinish = updateResults(
+      tournament,
+      currentRoundIndex,
+      roundResults[currentRoundIndex] || []
+    );
+    const { matches, players: nextPlayers } = generateSwissRound(afterFinish.players);
+
+    setTournament({
+      ...afterFinish,
+      players: nextPlayers,
+      rounds: [...afterFinish.rounds, { matches }],
+    });
+    setRoundResults([...roundResults, []]);
+
+    const tournamentId = `tournament_${Date.now()}`;
+    analytics.roundGenerated({
+      tournament_id: tournamentId,
+      round_number: afterFinish.rounds.length + 1,
+      system_type: 'swiss',
+    });
+
+    return true;
   };
 
   const finishTournament = () => {

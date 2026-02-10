@@ -1,7 +1,7 @@
 import React from 'react';
 import { PlayerForm } from './PlayerForm';
 import { PlayersList } from '@/entities/tournament/ui/PlayersList';
-import { useTournamentContext } from '@/features/manageTournament/model/TournamentContext';
+import { useSwissContext } from '@/features/swissTournament/model/SwissContext';
 import { toast } from 'sonner';
 
 export const PlayersTab: React.FC = () => {
@@ -13,7 +13,7 @@ export const PlayersTab: React.FC = () => {
     editPlayer,
     startTournament,
     resetTournament
-  } = useTournamentContext();
+  } = useSwissContext();
 
   const handleEditPlayer = (index: number, name: string, rating?: string) => {
     editPlayer(index, name, rating);
@@ -39,7 +39,11 @@ export const PlayersTab: React.FC = () => {
         isTournamentActive={!!tournament}
         onRemovePlayer={!tournament ? handleRemovePlayer : undefined}
         onEditPlayer={!tournament ? handleEditPlayer : undefined}
-        onStartTournament={!tournament && players.length >= 2 ? startTournament : undefined}
+        onStartTournament={
+          !tournament && players.length >= 2
+            ? () => startTournament(players)
+            : undefined
+        }
         onResetPlayers={resetTournament}
       />
     </div>

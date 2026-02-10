@@ -32,7 +32,7 @@ export function getOrCreateUserId(): string {
     }
 
     return userId;
-  } catch (error) {
+  } catch {
     // Fallback if localStorage unavailable
     console.warn('Analytics: localStorage unavailable, using session-only ID');
     return `anon_${crypto.randomUUID()}`;
@@ -53,7 +53,7 @@ export function getSessionId(): string {
     }
 
     return sessionId;
-  } catch (error) {
+  } catch {
     // Fallback if sessionStorage unavailable
     console.warn('Analytics: sessionStorage unavailable, generating temporary session ID');
     return crypto.randomUUID();

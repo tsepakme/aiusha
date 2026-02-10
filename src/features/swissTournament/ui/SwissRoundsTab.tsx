@@ -3,11 +3,11 @@ import { Button } from "@/shared/components/button";
 import { Separator } from "@/shared/components/separator";
 import { RoundView } from '@/entities/tournament/ui/RoundView';
 import DeleteConfirmationDialog from "@/shared/components/DeleteConfirmationDialog";
-import { calculateRounds } from '../model/manageTournament';
+import { calculateRounds } from '../model/swissTournament';
 import { toast } from "sonner";
-import { useTournamentContext } from '../model/TournamentContext';
+import { useSwissContext } from '../model/SwissContext';
 
-export const TournamentRoundsTab: React.FC = () => {
+export const SwissRoundsTab: React.FC = () => {
   const {
     tournament,
     roundResults,
@@ -16,7 +16,7 @@ export const TournamentRoundsTab: React.FC = () => {
     nextRound,
     finishTournament,
     resetTournament
-  } = useTournamentContext();
+  } = useSwissContext();
 
   if (!tournament) {
     return (

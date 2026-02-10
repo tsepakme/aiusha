@@ -1,7 +1,8 @@
 import { ThemeProvider } from "@/shared/theme-provider";
 import { Router, RouterProvider, Route, RootRoute, Outlet } from '@tanstack/react-router';
 import HomePage from '@/pages/HomePage';
-import TournamentPage from '@/pages/TournamentPage';
+import SwissPage from '@/pages/SwissPage';
+import OlympicPage from '@/pages/OlympicPage';
 import { Header } from "../shared/components/Header";
 import { Footer } from "../shared/components/Footer";
 import { useEffect } from 'react';
@@ -30,10 +31,16 @@ const indexRoute = new Route({
 const swissRoute = new Route({
   getParentRoute: () => rootRoute,
   path: '/swiss',
-  component: TournamentPage,
+  component: SwissPage,
 });
 
-const routeTree = rootRoute.addChildren([indexRoute, swissRoute]);
+const olympicRoute = new Route({
+  getParentRoute: () => rootRoute,
+  path: '/olympic',
+  component: OlympicPage,
+});
+
+const routeTree = rootRoute.addChildren([indexRoute, swissRoute, olympicRoute]);
 
 const router = new Router({ routeTree });
 

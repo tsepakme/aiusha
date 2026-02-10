@@ -26,13 +26,12 @@ export default function HomePage() {
             <span className="text-sm mt-2 inline-block">(Coming soon)</span>
           </div>
 
-          <div className="p-6 border rounded-lg opacity-60">
+          <Link to="/olympic" className="block p-6 border rounded-lg hover:bg-muted transition-colors">
             <h2 className="text-xl font-semibold mb-2">Olympic System</h2>
             <p className="text-muted-foreground">
-              Single or double elimination brackets with clear progression paths.
+              Single elimination brackets with clear progression paths. Winner advances, loser is out.
             </p>
-            <span className="text-sm mt-2 inline-block">(Coming soon)</span>
-          </div>
+          </Link>
 
           <div className="p-6 border rounded-lg opacity-60">
             <h2 className="text-xl font-semibold mb-2">Round-robin Tournament</h2>
