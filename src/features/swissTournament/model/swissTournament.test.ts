@@ -5,7 +5,7 @@ import {
   generateFirstRound,
   generateSwissRound,
   updateResults,
-} from "./manageTournament";
+} from "./swissTournament";
 import { initializePlayers } from "../../addPlayer/model/addPlayer";
 import { MatchResult } from "../../../entities/tournament/model/tournament";
 

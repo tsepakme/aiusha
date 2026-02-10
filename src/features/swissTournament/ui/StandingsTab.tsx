@@ -1,12 +1,12 @@
 import React, { useEffect } from 'react';
 import { StandingsTable } from '@/entities/tournament/ui/StandingsTable';
 import DeleteConfirmationDialog from "@/shared/components/DeleteConfirmationDialog";
-import { useTournamentContext } from '../model/TournamentContext';
+import { useSwissContext } from '../model/SwissContext';
 import { analytics } from '@/shared/lib/analytics';
 import { SupportButton } from '@/shared/components/SupportButton';
 
 export const StandingsTab: React.FC = () => {
-  const { tournament, isFinished, resetTournament } = useTournamentContext();
+  const { tournament, isFinished, resetTournament } = useSwissContext();
 
   // Track standings view
   useEffect(() => {

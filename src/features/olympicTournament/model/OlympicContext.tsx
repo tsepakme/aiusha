@@ -2,7 +2,6 @@ import React, { createContext, useContext, ReactNode } from "react";
 import { useOlympic } from "./useOlympic";
 import type { EliminationBracket } from "@/entities/tournament/model/elimination";
 import type { MatchResult } from "@/entities/tournament/model/tournament";
-import type { Player } from "@/entities/player/model/player";
 
 export interface OlympicContextType {
   players: Array<{ name: string; rating?: number }>;

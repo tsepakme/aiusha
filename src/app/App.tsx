@@ -1,7 +1,7 @@
 import { ThemeProvider } from "@/shared/theme-provider";
 import { Router, RouterProvider, Route, RootRoute, Outlet } from '@tanstack/react-router';
 import HomePage from '@/pages/HomePage';
-import TournamentPage from '@/pages/TournamentPage';
+import SwissPage from '@/pages/SwissPage';
 import OlympicPage from '@/pages/OlympicPage';
 import { Header } from "../shared/components/Header";
 import { Footer } from "../shared/components/Footer";
@@ -31,7 +31,7 @@ const indexRoute = new Route({
 const swissRoute = new Route({
   getParentRoute: () => rootRoute,
   path: '/swiss',
-  component: TournamentPage,
+  component: SwissPage,
 });
 
 const olympicRoute = new Route({

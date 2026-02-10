@@ -2,15 +2,15 @@ import React from 'react';
 import { ThemeProvider } from "@/shared/theme-provider"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/shared/components/tabs"
 import { PlayersTab } from '@/features/addPlayer/ui/PlayersTab';
-import { TournamentRoundsTab } from '@/features/manageTournament/ui/TournamentRoundsTab';
-import { StandingsTab } from '@/features/manageTournament/ui/StandingsTab';
-import { TournamentProvider } from '@/features/manageTournament/model/TournamentContext';
+import { SwissRoundsTab } from '@/features/swissTournament/ui/SwissRoundsTab';
+import { StandingsTab } from '@/features/swissTournament/ui/StandingsTab';
+import { SwissProvider } from '@/features/swissTournament/model/SwissContext';
 import { Toaster } from 'sonner';
 
-const TournamentPage: React.FC = () => {
+const SwissPage: React.FC = () => {
   return (
     <ThemeProvider defaultTheme="system" storageKey="vite-ui-theme">
-      <TournamentProvider>
+      <SwissProvider>
         <div className="w-full md:w-1/2 mx-auto p-4">
           <div className='w-full flex justify-between items-top my-5'>
             <div className=''>
@@ -33,7 +33,7 @@ const TournamentPage: React.FC = () => {
             </TabsContent>
             
             <TabsContent value="rounds">
-              <TournamentRoundsTab />
+              <SwissRoundsTab />
             </TabsContent>
             
             <TabsContent value="standings">
@@ -42,9 +42,9 @@ const TournamentPage: React.FC = () => {
           </Tabs>
         </div>
         <Toaster position="bottom-right" />
-      </TournamentProvider>
+      </SwissProvider>
     </ThemeProvider>
   );
 };
 
-export default TournamentPage;
+export default SwissPage;

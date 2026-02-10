@@ -1,9 +1,9 @@
 import React, { createContext, useContext, ReactNode } from 'react';
-import { useTournament } from './useTournament';
+import { useSwiss } from './useSwiss';
 import { Tournament, MatchResult } from '@/entities/tournament/model/tournament';
 import { Player } from '@/entities/player/model/player';
 
-interface TournamentContextType {
+interface SwissContextType {
   players: Array<{ name: string; rating?: number }>;
   tournament: Tournament | null;
   isFinished: boolean;
@@ -20,28 +20,28 @@ interface TournamentContextType {
   getSortedPlayers: () => Player[];
 }
 
-const TournamentContext = createContext<TournamentContextType | null>(null);
+const SwissContext = createContext<SwissContextType | null>(null);
 
-export const TournamentProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const tournamentData = useTournament();
+export const SwissProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+  const tournamentData = useSwiss();
   
-  const contextValue: TournamentContextType = {
+  const contextValue: SwissContextType = {
     ...tournamentData,
     getSortedPlayers: () => tournamentData.sortedPlayers || []
   };
   
   return (
-    <TournamentContext.Provider value={contextValue}>
+    <SwissContext.Provider value={contextValue}>
       {children}
-    </TournamentContext.Provider>
+    </SwissContext.Provider>
   );
 };
 
-export const useTournamentContext = (): TournamentContextType => {
-  const context = useContext(TournamentContext);
+export const useSwissContext = (): SwissContextType => {
+  const context = useContext(SwissContext);
   
   if (!context) {
-    throw new Error('useTournamentContext must be used within a TournamentProvider');
+    throw new Error('useSwissContext must be used within a SwissProvider');
   }
   
   return context;

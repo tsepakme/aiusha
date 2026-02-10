@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import { Tournament, MatchResult } from "@/entities/tournament/model/tournament";
-import { runTournament, generateSwissRound, updateResults, calculateRounds } from "./manageTournament";
+import { runTournament, generateSwissRound, updateResults, calculateRounds } from "./swissTournament";
 import { useLocalStorage } from '@/shared/hooks/useLocalStorage'
 import { toast } from 'sonner';
 import { analytics } from '@/shared/lib/analytics';
@@ -8,7 +8,7 @@ import { analytics } from '@/shared/lib/analytics';
 
 type PlayerInput = { name: string; rating?: number };
 
-export const useTournament = () => {
+export const useSwiss = () => {
   const [players, setPlayers, removePlayers] = useLocalStorage<PlayerInput[]>('players', []);
   const [tournament, setTournament, removeTournament] = useLocalStorage<Tournament | null>('tournament', null);
   const [isFinished, setIsFinished, removeIsFinished] = useLocalStorage<boolean>('isFinished', false);
