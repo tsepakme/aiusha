@@ -6,9 +6,17 @@ import { ButtonProps } from "@/shared/components/button";
 interface DeleteConfirmationDialogProps extends ButtonProps {
   onConfirm: () => void;
   value: string;
+  description?: string;
+  confirmLabel?: string;
 }
 
-const DeleteConfirmationDialog: React.FC<DeleteConfirmationDialogProps> = ({ onConfirm, value, variant }) => {
+const DeleteConfirmationDialog: React.FC<DeleteConfirmationDialogProps> = ({
+  onConfirm,
+  value,
+  variant,
+  description = "This action cannot be undone. This will permanently delete your data.",
+  confirmLabel = "Delete",
+}) => {
   return (
     <AlertDialog>
       <AlertDialogTrigger asChild>
@@ -17,13 +25,11 @@ const DeleteConfirmationDialog: React.FC<DeleteConfirmationDialogProps> = ({ onC
       <AlertDialogContent>
         <AlertDialogHeader>
           <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-          <AlertDialogDescription>
-            This action cannot be undone. This will permanently delete your data.
-          </AlertDialogDescription>
+          <AlertDialogDescription>{description}</AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel>Cancel</AlertDialogCancel>
-          <AlertDialogAction onClick={onConfirm}>Delete</AlertDialogAction>
+          <AlertDialogAction onClick={onConfirm}>{confirmLabel}</AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>

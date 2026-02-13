@@ -15,6 +15,7 @@ export function Header() {
           <Link to="/" className="text-sm font-medium hover:underline">Home</Link>
           <Link to="/swiss" className="text-sm font-medium hover:underline">Swiss System</Link>
           <Link to="/olympic" className="text-sm font-medium hover:underline">Olympic System</Link>
+          <Link to="/swiss-de" className="text-sm font-medium hover:underline">Swiss Double Elimination</Link>
         </nav>
         <ModeToggle />
       </div>
