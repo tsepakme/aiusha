@@ -30,6 +30,12 @@ export const SwissTab: React.FC = () => {
   const results = swissResults[currentRoundIndex] ?? [];
   const swissDone = isSwissComplete(teams);
 
+  const allResultsEntered =
+    currentRound?.matches.every(
+      (m, i) => m.team2 === null || results[i] === "team1" || results[i] === "team2"
+    ) ?? false;
+  const canCompleteRound = !swissDone && allResultsEntered;
+
   return (
     <div className="space-y-6">
       <div>
@@ -119,8 +125,9 @@ export const SwissTab: React.FC = () => {
             <Button
               onClick={() => completeSwissRound(currentRoundIndex)}
               variant="default"
+              disabled={!canCompleteRound}
             >
-              Complete round
+              Complete round {allResultsEntered ? "" : "(Enter result for every match)"}
             </Button>
             {swissDone && canStartPlayoff && (
               <Button type="button" onClick={() => startPlayoff()} variant="secondary">
