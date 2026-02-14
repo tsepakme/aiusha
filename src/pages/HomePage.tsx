@@ -33,6 +33,13 @@ export default function HomePage() {
             </p>
           </Link>
 
+          <Link to="/swiss-de" className="block p-6 border rounded-lg hover:bg-muted transition-colors">
+            <h2 className="text-xl font-semibold mb-2">Swiss Double Elimination</h2>
+            <p className="text-muted-foreground">
+              Swiss stage (first to 3 wins / 3 losses), then double elimination playoff. Min 8 players.
+            </p>
+          </Link>
+
           <div className="p-6 border rounded-lg opacity-60">
             <h2 className="text-xl font-semibold mb-2">Round-robin Tournament</h2>
             <p className="text-muted-foreground">

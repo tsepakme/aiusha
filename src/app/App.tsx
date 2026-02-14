@@ -3,6 +3,7 @@ import { Router, RouterProvider, Route, RootRoute, Outlet } from '@tanstack/reac
 import HomePage from '@/pages/HomePage';
 import SwissPage from '@/pages/SwissPage';
 import OlympicPage from '@/pages/OlympicPage';
+import SwissDePage from '@/pages/SwissDePage';
 import { Header } from "../shared/components/Header";
 import { Footer } from "../shared/components/Footer";
 import { useEffect } from 'react';
@@ -40,7 +41,13 @@ const olympicRoute = new Route({
   component: OlympicPage,
 });
 
-const routeTree = rootRoute.addChildren([indexRoute, swissRoute, olympicRoute]);
+const swissDeRoute = new Route({
+  getParentRoute: () => rootRoute,
+  path: '/swiss-de',
+  component: SwissDePage,
+});
+
+const routeTree = rootRoute.addChildren([indexRoute, swissRoute, olympicRoute, swissDeRoute]);
 
 const router = new Router({ routeTree });
 
