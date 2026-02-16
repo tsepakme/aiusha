@@ -4,6 +4,7 @@ import HomePage from '@/pages/HomePage';
 import SwissPage from '@/pages/SwissPage';
 import OlympicPage from '@/pages/OlympicPage';
 import SwissDePage from '@/pages/SwissDePage';
+import RoundRobinPage from '@/pages/RoundRobinPage';
 import { Header } from "../shared/components/Header";
 import { Footer } from "../shared/components/Footer";
 import { useEffect } from 'react';
@@ -47,7 +48,13 @@ const swissDeRoute = new Route({
   component: SwissDePage,
 });
 
-const routeTree = rootRoute.addChildren([indexRoute, swissRoute, olympicRoute, swissDeRoute]);
+const roundRobinRoute = new Route({
+  getParentRoute: () => rootRoute,
+  path: '/round-robin',
+  component: RoundRobinPage,
+});
+
+const routeTree = rootRoute.addChildren([indexRoute, swissRoute, olympicRoute, swissDeRoute, roundRobinRoute]);
 
 const router = new Router({ routeTree });
 

@@ -8,7 +8,6 @@ export const PlayoffTab: React.FC = () => {
   const {
     playoffBracket,
     phase,
-    champion,
     canStartPlayoff,
     startPlayoff,
     setPlayoffMatchResult,
@@ -154,12 +153,6 @@ export const PlayoffTab: React.FC = () => {
           </TableBody>
         </Table>
       </div>
-
-      {champion && (
-        <p className="text-lg font-semibold text-green-600 dark:text-green-400" role="status">
-          Champion: {champion.name}
-        </p>
-      )}
     </div>
   );
 };
