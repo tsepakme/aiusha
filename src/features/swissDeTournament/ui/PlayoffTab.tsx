@@ -8,7 +8,6 @@ export const PlayoffTab: React.FC = () => {
   const {
     playoffBracket,
     phase,
-    champion,
     canStartPlayoff,
     startPlayoff,
     setPlayoffMatchResult,

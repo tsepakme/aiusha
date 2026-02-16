@@ -3,7 +3,7 @@ import { Table, TableBody, TableCell, TableHeader, TableRow } from "@/shared/com
 import { useRoundRobinContext } from "../model/RoundRobinContext";
 
 export const RoundRobinStandingsTab: React.FC = () => {
-  const { standings, phase, isComplete, champion } = useRoundRobinContext();
+  const { standings, phase } = useRoundRobinContext();
 
   if (phase === "setup") {
     return (
