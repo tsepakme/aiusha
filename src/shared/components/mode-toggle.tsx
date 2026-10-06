@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { Moon, Sun, Cog } from "lucide-react"
+import { Monitor, Moon, Sun } from "lucide-react"
 
 import { Button } from "@/shared/components/button"
 import {
@@ -13,6 +13,7 @@ import { useTheme } from "@/shared/theme-provider"
 export function ModeToggle() {
   const { theme, setTheme } = useTheme();
   const [open, setOpen] = useState(false);
+  const themeLabels = { light: "Light", dark: "Dark", system: "System" } as const;
 
   return (
     <DropdownMenu open={open} onOpenChange={setOpen}>
@@ -20,48 +21,52 @@ export function ModeToggle() {
         <Button
           variant="outline"
           size="icon"
-          aria-label="change theme"
+          aria-label={`Select theme. Current: ${themeLabels[theme]}`}
           aria-expanded={open}
           aria-controls="theme-menu"
+          title={`Theme: ${themeLabels[theme]}`}
+          className="border-0 bg-transparent shadow-none hover:bg-transparent"
         >
-          <Sun
-            className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0"
-            aria-hidden="true"
-          />
-          <Moon
-            className="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100"
-            aria-hidden="true"
-          />
-          <span className="sr-only">Change theme</span>
+          {theme === "light" ? (
+            <Sun className="h-5 w-5" aria-hidden="true" />
+          ) : theme === "dark" ? (
+            <Moon className="h-5 w-5" aria-hidden="true" />
+          ) : (
+            <Monitor className="h-5 w-5" aria-hidden="true" />
+          )}
+          <span className="sr-only">Select theme</span>
         </Button>
       </DropdownMenuTrigger>
 
       <DropdownMenuContent id="theme-menu" align="end" aria-label="theme menu">
         <DropdownMenuItem
           onClick={() => setTheme("light")}
-          aria-selected={theme === "light"}
+          role="menuitemradio"
+          aria-checked={theme === "light"}
         >
           <Sun className="mr-2 h-4 w-4" aria-hidden="true" />
           <span>Light</span>
-          {theme === "light" && <span className="sr-only">(current)</span>}
+          {theme === "light" && <span aria-hidden="true">✓</span>}
         </DropdownMenuItem>
 
         <DropdownMenuItem
           onClick={() => setTheme("dark")}
-          aria-selected={theme === "dark"}
+          role="menuitemradio"
+          aria-checked={theme === "dark"}
         >
           <Moon className="mr-2 h-4 w-4" aria-hidden="true" />
           <span>Dark</span>
-          {theme === "dark" && <span className="sr-only">(current)</span>}
+          {theme === "dark" && <span aria-hidden="true">✓</span>}
         </DropdownMenuItem>
 
         <DropdownMenuItem
           onClick={() => setTheme("system")}
-          aria-selected={theme === "system"}
+          role="menuitemradio"
+          aria-checked={theme === "system"}
         >
-          <Cog className="mr-2 h-4 w-4" aria-hidden="true" />
+          <Monitor className="mr-2 h-4 w-4" aria-hidden="true" />
           <span>System</span>
-          {theme === "system" && <span className="sr-only">(current)</span>}
+          {theme === "system" && <span aria-hidden="true">✓</span>}
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
