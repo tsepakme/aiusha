@@ -192,7 +192,7 @@ export function pairSwissRound(teams: SwissDETeam[]): { round: SwissDERound; tea
   const allPairs: [number | string, number | string][] = [];
   let allUnpaired: (number | string)[] = [];
 
-  for (const [_score, ids] of scoreGroups) {
+  for (const ids of scoreGroups.values()) {
     const { pairs, unpaired } = pairWithinGroup(ids, opponents);
     for (const p of pairs) {
       allPairs.push(p);

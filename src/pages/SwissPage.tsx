@@ -9,7 +9,7 @@ import { Toaster } from 'sonner';
 
 const SwissPage: React.FC = () => {
   return (
-    <ThemeProvider defaultTheme="system" storageKey="vite-ui-theme">
+    <ThemeProvider defaultTheme="system">
       <SwissProvider>
         <div className="w-full md:w-1/2 mx-auto p-4">
           <div className='w-full flex justify-between items-top my-5'>

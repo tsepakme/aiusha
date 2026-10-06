@@ -12,7 +12,7 @@ import { initializeAnalytics, analytics } from '@/shared/lib/analytics';
 
 const rootRoute = new RootRoute({
   component: () => (
-    <ThemeProvider defaultTheme="system" storageKey="vite-ui-theme">
+    <ThemeProvider defaultTheme="system">
       <div className="flex flex-col min-h-screen">
         <Header />
         <main className="flex-1">

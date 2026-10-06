@@ -162,14 +162,21 @@ export function setDEMatchResult(
     if (roundIndex < newWinnerRounds.length) {
       const r = newWinnerRounds[roundIndex];
       const mat = r.matches[matchIndex];
-      if (mat) (slot === 0 ? (mat.team1 = team) : (mat.team2 = team));
+      if (mat) {
+        if (slot === 0) mat.team1 = team;
+        else mat.team2 = team;
+      }
     } else if (roundIndex < newWinnerRounds.length + newLoserRounds.length) {
       const idx = roundIndex - newWinnerRounds.length;
       const r = newLoserRounds[idx];
       const mat = r.matches[matchIndex];
-      if (mat) (slot === 0 ? (mat.team1 = team) : (mat.team2 = team));
+      if (mat) {
+        if (slot === 0) mat.team1 = team;
+        else mat.team2 = team;
+      }
     } else {
-      (slot === 0 ? (newGrandFinal.team1 = team) : (newGrandFinal.team2 = team));
+      if (slot === 0) newGrandFinal.team1 = team;
+      else newGrandFinal.team2 = team;
     }
   };
 
